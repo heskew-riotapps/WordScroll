@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    style="@style/SplashLayoutStyle" 
+    android:orientation="vertical"
+	>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+		<include android:id="@+id/topAreaLayout" layout="@layout/toparealayout" />
+ 
+	</LinearLayout>    
+<RelativeLayout
+	    android:layout_below="@id/topAreaLayout"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"  
+	 >
+    	<com.rozen.wordscroll.ui.GameSurfaceView
+    	   
+        	android:id="@+id/gameSurface"
+        	android:layout_margin="0dp"
+        	android:background="@null"
+        />
+    
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,10 @@
+<resources>
+
+    <string name="app_name">Funklee</string>
+	<string name="version">1.0</string>
+    <string name="versionName">Accordion</string>
+    <string name="build">110</string>
+ 	<string name="build">110</string>
+	<string name="namespace">com.rozen.wordscroll</string>
+
+</resources>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="top_area_background">#29cdf0</color><!-- 177efe -->
+    <color name="gameboard_bottom_ad_background">#2a2a2a</color>
+    <color name="gameboard_bottom_fill_background">#e03b7d</color>
+    <color name="word_list_area_middle_border">#A020F0</color> <!-- 670099 -->
+    <color name="word_list_area_player_title_text">#ffffff</color>
+    <color name="word_list_area_opponent_title_text">#ffffff</color>
+    <color name="word_list_area_player_title_background">#ff6501</color> 
+    <color name="word_list_area_opponent_title_background">#ff6501</color>
+    <color name="word_list_area_opponent_background">#fff5ee</color> 
+    <color name="word_list_area_player_background">#fff5ee</color> 
+    <color name="word_list_area_background">#cada39</color> 
+    <color name="button_area_background">#ee5b92</color> 
+    <color name="played_word_area_background">#BA55D3</color> <!-- B23AEE -->
+        <color name="game_complete_area_background">#BA55D3</color> <!-- B23AEE -->
+    <color name="scoreboard_background">#e03b7d</color> <!-- d42931 ae1d18 CD96CD DB70DB 024bc4 137ccd 64908A -->
+    <color name="tray_background">#29cdf0</color>
+	<color name="button_text_color_on">#fff5ee</color>
+	<color name="field_background">#cada39</color>
+	<color name="main_opponent_choose_background">#cada39</color>
+ 	<color name="main_opponent_choose_text">#d62a62</color>
+ 	  <color name="scoreboard_text_color">#ffffff</color> <!-- #fff5ee -->
+    <color name="scoreboard_text_last_played_color">#FF0000</color> <!-- #FF0000 --> 
+	<color name="sub_scoreboard_background">#29cdf0</color><!-- 177efe -->
+ <color name="sub_scoreboard_text_color">#ffffff</color>
+ <color name="countdown_text_color">#ffffff</color>
+ <color name="countdown_finish_text_color">#ff0000</color>
+ <color name="gameboard_winner_text">#ffffff</color>
+  <color name="gameboard_lookup_definition_text">#ffffff</color>
+	<color name="button_text_color_off">#790909</color>
+	<color name="game_board_full_view_upper_gap_bg">#cada39</color> <!-- #ffecaa eec591  -->
+	<color name="game_board_full_view_lower_gap_bg">#cada39</color> <!-- #ffecaa eec591  -->
+	<color name="game_board_full_view_board_bg">#eec591</color>
+	<color name="game_board_full_view_upper_gap_text">#ffffff</color>
+	<color name="game_board_full_view_upper_gap_front_text">#000000</color><!-- #1874C D eec591  -->  
+
+	<color name="game_board_tray_border">#eec591</color>  
+	<color name="game_board_tray_tile_letter">#080808</color>
+	<color name="game_board_tray_tile_value">#000000</color> 
+	<color name="game_board_board_tile_letter">#080808</color>
+	<color name="game_board_board_tile_value">#000000</color>
+	<color name="game_board_board_last_played_tile_letter">#ffffff</color>
+	<color name="game_board_board_last_played_tile_value">#000000</color>
+	<color name="game_board_dragging_tile_letter">#080808</color>
+	<color name="game_board_dragging_tile_value">#000000</color>
+	<color name="game_board_bonus_text">#ffffff</color>
+
+    <color name="pressed_color">#D3D3D3</color> <!--custom color for pressed state -->
+    <color name="normal_color">#fff5ee</color>  
+    <color name="form_background_color">#fff5ee</color> 
+
+    <color name="tab_background_color">#3366dd</color> 
+
+    <color name="content_area_font_color">#1874CD</color>
+    <color name="content_area_background_color">#fff5ee</color>
+    <color name="content_area_background_pressed_color">#bbbdbd</color>
+   
+    <color name="content_font_color">#1874CD</color>
+    <color name="form_border_color">#3366dd</color> <!-- previously 3366dd -->  
+    <color name="title_bar_background_color">#FF0000</color><!-- FF0000  -->
+    <color name="create_game_bottom_option_background">#ee5b92</color>
+    <color name="create_game_bottom_option_pressed">#D3D3D3</color>
+    <color name="create_game_bottom_option_text">#ffffff</color>
+    <color name="create_game_option_1_background">#BA55D3</color><!-- cada39 -->
+    <color name="create_game_option_1_pressed">#D3D3D3</color>
+    <color name="create_game_option_1_text">#ffffff</color>
+     <color name="create_game_option_2_background">#ff6501</color> <!-- 29cdf0 -->
+    <color name="create_game_option_2_pressed">#D3D3D3</color>
+    <color name="create_game_option_2_text">#ffffff</color>
+    <color name="game_type_text_background">#e03b7d</color><!--e03b7d -->
+  	<color name="game_type_text">#ffffff</color>
+  	<color name="game_type_text_border">#e03b7d</color>
+ 	<color name="short_info_text">#ffffff</color>
+  	
+    <color name="logo_area_bottom_background_color">#3366dd</color> 
+    <color name="form_header_text_color">#1874CD</color> 
+    <color name="form_header_sub_text_color">#1874CD</color> 
+    <color name="form_header_background_color">#e8cca8</color>
+    <color name="button_area_background_color">#ee5b92</color>
+    <color name="sub_text_color">#fff5ee</color> 
+    <color name="progress_background_color">#cada39</color><!-- 3366dd -->
+    <color name="progress_text_color">#000000</color> 
+    <color name="progress_background">#137ccd</color>
+    <color name="toast_background_color">#ae1d18</color>
+    <color name="toast_inner_background_color">#ae1d18</color>
+    <color name="toast_text_color">#ffffff</color>
+    <color name="dialog_background_color">#137ccd</color>
+        
+    <color name="button_text_color">#fff5ee</color>
+    <color name="secondary_button_text_color">#fff5ee</color>
+    <color name="field_button_text_color">#454545</color>
+	<color name="player_image_border_color">#000000</color>
+	<color name="player_image_background_color">#d2bfa6</color>
+	<color name="game_surface_fill_color">#eec591</color>
+	<color name="list_text_background_color">#20000000</color>
+ 
+	<color name="header_text_color">#fff5ee</color>
+	<color name="store_item_divider_color">#f62222</color>
+	<color name="header_bottom_border_color">#ee5b92</color>
+	<color name="store_item_title_color">#f62222</color>
+	<color name="alert_text_button_color">#fff5ee</color> 
+	<color name="alert_background_color">#fff5ee</color> 
+	<color name="inline_header_text_color">#fff5ee</color> 
+</resources>
