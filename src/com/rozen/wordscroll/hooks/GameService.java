@@ -38,14 +38,14 @@ public class GameService {
     	game.setRandomConsonants(AlphabetService.getRandomConsonants());
     	game.setHopper(AlphabetService.getHopper(game.getRandomVowel(), game.getRandomConsonants()));
     	
-    	for (String letter : game.getHopper()){
+    	for (int i = 0; i < game.getHopper().size(); i++) { //String letter : game.getHopper()){
     		Tile tile = new Tile();
-    		tile.setLetter(letter);
+    		tile.setLetter(game.getHopper().get(i));
     		tile.setPlayed(false);
-    		tile.setId(java.util.UUID.randomUUID().toString());
+    		tile.setId(i); //java.util.UUID.randomUUID().toString());
     		tile.setRow(1);
     		tile.setLocation(new Coordinate());
-    		game.getHopperTiles().add(tile);
+    		game.getRow1Tiles().add(tile);
     	}
     	contextPlayer.setActiveGameId(game.getId());
     	PlayerService.savePlayer(contextPlayer);

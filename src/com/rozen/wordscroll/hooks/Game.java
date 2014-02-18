@@ -27,6 +27,9 @@ public class Game {
 	@SerializedName("r2_tiles")
 	private List<Tile> row2Tiles = new ArrayList<Tile>();
 	
+	@SerializedName("r3_tiles")
+	private List<Tile> row3Tiles = new ArrayList<Tile>();
+	
 	@SerializedName("r_v")
 	private String randomVowel;
 
@@ -82,6 +85,14 @@ public class Game {
 
 	public void setRow2Tiles(List<Tile> row2Tiles) {
 		this.row2Tiles = row2Tiles;
+	}
+
+	public List<Tile> getRow3Tiles() {
+		return row3Tiles;
+	}
+
+	public void setRow3Tiles(List<Tile> row3Tiles) {
+		this.row3Tiles = row3Tiles;
 	}
 
 	public String getId() {

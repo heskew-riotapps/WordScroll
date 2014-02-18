@@ -1,14 +1,7 @@
 package com.rozen.wordscroll.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.riotapps.wordbase.R;
-import com.riotapps.wordbase.hooks.AlphabetService;
- 
- 
 import com.riotapps.wordbase.ui.Coordinate;
-import com.riotapps.wordbase.ui.TrayTile;
 import com.riotapps.wordbase.utils.ApplicationContext;
 import com.riotapps.wordbase.utils.ImageHelper;
 import com.riotapps.wordbase.utils.Logger;
@@ -23,7 +16,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.graphics.PorterDuff.Mode;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -58,13 +50,34 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	private Object movementTriggerTapcheckThreshold;
 	private Object fullViewTileWidth;
 	private boolean surfaceCreated;
-	private static Bitmap bgTest;
+	private static Bitmap bgTile;
+	private static Bitmap bgTilePlayed;
+	private int loopCount = 0;
+	private int speedDirection = 0;
+	private int speedDistanceMin = 4;
+	private int speedDistanceMax = 16;
+	private int lastSpeedChange = 0;
+	private int updateSpeedInterval = 30;
 	
+	
+	private int speedDistance = 5;
 	private int row1Position = 0;
 	private int row2Position = 0;
 
-	private int tileSize = 200;
+	private int tileSize = 160;
 	private int tileGap = 10;
+	private int row1_yPosition = 10;
+	private int row2_yPosition = 180;
+	private int row3_yPosition = 350;
+	
+	private int currentX = -1;
+	private int currentY = -1;
+	private int previousX = -1;
+	private int previousY = -1;
+	private long tapCheck = 0;
+	private static final long SINGLE_TAP_DURATION_IN_MILLISECONDS = 550;
+	private int tileOnDown = -1;
+	private Tile tappedTile = null;
 	
 	public boolean isReadyToDraw() {
 		return readyToDraw;
@@ -74,8 +87,42 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		this.readyToDraw = readyToDraw;
 	}
 
+	private Tile getTappedTile(){
+		if (this.tileOnDown >= 0) {
+			for (Tile tile : this.parent.getGame().getRow3Tiles()){
+				if (this.tileOnDown == tile.getId()){
+					return tile;
+				}
+			}
+			for (Tile tile : this.parent.getGame().getRow2Tiles()){
+					if (this.tileOnDown == tile.getId()){
+						return tile;
+					}
+			}
+			for (Tile tile : this.parent.getGame().getRow1Tiles()){
+				if (this.tileOnDown == tile.getId()){
+					return tile;
+				}
+			}
+		}
+		 
+		return null;
 	 
+	}
+ 
 
+	public int getTileOnDown() {
+		return tileOnDown;
+	}
+
+	public void setTileOnDown(int tileOnDown) {
+		this.tileOnDown = tileOnDown;
+	}
+
+	public void resetTileOnDown() {
+		this.tileOnDown = -1;
+	}
+	
 	public GameSurfaceView(Context context) {
 		super(context);
 		//this.construct(context);
@@ -201,12 +248,15 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 */	 
 		//this.fullViewTileWidth = Math.round(this.fullWidth/15) - this.tileGap; //-1 for the space between each tile
 		
-	 	 if (GameSurfaceView.bgTest == null) {
- 		 GameSurfaceView.bgTest = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_bg, this.tileSize, this.tileSize);
- 		
-			 GameSurfaceView.bgTest = ImageHelper.getResizedBitmap(GameSurfaceView.bgTest, this.tileSize, this.tileSize);
+	 	 if (GameSurfaceView.bgTile == null) {
+	 		 GameSurfaceView.bgTile = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_bg, this.tileSize, this.tileSize);
+	 		 GameSurfaceView.bgTile = ImageHelper.getResizedBitmap(GameSurfaceView.bgTile, this.tileSize, this.tileSize);
 		 }
-		
+	 	 
+	 	 if (GameSurfaceView.bgTilePlayed == null) {
+	 		 GameSurfaceView.bgTilePlayed = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_played_bg, this.tileSize, this.tileSize);
+	 		 GameSurfaceView.bgTilePlayed = ImageHelper.getResizedBitmap(GameSurfaceView.bgTilePlayed, this.tileSize, this.tileSize);
+		 } 
 		 this.parent.captureTime("SetDerivedValues after bitmap loads");
 		//Toast t = Toast.makeText(context, "Hello " +  this.height + " " + this.fullWidth + " " + getMeasuredHeight() , Toast.LENGTH_LONG);   
 	    //t.show();
@@ -358,7 +408,65 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			 return true;
 		 }
 
-		 return false;
+		  this.currentX = (int) event.getRawX() - this.absoluteLeft;
+		  this.currentY = (int) event.getRawY() - this.absoluteTop;
+		  long currentTouchTime = System.currentTimeMillis();
+		  
+		  Logger.d(TAG, "MotionEvent=" + event.getAction());
+	     synchronized (this.gameThread.getSurfaceHolder()) {
+             switch (event.getAction()) {
+             
+             case MotionEvent.ACTION_DOWN:  ///0
+            	 this.tapCheck = currentTouchTime;
+            	 
+            	 Logger.d(TAG, "onTouchEVent  this.tapCheck=" +  this.tapCheck);
+ 
+	          
+            	 this.previousX = this.currentX;
+            	 this.previousY = this.currentY;
+	  
+            	 this.setTileOnDown(this.findTapTargetTile(this.currentX, this.currentY));
+            	 
+            	 Logger.d(TAG, "onTouchEvent ACTION_DOWN tapped id=" + this.getTileOnDown());
+            	 
+            	  break;
+
+             case MotionEvent.ACTION_UP: //1
+            	 Logger.d(TAG, "onTouchEvent ACTION_UP tapped id=" + this.getTileOnDown());
+            	 Logger.d(TAG, "onTouchEvent ACTION_UP tapCheck=" + this.tapCheck + " currentTouchTime=" + currentTouchTime + " diff=" + (currentTouchTime - this.tapCheck));
+	            if (this.tapCheck > 0 && currentTouchTime - this.tapCheck <= SINGLE_TAP_DURATION_IN_MILLISECONDS) {
+            		 if (this.getTileOnDown() >= 0) {
+	            		// int actionUpTile = this.findTapTargetTile(this.currentX, this.currentY);
+	            		 
+	            		 //Logger.d(TAG, "onTouchEvent ACTION_UP tapped actionUpTile=" + actionUpTile);
+	            		 //if (actionUpTile == this.getTileOnDown()){
+	            			 
+	            			 if (this.parent.onTileClick(this.getTappedTile())){
+	            				 this.getTappedTile().setPlayed(true);	 
+	            			 }
+	            		// }
+	            		 //else {
+	            		//	 this.resetTileOnDown();
+	            		 //}
+            		 }
+            		 else {
+            			 this.resetTileOnDown();
+            		 }
+            	 }
+            	 else {
+            		 this.resetTileOnDown();
+            	 }
+	            this.tapCheck = 0;
+        	 
+        	  break;
+
+             case MotionEvent.ACTION_MOVE: //2
+ 
+            	 break;
+             }
+	     }
+	     
+	     return true;
 	 }
 	 
  
@@ -366,7 +474,35 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		
 	 }
 	 
-	 
+	 private int findTapTargetTile(int xPosition, int yPosition){
+		 int tileId = -1;
+		 this.parent.captureTime(TAG + " FindTileFromPositionInFullViewMode loop starting");
+		 
+		 for (Tile tile : this.parent.getGame().getRow1Tiles()) { 
+	    	 if (xPosition >= tile.getLocation().getxLocation() && xPosition <= (tile.getLocation().getxLocation() + this.tileSize + Math.round(this.tileGap / 4 )) &&
+	    	 		 yPosition >= tile.getLocation().getyLocation() && yPosition <= tile.getLocation().getyLocation() + this.tileSize + Math.round(this.tileGap / 4 )){
+	    		 return tile.getId();
+	    	 }
+	     } 
+		 
+		 for (Tile tile : this.parent.getGame().getRow2Tiles()) { 
+	    	 if (xPosition >= tile.getLocation().getxLocation() && xPosition <= (tile.getLocation().getxLocation() + this.tileSize + Math.round(this.tileGap / 4 )) &&
+	    	 		 yPosition >= tile.getLocation().getyLocation() && yPosition <= tile.getLocation().getyLocation() + this.tileSize + Math.round(this.tileGap / 4 )){
+	    		 return tile.getId();
+	    	 }
+	     }
+		 
+		 for (Tile tile : this.parent.getGame().getRow3Tiles()) { 
+	    	 if (xPosition >= tile.getLocation().getxLocation() && xPosition <= (tile.getLocation().getxLocation() + this.tileSize + Math.round(this.tileGap / 4 )) &&
+	    	 		 yPosition >= tile.getLocation().getyLocation() && yPosition <= tile.getLocation().getyLocation() + this.tileSize + Math.round(this.tileGap / 4 )){
+	    		 return tile.getId();
+	    	 }
+	     }
+		 
+		 this.parent.captureTime(TAG + " FindTileFromPositionInFullViewMode loop ended");
+		 return tileId; //null;
+
+	 }
 	
 	 //Lint made me do it  
 	protected void drawFromThread(Canvas canvas) {
@@ -385,12 +521,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		 
 		// this.parent.captureTime(TAG + " onDraw started");
 		 
-		 this.drawTest(canvas);
+		 this.drawField(canvas);
 		
 	//	 this.parent.captureTime("onDraw ended");
 	 }
    
-	private void drawTest(Canvas canvas){
+	private void drawField(Canvas canvas){
 	//	Logger.d(TAG, "drawTest started");
 		 
 	/*	 try {
@@ -400,112 +536,262 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			e.printStackTrace();
 		}
 		*/ 
-		int numLetters = this.parent.getGame().getHopper().size();
-	/*  	
-		for (int i = 0; i < numLetters; i++) {  
-			 
-			//if (this.parent.getGame().getHopper().get(i).equals("H")){
-				if ((this.row1Position - (i * (this.tileSize + this.tileGap)) + this.tileSize) > 0  &&  
-					this.row1Position - (i * (this.tileSize + this.tileGap)) < this.fullWidth){
-					Logger.d(TAG, "about to draw testPosition=" + this.row1Position + " tile=" + this.parent.getGame().getHopper().get(i) + " i=" + i);
-					this.drawTile(canvas, this.row1Position - (i * (this.tileSize + this.tileGap)), 0, this.parent.getGame().getHopper().get(i));
-					
-					//update tile location, save game on pause 
-				}
-				//else if (this.testPosition - (i * 190) > this.fullWidth){
-				//	Logger.d(TAG, "kicking out of loop - location=" + (this.testPosition - (i * 190)));
-				//	break;
-				//}
-			//}
+		this.loopCount += 1;
+		if (this.loopCount - this.lastSpeedChange >= this.updateSpeedInterval){
+			this.lastSpeedChange = this.loopCount;
+			
+			//faster
+			if (this.speedDirection == 0 && this.speedDistance < this.speedDistanceMax ){ 
+				this.speedDistance += 1;
+			}
+			//faster but we've reached the max, so flip speed direction
+			else if (this.speedDirection == 0 && this.speedDistance >= this.speedDistanceMax ){ 
+				this.speedDirection = 1;
+				this.speedDistance -= 1;
+			}
+			//slower
+			if (this.speedDirection == 1 && this.speedDistance > this.speedDistanceMin ){ 
+				this.speedDistance -= 1;
+			}
+			//slower but we've reached the min, so flip speed direction
+			else if (this.speedDirection == 1 && this.speedDistance <= this.speedDistanceMin ){ 				
+				this.speedDirection = 0;
+				this.speedDistance += 1;
+			}
 		}
-	  */
-		for (int i = 0; i < numLetters; i++) {  
+
+		int numTilesRow1 = this.parent.getGame().getRow1Tiles().size();
+		int numTilesRow2 = this.parent.getGame().getRow2Tiles().size();
+		int numTilesRow3 = this.parent.getGame().getRow3Tiles().size();
+		int moveToRow2 = -1;
+		int moveToRow1 = -1;
+		int moveToRow3 = -1;
+ 
+	//	Logger.d(TAG, "numTilesRow1=" + numTilesRow1 + " numTilesRow2=" + numTilesRow2 + " numTilesRow3=" + numTilesRow3 + " total=" + (numTilesRow1 + numTilesRow2 + numTilesRow3));
+		
+		for (int i = 0; i < numTilesRow1; i++) {  
 			Tile tile = this.parent.getGame().getRow1Tiles().get(i); 
 			
 			//set initial position
 			if (tile.getLocation().getxLocation() == 0 && tile.getLocation().getyLocation() == 0){
 				tile.getLocation().setxLocation(this.row1Position - (i * (this.tileSize + this.tileGap)));
-				tile.getLocation().setyLocation(0);
+				tile.getLocation().setyLocation(this.row1_yPosition);
 
 //				tile.setLocation(new Coordinate(this.row1Position - (i * (this.tileSize + this.tileGap)), 0, 0));
 			}
-			if (i > 4 && i < 8){
-				Logger.d(TAG, "about to check testPosition=" + this.row1Position + " tile=" + tile.getLetter() + " x=" + tile.getLocation().getxLocation() + " x+=" + (tile.getLocation().getxLocation()+ this.tileSize) + " i=" + i);
-			}
+		 	//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+		 	//	Logger.d(TAG, "ROW1 about to check testPosition=" + this.row1Position + " tile=" + tile.getLetter() + " x=" + tile.getLocation().getxLocation() + " x+=" + (tile.getLocation().getxLocation()+ this.tileSize) + " i=" + i);
+		 //}
 		//	if (i > 4 && i < 8){
 		//		Logger.d(TAG, " checking tile=" + tile.getLetter() + " row1Position=" + this.row1Position  + " i=" + i);
 		//	}
 			//if (this.parent.getGame().getHopper().get(i).equals("H")){
-				if ((tile.getLocation().getxLocation() + this.tileSize) > 0  && tile.getLocation().getxLocation() < this.fullWidth){
-					if (i > 4 && i < 8){
-						Logger.d(TAG, "about to draw pos=" + tile.getLocation().getxLocation() + " tile=" + tile.getLetter() + " i=" + i);
-					}
-					this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter());
-					
-					//update tile location, save game on pause 
-				}
-				//else if (tile.getRow() == 2 && (this.row2Position - (i * (this.tileSize + this.tileGap)) + this.tileSize) > 0  &&  this.row2Position - (i * (this.tileSize + this.tileGap)) < this.fullWidth){
-				//	Logger.d(TAG, "about to draw testPosition=" + this.row2Position + " tile=" + tile.getLetter() + " i=" + i);
-				//	this.drawTile(canvas, this.row1Position - (i * (this.tileSize + this.tileGap)), 0, tile.getLetter());
-				//	
-				//	//update tile location, save game on pause 
-				//}
+			if ((tile.getLocation().getxLocation() + this.tileSize) > 0  && tile.getLocation().getxLocation() < this.fullWidth){
+			 	//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			 	// 	Logger.d(TAG, tile.getLetter() + " about to draw pos=" + tile.getLocation().getxLocation() + " tile=" + tile.getLetter() + " i=" + i);
+			 	//}
+				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed());
 				
-				//if a tile on the first row is fully outside of the viewport, move it down to the second row
-				if (tile.getRow() == 1 && (tile.getLocation().getxLocation() > this.fullWidth)){
-					if (i > 4 && i < 8){
-						Logger.d(TAG, "letter " + tile.getLetter() + " moving to 2nd row");
-					}
-					tile.setRow(2);
-					tile.getLocation().setxLocation(this.fullWidth + this.tileSize);
-					tile.getLocation().setyLocation(210);
-				}
-				else if (tile.getRow() == 1){  
-					if (i > 4 && i < 8){
-						Logger.d(TAG, tile.getLetter() + " row 1 advancing location");
-					}
-					tile.getLocation().setxLocation(tile.getLocation().getxLocation() + 8);
-				}
-				
-				else if (tile.getRow() == 2 && (tile.getLocation().getxLocation() + this.tileSize < 0 )){
-					if (i > 4 && i < 8){
-						Logger.d(TAG, "letter " + tile.getLetter() + " moving back to 1st row");
-					}
-					tile.setRow(1);
-					
-					//set to last position, after last tile in list (this might not work if there are only enough tiles for a single row
-					int newPosition = this.parent.getGame().getHopperTiles().get(numLetters - 1).getLocation().getxLocation();
-					tile.getLocation().setxLocation(newPosition - this.tileSize - this.tileGap); ///set to last position
-					tile.getLocation().setyLocation(0);
-				}
-				else if (tile.getRow() == 2){  
-					if (i > 4 && i < 8){
-						Logger.d(TAG, tile.getLetter() + " row 2 advancing location");
-					}
-					tile.getLocation().setxLocation(tile.getLocation().getxLocation() - 8);
-				}
-				//else if (this.testPosition - (i * 190) > this.fullWidth){
-				//	Logger.d(TAG, "kicking out of loop - location=" + (this.testPosition - (i * 190)));
-				//	break;
+				//update tile location, save game on pause 
+			}
+			
+			//if a tile on the first row is fully outside of the viewport, move it down to the second row
+			if (i == 0 && (tile.getLocation().getxLocation() > this.fullWidth)){
+				//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			 	 //	Logger.d(TAG, "letter " + tile.getLetter() + " moving to 2nd row");
 				//}
-			//}
+				moveToRow2 = i;
+				tile.getLocation().setxLocation(tile.getLocation().getxLocation() + this.speedDistance);
+			//	tile.setRow(2);
+			//	tile.getLocation().setxLocation(this.fullWidth + (this.tileSize * 2));
+			//	tile.getLocation().setyLocation(210);
+			}
+			else {
+
+				tile.getLocation().setxLocation(tile.getLocation().getxLocation() + this.speedDistance);
+ 
+			}
+		 
 		}
 		
-		//canvas.drawBitmap(GameSurfaceView.bgTest, this.testPosition - 525, 0, null);
-	//	canvas.drawBitmap(GameSurfaceView.bgTest, this.testPosition - 350, 0, null);
-	//	 canvas.drawBitmap(GameSurfaceView.bgTest, this.testPosition - 175, 0, null);
-	//	 canvas.drawBitmap(GameSurfaceView.bgTest, this.testPosition, 0, null);
-		// if (this.row1Position < 5000){
-			 this.row1Position += 8;
-			 this.readyToDraw = true;
-		// }
-	//	Logger.d(TAG, "drawTest ended");			 
-	 
+		for (int i = 0; i < numTilesRow2; i++) {  
+			Tile tile = this.parent.getGame().getRow2Tiles().get(i); 
+ 
+			if ((tile.getLocation().getxLocation() + this.tileSize) > 0  && tile.getLocation().getxLocation() < this.fullWidth){
+				//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+				 //	Logger.d(TAG, "about to draw pos=" + tile.getLocation().getxLocation() + " tile=" + tile.getLetter() + " i=" + i);
+				//}
+				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed());
+				
+				//update tile location, save game on pause 
+			}
+			
+			//if a tile on the first row is fully outside of the viewport, move it down to the second row
+			if (i == 0 && (tile.getLocation().getxLocation() + this.tileSize < 0 )){
+			 //	if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			 	// 	Logger.d(TAG, "letter " + tile.getLetter() + " moving back to 1st row");
+			 //	}
+			//	tile.setRow(1);
+				moveToRow3 = i;
+				//set to last position, after last tile in list (this might not work if there are only enough tiles for a single row
+			}
+			else{
+			//	tile.getLocation().setxLocation(newPosition - this.tileSize - this.tileGap); ///set to last position
+			//	tile.getLocation().setyLocation(0);
+			 
+			 	//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			 	//	Logger.d(TAG, tile.getLetter() + " row 1 advancing location from " + tile.getLocation().getxLocation());
+				//}
+				tile.getLocation().setxLocation(tile.getLocation().getxLocation() - this.speedDistance);
+				
+			///	if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			 	//	Logger.d(TAG, tile.getLetter() + " row 1 advanced location to " + tile.getLocation().getxLocation());
+			//	}
+			}
+			 
+		}
+		for (int i = 0; i < numTilesRow3; i++) {  
+			Tile tile = this.parent.getGame().getRow3Tiles().get(i); 
+ 
+			if ((tile.getLocation().getxLocation() + this.tileSize) > 0  && tile.getLocation().getxLocation() < this.fullWidth){
+				//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+				 //	Logger.d(TAG, "about to draw pos=" + tile.getLocation().getxLocation() + " tile=" + tile.getLetter() + " i=" + i);
+				//}
+				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed());
+				
+				//update tile location, save game on pause 
+			}
+			
+			//if a tile on the first row is fully outside of the viewport, move it down to the second row
+			if (i == 0 && (tile.getLocation().getxLocation() > this.fullWidth)){
+			 	//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			 	// 	Logger.d(TAG, "letter " + tile.getLetter() + " moving back to 1st row");
+			 	//}
+			//	tile.setRow(1);
+				moveToRow1 = i;
+				//set to last position, after last tile in list (this might not work if there are only enough tiles for a single row
+			}
+			else{
+			//	tile.getLocation().setxLocation(newPosition - this.tileSize - this.tileGap); ///set to last position
+			//	tile.getLocation().setyLocation(0);
+			 
+			 	//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			 	//	Logger.d(TAG, tile.getLetter() + " row 1 advancing location from " + tile.getLocation().getxLocation());
+				//}
+				tile.getLocation().setxLocation(tile.getLocation().getxLocation() + this.speedDistance);
+				
+				//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			 	//	Logger.d(TAG, tile.getLetter() + " row 1 advanced location to " + tile.getLocation().getxLocation());
+				//}
+			}
+			 
+		}
+			
+		if (moveToRow2 >= 0) {
+			//take indexed item out of row1 and move to end of row2
+			Tile source = this.parent.getGame().getRow1Tiles().get(0);
+
+			// Logger.d(TAG, "MOVE tp row2 letter=" + source.getLetter());
+
+			//if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			//	Logger.d(TAG, "A is being moved to second row");
+			//}
+			Tile target = new Tile();
+			target.setId(source.getId());
+			target.setLetter(source.getLetter());
+			//add to end of row2's list
+			int newPosition = this.fullWidth;
+			if (numTilesRow2 > 0) {
+				newPosition = this.parent.getGame().getRow2Tiles().get(numTilesRow2 - 1).getLocation().getxLocation();
+			}
+			else{
+				//double up the distance the first tile is outside of bounds
+				newPosition += this.tileSize;  
+			}
+		//	if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+				//Logger.d(TAG, this.parent.getGame().getRow1Tiles().get(0).getLetter() + " moveToRow2=" + moveToRow2 + " pos=" + newPosition + " numTilesRow2=" + numTilesRow2);
+		//	}
+			target.setPlayed(source.isPlayed());
+			target.setLocation(new Coordinate());
+			target.setRow(2);
+			target.getLocation().setxLocation(newPosition + this.tileSize + this.tileGap);
+			target.getLocation().setyLocation(this.row2_yPosition);
+			
+			this.parent.getGame().getRow2Tiles().add(target);
+			this.parent.getGame().getRow1Tiles().remove(0);
+		}
+		if (moveToRow3 >= 0) {
+			//take indexed item out of row1 and move to end of row2
+			Tile source = this.parent.getGame().getRow2Tiles().get(0);
+
+		//	 Logger.d(TAG, "MOVE tp row3 letter=" + source.getLetter());
+
+		//	if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			//	Logger.d(TAG, "A is being moved to second row");
+		//	}
+			Tile target = new Tile();
+			target.setId(source.getId());
+			target.setLetter(source.getLetter());
+			target.setPlayed(source.isPlayed());
+			//add to end of row2's list
+			int newPosition = 0;
+			if (numTilesRow3 > 0) {
+				newPosition = this.parent.getGame().getRow3Tiles().get(numTilesRow3 - 1).getLocation().getxLocation();
+			}
+			else{
+				//double up the distance the first tile is outside of bounds
+				newPosition -= this.tileSize;  
+			}
+	//		if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+				//Logger.d(TAG, this.parent.getGame().getRow1Tiles().get(0).getLetter() + " moveToRow2=" + moveToRow2 + " pos=" + newPosition + " numTilesRow2=" + numTilesRow2);
+	//		}
+			target.setRow(3);
+			target.setLocation(new Coordinate());
+			target.getLocation().setxLocation(newPosition - this.tileSize - this.tileGap);
+			target.getLocation().setyLocation(this.row3_yPosition);
+			
+			this.parent.getGame().getRow3Tiles().add(target);
+			this.parent.getGame().getRow2Tiles().remove(0);
+		}
+		if (moveToRow1 >= 0) {
+			//take indexed item out of row1 and move to end of row2
+			Tile source = this.parent.getGame().getRow3Tiles().get(0);
+			Tile target = new Tile();
+			target.setId(source.getId());
+			target.setLetter(source.getLetter());
+			//add to end of row2's list
+			int newPosition = 0;
+			int numTiles1 = this.parent.getGame().getRow1Tiles().size();
+			if (numTilesRow1 > 0) {
+				newPosition = this.parent.getGame().getRow1Tiles().get(numTiles1 - 1).getLocation().getxLocation();
+			}
+			else{
+				newPosition -= this.tileSize;
+			}
+	//		if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+	//			//Logger.d(TAG, this.parent.getGame().getRow2Tiles().get(0).getLetter() + " moveToRow1=" + moveToRow1 + " pos=" + newPosition + " numTilesRow1=" + numTilesRow1);
+	//		}
+			target.setPlayed(source.isPlayed());
+			target.setRow(1);
+			target.setLocation(new Coordinate());
+			target.getLocation().setxLocation(newPosition - this.tileSize - this.tileGap);
+			target.getLocation().setyLocation(this.row1_yPosition);
+			
+			this.parent.getGame().getRow1Tiles().add(target);
+			this.parent.getGame().getRow3Tiles().remove(0);
+		}
+ 
+		this.readyToDraw = true;
+ 
 	}
 	
-	private void drawTile(Canvas canvas, int xPosition, int yPosition, String letter){
-		 canvas.drawBitmap(GameSurfaceView.bgTest, xPosition, yPosition, null);
-	 
+	private void drawTile(Canvas canvas, int xPosition, int yPosition, String letter, boolean isPlayed){
+		if (isPlayed) { 
+			canvas.drawBitmap(GameSurfaceView.bgTilePlayed, xPosition, yPosition, null);
+		}
+		else {
+			canvas.drawBitmap(GameSurfaceView.bgTile, xPosition, yPosition, null);
+		}
     	 Paint pLetter = new Paint();
     	 pLetter.setColor(Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_letter)));
     	 pLetter.setTextSize(Math.round(this.tileSize  * .70));

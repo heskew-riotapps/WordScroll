@@ -1,10 +1,12 @@
 <resources>
 
-    <string name="app_name">Funklee</string>
+    <string name="app_name">Fragoo</string>
 	<string name="version">1.0</string>
     <string name="versionName">Accordion</string>
     <string name="build">110</string>
  	<string name="build">110</string>
 	<string name="namespace">com.rozen.wordscroll</string>
 
+	<string name="game_surface_played_words">played words</string>
+	<string name="scoreboard_countdown_start">1:30</string>
 </resources>

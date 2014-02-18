@@ -11,18 +11,286 @@
         android:orientation="vertical">
 		<include android:id="@+id/topAreaLayout" layout="@layout/toparealayout" />
  
-	</LinearLayout>    
+	</LinearLayout>
+	
+     <LinearLayout
+        
+       >
+
+		<LinearLayout
+		     android:orientation="vertical"
+		     android:layout_weight="1"
+		     android:layout_height="fill_parent"
+		   
+		     >
+		    <TextView
+			    android:id="@+id/tvCountdown"
+			    style="@style/CountdownTextStyle" 
+			    android:text="@string/scoreboard_countdown_start"
+			    
+			/>
+	 	     <TextView
+			    android:id="@+id/tvScore"
+			    style="@style/CountdownTextStyle" 
+			    
+			/>
+	 	     <TextView
+			    android:id="@+id/tvTopScore"
+			    style="@style/CountdownTextStyle" 
+			/>  
+       	</LinearLayout>
+       	<LinearLayout
+       	    android:layout_width="2dp"
+       	     android:background="@color/word_list_area_middle_border"
+       	     android:layout_height="fill_parent"
+       	>
+       	</LinearLayout>
+        	<LinearLayout
+        	    android:layout_weight="1"
+        	    android:orientation="vertical"
+        	    android:layout_height="fill_parent"
+        	    android:background="@color/word_list_area_player_background"
+        	    >
+		 	     <TextView 
+			         android:id="@+id/tvPlayerWordListTitle"
+			           
+			         android:text="@string/game_surface_played_words"
+			         />
+	     		<ListView 
+				    android:layout_width="fill_parent"
+	       			android:id="@+id/lvPlayer" 
+	       			android:layout_height="fill_parent" 
+	       			
+	       			
+	        	/>
+     		</LinearLayout>
+     		
+			
+    	</LinearLayout>
+    
 <RelativeLayout
 	    android:layout_below="@id/topAreaLayout"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"  
+	    android:layout_marginTop="8dp"
+	    android:paddingLeft="4dp"
 	 >
+		 <LinearLayout
+	         android:id="@+id/llRow1PlayedWord"
+		     android:orientation="horizontal"
+		     android:layout_width="fill_parent"
+		     android:layout_height="wrap_content"
+		     android:layout_marginBottom="10dp"
+	       >
+	     
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter1"
+		        android:layout_marginRight="1dp"	
+		        android:gravity="center"        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter2"
+		        android:layout_marginRight="1dp"	       
+		        android:gravity="center" 
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter3"
+		        android:layout_marginRight="1dp"
+		        android:gravity="center"	        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter4"
+		        android:layout_marginRight="1dp"	       
+		        android:gravity="center" 
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter5"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />	
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter6"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter7"
+		        android:layout_marginRight="1dp"
+		        android:gravity="center"	        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter8"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter9"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow1PlayedLetter10"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />								
+		</LinearLayout>
+		<LinearLayout
+	         android:id="@+id/llRow2PlayedWord"
+	         android:layout_below="@+id/llRow1PlayedWord"
+		     android:orientation="horizontal"
+		     android:layout_width="fill_parent"
+		     android:layout_height="wrap_content"
+		     android:layout_marginBottom="10dp"
+	       >
+	     
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter1"
+		        android:layout_marginRight="1dp"	
+		        android:gravity="center"        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter2"
+		        android:layout_marginRight="1dp"	       
+		        android:gravity="center" 
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter3"
+		        android:layout_marginRight="1dp"
+		        android:gravity="center"	        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter4"
+		        android:layout_marginRight="1dp"	       
+		        android:gravity="center" 
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter5"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />	
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter6"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter7"
+		        android:layout_marginRight="1dp"
+		        android:gravity="center"	        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter8"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter9"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow2PlayedLetter10"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />								
+		</LinearLayout>
+		<LinearLayout
+	         android:id="@+id/llRow3PlayedWord"
+	         android:layout_below="@+id/llRow2PlayedWord"
+		     android:orientation="horizontal"
+		     android:layout_width="fill_parent"
+		     android:layout_height="wrap_content"
+		     android:layout_marginBottom="10dp"
+	       >
+	     
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter1"
+		        android:layout_marginRight="1dp"	
+		        android:gravity="center"        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter2"
+		        android:layout_marginRight="1dp"	       
+		        android:gravity="center" 
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter3"
+		        android:layout_marginRight="1dp"
+		        android:gravity="center"	        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter4"
+		        android:layout_marginRight="1dp"	       
+		        android:gravity="center" 
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter5"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />	
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter6"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter7"
+		        android:layout_marginRight="1dp"
+		        android:gravity="center"	        
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter8"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter9"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />
+			<TextView  
+		  	    android:id="@+id/ivRow3PlayedLetter10"
+		        android:layout_marginRight="1dp"	        
+		        android:gravity="center"
+		    />								
+		</LinearLayout>
+				 
+				 
     	<com.rozen.wordscroll.ui.GameSurfaceView
-    	   
+    	   android:layout_below="@id/llRow3PlayedWord"
         	android:id="@+id/gameSurface"
         	android:layout_margin="0dp"
         	android:background="@null"
         />
     
     </RelativeLayout>
+    	<LinearLayout
+	     android:id="@+id/llButtons"
+        style="@style/GameBoardButtonAreaStyle">
+
+	
+    <Button 
+  	    style="@style/GameBoardSecondaryButtonStyle"
+  	    android:id="@+id/bHopperPeek"
+        android:layout_width="0dp" 
+        android:layout_weight="1.0"
+        android:text="@string/gameboard_hopper_peek_button_text"
+     
+    />
+      <Button 
+        style="@style/GameBoardSecondaryButtonStyle"
+        android:id="@+id/bCancel"
+        android:layout_width="0dp"
+        android:layout_weight="1.0"
+        android:text="@string/gameboard_cancel_button_text"
+    />
+
+   <Button
+        style="@style/GameBoardSecondaryButtonStyle"
+        android:id="@+id/bResign"
+        android:layout_width="0dp"
+        android:layout_weight="1.0"
+        android:text="@string/gameboard_resign_button_text"
+    />
+    </LinearLayout>
 </LinearLayout>
