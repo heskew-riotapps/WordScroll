@@ -2,7 +2,7 @@
 <LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
      xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
-    style="@style/SplashLayoutStyle" 
+    style="@style/GameboardLayoutStyle" 
     android:orientation="vertical"
 	>
     <LinearLayout
@@ -14,8 +14,9 @@
 	</LinearLayout>
 	
      <LinearLayout
-        
-       >
+         android:id="@+id/rlWordLists"
+         android:layout_height="150dp"
+         android:background="@color/scoreboard_area_background_color">
 
 		<LinearLayout
 		     android:orientation="vertical"
@@ -53,12 +54,12 @@
         	    >
 		 	     <TextView 
 			         android:id="@+id/tvPlayerWordListTitle"
-			           
+			         style="@style/WordListTitleStyle"
 			         android:text="@string/game_surface_played_words"
 			         />
 	     		<ListView 
 				    android:layout_width="fill_parent"
-	       			android:id="@+id/lvPlayer" 
+	       			android:id="@+id/lvPlayedWords" 
 	       			android:layout_height="fill_parent" 
 	       			
 	       			
@@ -67,20 +68,24 @@
      		
 			
     	</LinearLayout>
-    
+    <View style="@style/ScoreboardSeparatorStyle" />
+         
 <RelativeLayout
 	    android:layout_below="@id/topAreaLayout"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"  
 	    android:layout_marginTop="8dp"
-	    android:paddingLeft="4dp"
+	     
 	 >
+         <TextView 
+             android:id="@+id/tvPlayedWord1Title"
+		 	android:text="@string/game_surface_played_word_1"
+		 	style="@style/PlayedWordTileSetTitleStyle"
+		 />
 		 <LinearLayout
+		     android:layout_below="@id/tvPlayedWord1Title"
 	         android:id="@+id/llRow1PlayedWord"
-		     android:orientation="horizontal"
-		     android:layout_width="fill_parent"
-		     android:layout_height="wrap_content"
-		     android:layout_marginBottom="10dp"
+			style="@style/PlayedWordTileSetStyle"
 	       >
 	     
 			<TextView  
@@ -134,13 +139,16 @@
 		        android:gravity="center"
 		    />								
 		</LinearLayout>
+		<TextView 
+		    android:layout_below="@+id/llRow1PlayedWord"
+		    android:id="@+id/tvPlayedWord2Title"
+		 	android:text="@string/game_surface_played_word_2"
+		 	style="@style/PlayedWordTileSetTitleStyle"
+		 />
 		<LinearLayout
 	         android:id="@+id/llRow2PlayedWord"
-	         android:layout_below="@+id/llRow1PlayedWord"
-		     android:orientation="horizontal"
-		     android:layout_width="fill_parent"
-		     android:layout_height="wrap_content"
-		     android:layout_marginBottom="10dp"
+	         android:layout_below="@+id/tvPlayedWord2Title"
+		     style="@style/PlayedWordTileSetStyle"
 	       >
 	     
 			<TextView  
@@ -194,13 +202,16 @@
 		        android:gravity="center"
 		    />								
 		</LinearLayout>
+		<TextView 
+		    android:layout_below="@+id/llRow2PlayedWord"
+		    android:id="@+id/tvPlayedWord3Title"
+		 	android:text="@string/game_surface_played_word_3"
+		 	style="@style/PlayedWordTileSetTitleStyle"
+		 />
 		<LinearLayout
 	         android:id="@+id/llRow3PlayedWord"
-	         android:layout_below="@+id/llRow2PlayedWord"
-		     android:orientation="horizontal"
-		     android:layout_width="fill_parent"
-		     android:layout_height="wrap_content"
-		     android:layout_marginBottom="10dp"
+	         android:layout_below="@+id/tvPlayedWord3Title"
+		     style="@style/PlayedWordTileSetStyle"
 	       >
 	     
 			<TextView  
@@ -271,26 +282,26 @@
 	
     <Button 
   	    style="@style/GameBoardSecondaryButtonStyle"
-  	    android:id="@+id/bHopperPeek"
+  	    android:id="@+id/bPlay1"
         android:layout_width="0dp" 
         android:layout_weight="1.0"
-        android:text="@string/gameboard_hopper_peek_button_text"
+        android:text="@string/button_play_word_1"
      
     />
       <Button 
         style="@style/GameBoardSecondaryButtonStyle"
-        android:id="@+id/bCancel"
+        android:id="@+id/bPlay2"
         android:layout_width="0dp"
         android:layout_weight="1.0"
-        android:text="@string/gameboard_cancel_button_text"
+        android:text="@string/button_play_word_2"
     />
 
    <Button
         style="@style/GameBoardSecondaryButtonStyle"
-        android:id="@+id/bResign"
+        android:id="@+id/bPlay3"
         android:layout_width="0dp"
         android:layout_weight="1.0"
-        android:text="@string/gameboard_resign_button_text"
+        android:text="@string/button_play_word_3"
     />
     </LinearLayout>
 </LinearLayout>

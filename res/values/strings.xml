@@ -8,5 +8,18 @@
 	<string name="namespace">com.rozen.wordscroll</string>
 
 	<string name="game_surface_played_words">played words</string>
-	<string name="scoreboard_countdown_start">1:30</string>
+	<string name="scoreboard_countdown_start">5:00</string>
+	<string name="scoreboard_countdown">%1$s:%2$s</string>
+ 	<string name="scoreboard_countdown_completed">0:00</string>
+ 	
+	<string name="button_play_word_1">PLAY\nWORD 1</string>
+	<string name="button_play_word_2">PLAY\nWORD 2</string>
+	<string name="button_play_word_3">PLAY\nWORD 3</string>
+	<string name="game_surface_played_word_contains_spaces">no spaces allowed within the word</string>
+	<string name="game_surface_played_word_too_short">words must be at least 2 letters long</string>
+	<string name="game_surface_played_word_already_played">%s has already been played</string>
+	<string name="game_surface_played_word_invalid">%s is an invalid word</string>
+	<string name="game_surface_played_word_1">WORD 1</string>
+	<string name="game_surface_played_word_2">WORD 2</string>
+	<string name="game_surface_played_word_3">WORD 3</string>
 </resources>

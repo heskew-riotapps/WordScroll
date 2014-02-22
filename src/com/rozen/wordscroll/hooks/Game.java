@@ -52,7 +52,16 @@ public class Game {
 	@SerializedName("t")
 	private int turn = 0;  	
 
+	@SerializedName("s")
+	private int score = 0;  
 
+	@SerializedName("nb")
+	private int numBonus = 0;  
+
+	
+	@SerializedName("cd")
+	private long countdown = 0;
+	
 	public String getRandomVowel() {
 		return randomVowel;
 	}
@@ -161,6 +170,30 @@ public class Game {
 	
 	public boolean isActive(){
 		return this.status == 1;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public long getCountdown() {
+		return countdown;
+	}
+
+	public void setCountdown(long countdown) {
+		this.countdown = countdown;
+	}
+
+	public int getNumBonus() {
+		return numBonus;
+	}
+
+	public void setNumBonus(int numBonus) {
+		this.numBonus = numBonus;
 	}
 	
 

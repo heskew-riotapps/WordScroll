@@ -7,6 +7,7 @@ public class Tile {
 	private int row;
 	private String letter;
 	private boolean isPlayed;
+	private boolean isBonus;
 	private int id;
 	
 	public Coordinate getLocation() {
@@ -38,6 +39,12 @@ public class Tile {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public boolean isBonus() {
+		return isBonus;
+	}
+	public void setBonus(boolean isBonus) {
+		this.isBonus = isBonus;
 	}
 	
 

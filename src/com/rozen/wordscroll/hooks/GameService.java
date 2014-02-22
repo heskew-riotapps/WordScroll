@@ -34,9 +34,9 @@ public class GameService {
     	game.setCreateDate(new Date());
     	game.setStatus(1); //active
     
-    	game.setRandomVowel(AlphabetService.getRandomVowel());
-    	game.setRandomConsonants(AlphabetService.getRandomConsonants());
-    	game.setHopper(AlphabetService.getHopper(game.getRandomVowel(), game.getRandomConsonants()));
+    	//game.setRandomVowel(AlphabetService.getRandomVowel());
+    	//game.setRandomConsonants(AlphabetService.getRandomConsonants());
+    	game.setHopper(AlphabetService.getScrollLetters());
     	
     	for (int i = 0; i < game.getHopper().size(); i++) { //String letter : game.getHopper()){
     		Tile tile = new Tile();

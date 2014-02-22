@@ -3,6 +3,7 @@ package com.rozen.wordscroll.hooks;
 public class PlayedTile {
 	private String letter = "";
 	private boolean isDefault;
+	private boolean isBonus;
 	private int position;
 	private int tileId;
 	
@@ -40,6 +41,16 @@ public class PlayedTile {
 	}
 	public void setTileId(int tileId) {
 		this.tileId = tileId;
+	}
+
+
+	public boolean isBonus() {
+		return isBonus;
+	}
+
+
+	public void setBonus(boolean isBonus) {
+		this.isBonus = isBonus;
 	}
 	
 	

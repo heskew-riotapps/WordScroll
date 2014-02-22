@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="GameboardWordListAreaStyle">
+        <item name="android:baselineAligned">false</item>
+	    <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:background">@color/word_list_area_background</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+</resources>

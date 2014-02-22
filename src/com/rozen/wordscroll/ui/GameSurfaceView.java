@@ -1,5 +1,7 @@
 package com.rozen.wordscroll.ui;
 
+import java.util.List;
+
 import com.riotapps.wordbase.R;
 import com.riotapps.wordbase.ui.Coordinate;
 import com.riotapps.wordbase.utils.ApplicationContext;
@@ -52,12 +54,14 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	private boolean surfaceCreated;
 	private static Bitmap bgTile;
 	private static Bitmap bgTilePlayed;
+	private static Bitmap bgTileBonus;
 	private int loopCount = 0;
 	private int speedDirection = 0;
-	private int speedDistanceMin = 4;
-	private int speedDistanceMax = 16;
+	private int speedDistanceMin = 5;
+	private int speedDistanceMax = 14;
 	private int lastSpeedChange = 0;
-	private int updateSpeedInterval = 30;
+	private int updateSpeedInterval = 38;
+	private int bonusCount = 0;
 	
 	
 	private int speedDistance = 5;
@@ -78,6 +82,8 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	private static final long SINGLE_TAP_DURATION_IN_MILLISECONDS = 550;
 	private int tileOnDown = -1;
 	private Tile tappedTile = null;
+	private int midPoint;
+	private int maxUsableHeightPerRow;
 	
 	public boolean isReadyToDraw() {
 		return readyToDraw;
@@ -175,7 +181,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			 	  lp.height = me.height;
 			 	  
 				  me.parent.captureTime(TAG + " load game starting");
-			 	  me.loadGame();
+			 	  //me.loadGame();
 				  me.parent.captureTime(TAG + " load game ended");
 			//	  // Apply to new dimension
 			 	  me.setLayoutParams( lp );
@@ -189,12 +195,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			this.parent.captureTime(TAG + " construct ended");
 	}
 
-	public void loadGame(){
+	//public void loadGame(){
 	//	Logger.d(TAG,"loadGame game turn=" + this.parent.getGame().getTurn());
 		
 	 
-	    this.parent.callback();
-	}
+	  //  this.parent.callback();
+	//}
 
 	
 	private void SetDerivedValues(){
@@ -233,6 +239,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 	  this.height = this.getHeight() - 
 		 		 Utils.convertDensityPixelsToPixels(parent, this.parent.getResources().getInteger(com.riotapps.wordbase.R.integer.gameboard_button_area_height));// - 
  
+	 	  
+	 	 this.midPoint = Math.round(this.height / 2); 
+	 	 this.maxUsableHeightPerRow = Math.round(this.height / 4.5f);
+	 	 
+	 	 this.tileSize =  this.maxUsableHeightPerRow;
+	 	  
 	 	this.parent.captureTime("SetDerivedValues before math");
 	/* 	this.trayTileSize = Math.round(this.fullWidth / 7.50f);	
 	 	int maxTrayTileSize = this.parent.getResources().getInteger(R.integer.maxTrayTileSize);
@@ -256,6 +268,11 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 	 if (GameSurfaceView.bgTilePlayed == null) {
 	 		 GameSurfaceView.bgTilePlayed = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_played_bg, this.tileSize, this.tileSize);
 	 		 GameSurfaceView.bgTilePlayed = ImageHelper.getResizedBitmap(GameSurfaceView.bgTilePlayed, this.tileSize, this.tileSize);
+		 } 
+	 	 
+	 	 if (GameSurfaceView.bgTileBonus == null) {
+	 		 GameSurfaceView.bgTileBonus = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_bonus_bg, this.tileSize, this.tileSize);
+	 		 GameSurfaceView.bgTileBonus = ImageHelper.getResizedBitmap(GameSurfaceView.bgTileBonus, this.tileSize, this.tileSize);
 		 } 
 		 this.parent.captureTime("SetDerivedValues after bitmap loads");
 		//Toast t = Toast.makeText(context, "Hello " +  this.height + " " + this.fullWidth + " " + getMeasuredHeight() , Toast.LENGTH_LONG);   
@@ -298,6 +315,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	public void onPause() {
 		Logger.w(TAG, "onPause called");
 		this.dismissDialog();
+		this.readyToDraw = false;
 		this.gameThread.onPause();
 	//	 this.stopThread();
 	}
@@ -321,7 +339,9 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		 this.holder.setFormat(PixelFormat.TRANSPARENT);
 	//	 this.startThread();
 		 
-		 me.readyToDraw = true;
+		 if (this.parent.getGame().isActive()){
+			 me.readyToDraw = true;
+		 }
 	//	 this.startThread(); ///?????
 	     if (this.surfaceCreated) {this.startThread();}
 	}
@@ -590,7 +610,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			 	//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
 			 	// 	Logger.d(TAG, tile.getLetter() + " about to draw pos=" + tile.getLocation().getxLocation() + " tile=" + tile.getLetter() + " i=" + i);
 			 	//}
-				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed());
+				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed(), tile.isBonus());
 				
 				//update tile location, save game on pause 
 			}
@@ -621,7 +641,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 				//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
 				 //	Logger.d(TAG, "about to draw pos=" + tile.getLocation().getxLocation() + " tile=" + tile.getLetter() + " i=" + i);
 				//}
-				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed());
+				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed(), tile.isBonus());
 				
 				//update tile location, save game on pause 
 			}
@@ -657,7 +677,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 				//if (tile.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
 				 //	Logger.d(TAG, "about to draw pos=" + tile.getLocation().getxLocation() + " tile=" + tile.getLetter() + " i=" + i);
 				//}
-				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed());
+				this.drawTile(canvas, tile.getLocation().getxLocation(), tile.getLocation().getyLocation(), tile.getLetter(), tile.isPlayed(), tile.isBonus());
 				
 				//update tile location, save game on pause 
 			}
@@ -688,7 +708,10 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		}
 			
 		if (moveToRow2 >= 0) {
-			//take indexed item out of row1 and move to end of row2
+			this.moveToNextRow(this.parent.getGame().getRow1Tiles(), this.parent.getGame().getRow2Tiles(), 2, this.row2_yPosition);
+			/*
+			  //take indexed item out of row1 and move to end of row2
+			 
 			Tile source = this.parent.getGame().getRow1Tiles().get(0);
 
 			// Logger.d(TAG, "MOVE tp row2 letter=" + source.getLetter());
@@ -706,12 +729,13 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			}
 			else{
 				//double up the distance the first tile is outside of bounds
-				newPosition += this.tileSize;  
+				newPosition += (this.tileSize * 2);  
 			}
 		//	if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
 				//Logger.d(TAG, this.parent.getGame().getRow1Tiles().get(0).getLetter() + " moveToRow2=" + moveToRow2 + " pos=" + newPosition + " numTilesRow2=" + numTilesRow2);
 		//	}
-			target.setPlayed(source.isPlayed());
+			target.setBonus(this.isBonus());
+			target.setPlayed(false);
 			target.setLocation(new Coordinate());
 			target.setRow(2);
 			target.getLocation().setxLocation(newPosition + this.tileSize + this.tileGap);
@@ -719,9 +743,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			
 			this.parent.getGame().getRow2Tiles().add(target);
 			this.parent.getGame().getRow1Tiles().remove(0);
+			*/
 		}
 		if (moveToRow3 >= 0) {
-			//take indexed item out of row1 and move to end of row2
+			this.moveToNextRow(this.parent.getGame().getRow2Tiles(), this.parent.getGame().getRow3Tiles(), 3, this.row3_yPosition);
+		/*
+		 	//take indexed item out of row1 and move to end of row2
 			Tile source = this.parent.getGame().getRow2Tiles().get(0);
 
 		//	 Logger.d(TAG, "MOVE tp row3 letter=" + source.getLetter());
@@ -732,7 +759,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			Tile target = new Tile();
 			target.setId(source.getId());
 			target.setLetter(source.getLetter());
-			target.setPlayed(source.isPlayed());
+			target.setPlayed(false);
 			//add to end of row2's list
 			int newPosition = 0;
 			if (numTilesRow3 > 0) {
@@ -740,11 +767,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			}
 			else{
 				//double up the distance the first tile is outside of bounds
-				newPosition -= this.tileSize;  
+				newPosition -= (this.tileSize * 2);  
 			}
 	//		if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
 				//Logger.d(TAG, this.parent.getGame().getRow1Tiles().get(0).getLetter() + " moveToRow2=" + moveToRow2 + " pos=" + newPosition + " numTilesRow2=" + numTilesRow2);
 	//		}
+			target.setBonus(this.isBonus());
 			target.setRow(3);
 			target.setLocation(new Coordinate());
 			target.getLocation().setxLocation(newPosition - this.tileSize - this.tileGap);
@@ -752,9 +780,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			
 			this.parent.getGame().getRow3Tiles().add(target);
 			this.parent.getGame().getRow2Tiles().remove(0);
+			*/
 		}
 		if (moveToRow1 >= 0) {
-			//take indexed item out of row1 and move to end of row2
+			this.moveToNextRow(this.parent.getGame().getRow3Tiles(), this.parent.getGame().getRow1Tiles(), 1, this.row1_yPosition);
+		/*
+		 *	//take indexed item out of row1 and move to end of row2
 			Tile source = this.parent.getGame().getRow3Tiles().get(0);
 			Tile target = new Tile();
 			target.setId(source.getId());
@@ -771,7 +802,8 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	//		if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
 	//			//Logger.d(TAG, this.parent.getGame().getRow2Tiles().get(0).getLetter() + " moveToRow1=" + moveToRow1 + " pos=" + newPosition + " numTilesRow1=" + numTilesRow1);
 	//		}
-			target.setPlayed(source.isPlayed());
+			target.setBonus(this.isBonus());
+			target.setPlayed(false);
 			target.setRow(1);
 			target.setLocation(new Coordinate());
 			target.getLocation().setxLocation(newPosition - this.tileSize - this.tileGap);
@@ -779,21 +811,76 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			
 			this.parent.getGame().getRow1Tiles().add(target);
 			this.parent.getGame().getRow3Tiles().remove(0);
+			*/
 		}
  
 		this.readyToDraw = true;
  
 	}
+	private void moveToNextRow(List<Tile> sourceTiles, List<Tile> targetTiles, int targetRow, int yPosition){
+		
+		int direction = targetRow == 2 ? 1 : -1;
+		int newPositionBase = targetRow == 2 ? this.fullWidth : 0;
+		
+		Tile source = sourceTiles.get(0);
+
+		// Logger.d(TAG, "MOVE tp row2 letter=" + source.getLetter());
+
+		//if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+		//	Logger.d(TAG, "A is being moved to second row");
+		//}
+		Tile target = new Tile();
+		target.setId(source.getId());
+		target.setLetter(source.getLetter());
+		//add to end of row2's list
+		int newPosition = newPositionBase  += ((this.tileSize * 2) * direction);
+		if (targetTiles.size() > 0) {
+			newPosition = targetTiles.get(targetTiles.size() - 1).getLocation().getxLocation();
+		}
+		 
+	//	if (source.getId().equals("9d24c6d7-e83e-4b64-87ee-ad1cbf318d74")){
+			//Logger.d(TAG, this.parent.getGame().getRow1Tiles().get(0).getLetter() + " moveToRow2=" + moveToRow2 + " pos=" + newPosition + " numTilesRow2=" + numTilesRow2);
+	//	}
+		target.setBonus(this.isBonus());
+		target.setPlayed(false);
+		target.setLocation(new Coordinate());
+		target.setRow(targetRow);
+		target.getLocation().setxLocation(newPosition + ((this.tileSize + this.tileGap) * direction));
+		target.getLocation().setyLocation(yPosition);
+		
+		targetTiles.add(target);
+		sourceTiles.remove(0);
+	}
 	
-	private void drawTile(Canvas canvas, int xPosition, int yPosition, String letter, boolean isPlayed){
+	
+	private boolean isBonus(){
+
+	 	if (this.parent.getGame().getNumBonus() >= 4){
+			return false;
+		}
+		else {
+			//1 in a 50 chance of hitting a bonus
+			if (com.riotapps.wordbase.utils.Utils.getRandomNumberFromRange(1, 200) == 10){
+				this.parent.getGame().setNumBonus(this.parent.getGame().getNumBonus() + 1);
+				return true;
+			}
+			return false;
+		}
+		 
+	}
+	
+	private void drawTile(Canvas canvas, int xPosition, int yPosition, String letter, boolean isPlayed, boolean isBonus){
 		if (isPlayed) { 
 			canvas.drawBitmap(GameSurfaceView.bgTilePlayed, xPosition, yPosition, null);
+		}
+		else if (isBonus) { 
+			canvas.drawBitmap(GameSurfaceView.bgTileBonus, xPosition, yPosition, null);
 		}
 		else {
 			canvas.drawBitmap(GameSurfaceView.bgTile, xPosition, yPosition, null);
 		}
     	 Paint pLetter = new Paint();
-    	 pLetter.setColor(Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_letter)));
+    	 pLetter.setColor(isBonus ? Color.parseColor(this.parent.getString(com.rozen.wordscroll.R.color.game_board_bonus_tile_letter)) : Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_letter)));
     	 pLetter.setTextSize(Math.round(this.tileSize  * .70));
     	 pLetter.setAntiAlias(true); 
     	 pLetter.setTypeface(ApplicationContext.getLetterTypeface()); //(this.letterTypeface);
