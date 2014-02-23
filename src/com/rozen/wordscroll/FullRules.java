@@ -3,12 +3,10 @@ package com.rozen.wordscroll;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
-import com.riotapps.wordbase.hooks.PlayerService;
 import com.riotapps.wordbase.hooks.StoreService;
 import com.riotapps.wordbase.ui.MenuUtils;
 import com.riotapps.wordbase.utils.ApplicationContext;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.method.LinkMovementMethod;
