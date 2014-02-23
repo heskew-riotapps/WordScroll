@@ -33,13 +33,14 @@ public class ApplicationContext extends com.riotapps.wordbase.utils.ApplicationC
  		else if (activity.equals(Constants.ACTIVITY_CLASS_GAME_SURFACE)){
  			openNewActivity(context, com.rozen.wordscroll.GameSurface.class, extras);
 		}
+ 		else if (activity.equals(Constants.ACTIVITY_CLASS_ABOUT)){
+ 			openNewActivity(context,com.rozen.wordscroll.About.class, extras);
+ 		}
  	/*	else if (activity.equals(Constants.ACTIVITY_CLASS_MAIN)){
  			Logger.d(TAG, "startNewActivity Constants.ACTIVITY_CLASS_MAIN");
  			openNewActivity(context, com.riotapps.wordrace.Main.class, extras);
  		}
- 		else if (activity.equals(Constants.ACTIVITY_CLASS_ABOUT)){
- 			openNewActivity(context, com.riotapps.wordrace.About.class, extras);
- 		}
+ 		
  		else if (activity.equals(Constants.ACTIVITY_CLASS_GAME_HISTORY)){
  			openNewActivity(context, com.riotapps.wordrace.GameHistory.class, extras);
 		}

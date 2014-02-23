@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
  
 import android.widget.ArrayAdapter;
@@ -52,7 +53,7 @@ import com.riotapps.wordbase.utils.Constants;
 import com.riotapps.wordbase.utils.DesignByContractException;
 import com.riotapps.wordbase.utils.ImageHelper;
 import com.riotapps.wordbase.utils.Logger;
-import com.riotapps.wordbase.utils.NetworkConnectivity;
+ 
  
 
 public class GameSurface  extends FragmentActivity implements View.OnClickListener, PopupMenu.OnMenuItemClickListener, ICloseDialog{
@@ -61,6 +62,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	private Game game;
 	private Player player;
+	private PopupMenu popupMenu;
 	private List<Fragment> fragments = new ArrayList<Fragment>();
 	private LoadFragmentsTask loadFragmentsTask;
 	private TextView ivRow1PlayedLetter1;
@@ -148,6 +150,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.gamesurface);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		
 		Logger.d(TAG, "onCreate called");
 		
@@ -243,6 +246,22 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		//}
 		 
 	}
+	
+	  private void setupMenu(){
+	      	
+	  	  this.popupMenu = new PopupMenu(this, findViewById(R.id.options));
+
+	  	  MenuUtils.fillMenuNoGames(this, this.popupMenu);
+	      this.popupMenu.setOnMenuItemClickListener(this);
+	      findViewById(R.id.options).setOnClickListener(this);
+	  }
+	    @Override
+	    public boolean onMenuItemClick(MenuItem item) {
+	    	Logger.d(TAG, "onMenuItemClick");
+	    	//probably need to stop thread here
+	    	return MenuUtils.handleMenuClick(this, item.getItemId());
+	    }
+	    
 	private void kickoff(){
 
 		this.setGame(); 
@@ -250,18 +269,18 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		this.playedTileTextColor = this.getResources().getColor(com.rozen.wordscroll.R.color.played_tile_letter);
 		
 		//temp
-		String s = "";
+//		String s = "";
 		//for(int i = 0; i < 10; i ++){
 		//	this.game.getRow1Tiles().remove(0);
 		//}
-	 	for (Tile t : this.game.getRow1Tiles()){ 
-	 		 s += t.getLetter() + " ";// + " id=" + t.getId());
-	 	}
-	 	 Logger.d("TAG", "hopper=" +  s);// + " id=" + t.getId());
-	 	 
-	 	for (Tile t : this.game.getRow1Tiles()){
-	 		Logger.d("TAG", "hopper id=" + t.getId() + " letter=" + t.getLetter() + " played=" + t.isPlayed());
-	 	}
+//	 	for (Tile t : this.game.getRow1Tiles()){ 
+//	 		 s += t.getLetter() + " ";// + " id=" + t.getId());
+//	 	}
+//	 	 Logger.d("TAG", "hopper=" +  s);// + " id=" + t.getId());
+//	 	 
+//	 	for (Tile t : this.game.getRow1Tiles()){
+//	 		Logger.d("TAG", "hopper id=" + t.getId() + " letter=" + t.getLetter() + " played=" + t.isPlayed());
+//	 	}
 	    this.gameSurfaceView = (GameSurfaceView)findViewById(R.id.gameSurface);
 	    this.gameSurfaceView.construct(this);
 	    
@@ -271,9 +290,12 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		this.setViewLayouts();
 		this.preloadPlayedTiles();		
 		this.initializeWordList();
-		
+	
 		this.loadFragmentsTask = new LoadFragmentsTask();
 		this.loadFragmentsTask.execute(); 
+		
+		this.resetPoints();
+		this.setupMenu();
 	}
 	
  
@@ -552,17 +574,22 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 	}
 
-	@Override
-	public boolean onMenuItemClick(MenuItem arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+//	@Override
+//	public boolean onMenuItemClick(MenuItem arg0) {
+//		// TODO Auto-generated method stub
+//		return false;
+//	}
 
 	@Override
 	public void onClick(View v) {
 		Logger.d(TAG, "onClick called");
 		
 		switch (v.getId()){
+			case R.id.options:
+			//	if (!this.game.isActive()){
+					popupMenu.show();
+			//	}
+				break;
 			case R.id.ivRow1PlayedLetter1:
 			case R.id.ivRow1PlayedLetter2:
 			case R.id.ivRow1PlayedLetter3:

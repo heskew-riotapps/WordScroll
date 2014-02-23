@@ -13,37 +13,57 @@
  
 	</LinearLayout>
 	
-     <LinearLayout
+     <LinearLayout  
+         android:baselineAligned="false"
+         android:orientation="horizontal"
          android:id="@+id/rlWordLists"
-         android:layout_height="150dp"
-         android:background="@color/scoreboard_area_background_color">
-
-		<LinearLayout
-		     android:orientation="vertical"
+        style="@style/GameboardListAreaStyle"
+		 >
+		<RelativeLayout
 		     android:layout_weight="1"
 		     android:layout_height="fill_parent"
-		   
+		     android:layout_width="wrap_content"
 		     >
 		    <TextView
 			    android:id="@+id/tvCountdown"
 			    style="@style/CountdownTextStyle" 
 			    android:text="@string/scoreboard_countdown_start"
-			    
 			/>
-	 	     <TextView
+		    <TextView
+			    android:id="@+id/tvCountdownLabel"
+			    style="@style/CountdownLabelTextStyle" 
+			    android:text="@string/game_surface_countdown"
+			    android:layout_toLeftOf="@id/tvCountdown"
+			   
+			    android:layout_alignBaseline="@id/tvCountdown"
+			/>
+	 	    <TextView
+	 	        android:layout_below="@id/tvCountdown"
 			    android:id="@+id/tvScore"
 			    style="@style/CountdownTextStyle" 
-			    
 			/>
-	 	     <TextView
+	 	    <TextView
+			    android:id="@+id/tvScoreLabel"
+			    android:text="@string/game_surface_score" 
+			    android:layout_toLeftOf="@id/tvScore"
+			    style="@style/CountdownLabelTextStyle" 
+			    android:layout_alignBaseline="@id/tvScore" 
+			/>
+	 	    <TextView
+	 	        android:layout_below="@id/tvScore"
 			    android:id="@+id/tvTopScore"
 			    style="@style/CountdownTextStyle" 
 			/>  
-       	</LinearLayout>
+			<TextView
+			    android:id="@+id/tvTopScoreLabel"
+			    android:text="@string/game_surface_top_score" 
+			    android:layout_toLeftOf="@id/tvTopScore"
+			    style="@style/CountdownLabelTextStyle" 
+			    android:layout_alignBaseline="@id/tvTopScore"
+			/>
+       	</RelativeLayout>
        	<LinearLayout
-       	    android:layout_width="2dp"
-       	     android:background="@color/word_list_area_middle_border"
-       	     android:layout_height="fill_parent"
+       	    style="@style/ListSeparatorStyle"
        	>
        	</LinearLayout>
         	<LinearLayout
@@ -266,7 +286,11 @@
 		    />								
 		</LinearLayout>
 				 
-				 
+    <View 
+        android:visibility="invisible"
+        android:layout_below="@+id/llRow3PlayedWord"
+        style="@style/ScoreboardSeparatorStyle" />
+						 
     	<com.rozen.wordscroll.ui.GameSurfaceView
     	   android:layout_below="@id/llRow3PlayedWord"
         	android:id="@+id/gameSurface"

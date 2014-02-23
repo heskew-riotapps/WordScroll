@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-          <color name="scoreboard_separator">#29cdf0</color> 
+          <color name="scoreboard_separator">#3479b2</color> <!--11ace2 29cdf0 -->
       <color name="default_played_tile_letter">#696969</color> 
       <color name="played_tile_letter">#000000</color> 
-    <color name="top_area_background">#29cdf0</color><!-- 177efe -->
+    <color name="top_area_background">#ee5b92</color><!-- ee5b92 29cdf0 177efe -->
     <color name="gameboard_bottom_ad_background">#2a2a2a</color>
     <color name="gameboard_bottom_fill_background">#e03b7d</color>
-    <color name="word_list_area_middle_border">#29cdf0</color> <!-- A020F0   670099 -->
+    <color name="word_list_area_middle_border">#3479b2</color> <!-- 29cdf0 A020F0   670099 -->
     <color name="word_list_area_player_title_text">#ffffff</color>
     <color name="word_list_area_opponent_title_text">#ffffff</color>
     <color name="word_list_area_player_title_background">#ff6501</color> 
-    <color name="word_list_area_opponent_title_background">#ff6501</color>
+    <color name="word_list_area_opponent_title_background">#ff6501</color> 
     <color name="word_list_area_opponent_background">#fff5ee</color> 
-    <color name="word_list_area_player_background">#20fff5ee</color> 
+    <color name="word_list_area_player_background">#20fff5ee</color>  
     <color name="word_list_area_background">#cada39</color> 
-   <color name="button_area_background">#ee5b92</color> 
+   <color name="button_area_background">#ee5b92</color> <!-- ee5b92 -->
     <color name="played_word_area_background">#BA55D3</color> <!-- B23AEE -->
         <color name="game_complete_area_background">#BA55D3</color> <!-- B23AEE -->
     <color name="scoreboard_background">#e03b7d</color> <!-- d42931 ae1d18 CD96CD DB70DB 024bc4 137ccd 64908A -->
@@ -89,7 +89,7 @@
     <color name="toast_background_color">#ae1d18</color>
     <color name="toast_inner_background_color">#ae1d18</color>
     <color name="toast_text_color">#ffffff</color>
-    <color name="dialog_background_color">#137ccd</color>
+    <color name="dialog_background_color">#137ccd</color> 
         
     <color name="button_text_color">#fff5ee</color>
     <color name="secondary_button_text_color">#fff5ee</color>
@@ -102,7 +102,7 @@
 	
 	<color name="header_text_color">#fff5ee</color>
 	<color name="store_item_divider_color">#f62222</color>
-	<color name="header_bottom_border_color">#ee5b92</color>
+	<color name="header_bottom_border_color">#f175a4</color> <!-- 26afdc ee5b92 -->
 	<color name="store_item_title_color">#f62222</color>
 	<color name="alert_text_button_color">#fff5ee</color> 
 	<color name="alert_background_color">#fff5ee</color> 

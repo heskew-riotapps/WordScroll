@@ -2,7 +2,7 @@
 
     <string name="app_name">Fragoo</string>
 	<string name="version">1.0</string>
-    <string name="versionName">Accordion</string>
+    <string name="versionName">Aardvark</string>
     <string name="build">110</string>
  	<string name="build">110</string>
 	<string name="namespace">com.rozen.wordscroll</string>
@@ -22,4 +22,71 @@
 	<string name="game_surface_played_word_1">WORD 1</string>
 	<string name="game_surface_played_word_2">WORD 2</string>
 	<string name="game_surface_played_word_3">WORD 3</string>
+	
+	<string name="game_surface_countdown">countdown:</string>
+	<string name="game_surface_score">score:</string>
+	<string name="game_surface_top_score">top score:</string>
+	
+	<string name="main_menu_about">About Fragoo</string>
+	<string name="about_device_specs">This device is %1$s size with %2$s resolution.</string>
+	<string name="about_main">Fragoo by Rozen Studios</string> 
+	<string name="share_subject">Fragoo</string>
+	<string name="share_message">Check out Fragoo for Android in the Google Play store.  Test your word building skills as the letters snake by.  How many words can you build???</string>
+
+	<string name="full_rules_1">The idea is to Score as many points as you possibly can by building words (the longer the better) before the countdown is completed.</string>
+	<string name="full_rules_2">To start the game, just tap the Start button.  That kicks off the 5 minute countdown timer. Three possible words will be preset for you with fragments of words.  Your job is to determine what words can be formed by each fragment and use the letter tiles that are snaking by in the bottom area to build those words.  The top row of moving tiles is used for Word 1.  The middle row is used for Word 2.  The bottom row is used for Word 3.  As you tap letter tiles, they are added to the left-most empty tile of the particular word for the row the ta[pped tile belonged to.  If you make a mistake and want to remove a letter from a word, just tap that letter\'s tile and it will be removed - except for the preset letters in the word fragment which cannot be changed.</string>
+	<string name="full_rules_3">No formal words or hyphenated words are allowed. Words can be from 2 to 10 letters long. After you build a word (for example, Word 1), just tap the "Play" button at the bottom corresponding to that word (in our example, tap the "Play Word 1" button). A specific word can only be played once per game.</string>
+	<string name="full_rules_4">Remember to tap the letters to add them to the played word.  Don\'t drag them, it does not work.  The game was built for pure finger-tapping speed.</string>  
+	<string name="full_rules_letters_1">The Letters</string>
+	<string name="full_rules_letters_2">102 letters are shuffled and continously snake around 3 rows.  The mix of the 102 letters is as follows:</string> 
+
+   <string name="full_rules_letter1_num">A - 8</string>
+	<string name="full_rules_letter2_num">B - 2</string>
+	<string name="full_rules_letter3_num">C - 2</string>
+	<string name="full_rules_letter4_num">D - 4</string>
+	<string name="full_rules_letter5_num">E - 12</string>
+	<string name="full_rules_letter6_num">F - 2</string>
+	<string name="full_rules_letter7_num">G - 2</string>
+	<string name="full_rules_letter8_num">H - 4</string>
+	<string name="full_rules_letter9_num">I - 8</string>
+	<string name="full_rules_letter10_num">J - 1</string>
+	<string name="full_rules_letter11_num">K - 2</string>
+	<string name="full_rules_letter12_num">L - 4</string>
+	<string name="full_rules_letter13_num">M - 2</string>
+	<string name="full_rules_letter14_num">N - 6</string>
+	<string name="full_rules_letter15_num">O - 8</string>
+	<string name="full_rules_letter16_num">P - 2</string>
+	<string name="full_rules_letter17_num">Q - 1</string>
+	<string name="full_rules_letter18_num">R - 6</string>
+	<string name="full_rules_letter19_num">S - 5</string>
+	<string name="full_rules_letter20_num">T - 9</string>
+	<string name="full_rules_letter21_num">U - 4</string>
+	<string name="full_rules_letter22_num">V - 2</string>
+	<string name="full_rules_letter23_num">W - 2</string>
+	<string name="full_rules_letter24_num">X - 1</string>
+	<string name="full_rules_letter25_num">Y - 2</string>
+	<string name="full_rules_letter26_num">Z - 1</string>
+	
+	<string name="full_rules_scoring_1">Scoring</string>
+	<string name="full_rules_scoring_2">Scoring is simple and based on the length of the played word. Letters 1 - 3 of a word are worth 1 point each.  Letters 4 - 6 are 
+
+worth 3 points each.  Letters 7 - 9 are worth 5 points each.  Letter 10 is worth 10 points.  
+
+So, for example, if you played the word KNUCKLES, it would be worth 22 points. 1 point each for "K", "N", and "U".  Then 3 points 
+
+each for "C", "K", and "L".  Finally, "E" and "S", being letters 7 and 8, would be worth 5 points each.
+
+By contrast, the word "FLY", which only contains letters 1, 2, and 3, is only worth 3 points.
+
+As you can see, the longer the word, the more points you will earn for a particular word.
+
+The only exception to the rule, however, is the occasional Bonus +10 tile that will scroll across among the other tiles.  If you are 
+
+able to use the bonus letter in a word, 10 points is added to the word.  In fact, if you get really lucky and can use more than one 
+
+bonus letter in a word, 10 points is added to the word for each bonus letter used.  For example, in the "FLY" example above, if the 
+
+"Y" had been from a Bonus +10 tile, the word would have been worth 13 points as opposed to 3.    
+
+The points from each word played are added together to arrive at the score for the game. </string>
 </resources>
