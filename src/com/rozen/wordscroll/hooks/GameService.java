@@ -12,10 +12,12 @@ import com.rozen.wordscroll.hooks.Game;
 import com.riotapps.wordbase.R;
 import com.rozen.wordscroll.data.GameData;
 import com.riotapps.wordbase.hooks.AlphabetService;
+import com.riotapps.wordbase.hooks.OpponentService;
 import com.riotapps.wordbase.hooks.Player;
 import com.riotapps.wordbase.hooks.PlayerService;
 import com.riotapps.wordbase.ui.Coordinate;
 import com.riotapps.wordbase.utils.Check;
+import com.riotapps.wordbase.utils.Constants;
 import com.riotapps.wordbase.utils.DesignByContractException;
 
 public class GameService {
@@ -69,5 +71,40 @@ public class GameService {
 		 
 		GameData.removeGame(gameId);
  	}
+	
+	public static void startGame(Game game){
+		game.setStatus(2); //started
+		game.setCountdown(1);
+	//	saveGame(game);
+	}
+	
+	public static int completeGame(Context context, Player player, Game game){
+		 
+		//Player player = PlayerService.getPlayer();
+    	//add 1 to opponent's wins, save opponent 
+    	//add 1 to player's losses, save player
+    	player.setActiveGameId(Constants.EMPTY_STRING);
+    	
+
+    	///update high score
+    	int highScore = game.getScore();
+    	
+		if (highScore > player.getHighScore()){
+			player.setHighScore(highScore);
+			PlayerService.savePlayer(player);
+		}
+		else {
+			highScore = player.getHighScore();
+		}
+        	  
+    	game.setStatus(3); //sets up enum for game status and playerGame status
+     	
+    	saveGame(game);
+
+    	removeGame(game.getId());
+				
+    	return highScore;
+	}
+
 
 }

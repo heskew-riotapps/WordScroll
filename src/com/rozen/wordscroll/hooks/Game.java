@@ -163,7 +163,9 @@ public class Game {
 	}
  
  
-	
+	public boolean isStarted(){
+		return this.status == 2;
+	}
 	public boolean isCompleted(){
 		return this.status == 3 || this.getStatus() == 4;
 	}

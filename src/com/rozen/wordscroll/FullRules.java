@@ -61,10 +61,23 @@ public class FullRules extends FragmentActivity{
 		TextView tvFullRulesBasics_2 = (TextView)findViewById(R.id.tvFullRulesBasics_2);
 		TextView tvFullRulesBasics_3 = (TextView)findViewById(R.id.tvFullRulesBasics_3);
 		TextView tvFullRulesBasics_4 = (TextView)findViewById(R.id.tvFullRulesBasics_4);
-//		TextView tvFullRulesBasics_5 = (TextView)findViewById(R.id.tvFullRulesBasics_5);
-//		TextView tvFullRulesBasics_6 = (TextView)findViewById(R.id.tvFullRulesBasics_6);
+		TextView tvFullRulesBasics_5 = (TextView)findViewById(R.id.tvFullRulesBasics_5);
+		TextView tvFullRulesBasics_6 = (TextView)findViewById(R.id.tvFullRulesBasics_6);
+		TextView tvFullRulesBasics_7 = (TextView)findViewById(R.id.tvFullRulesBasics_7);
+
+		TextView tvFullRulesLetters_1 = (TextView)findViewById(R.id.tvFullRulesLetters_1);
+		TextView tvFullRulesLetters_2 = (TextView)findViewById(R.id.tvFullRulesLetters_2);
+		
+		
+		
  		TextView tvFullRulesScoring_1 = (TextView)findViewById(R.id.tvFullRulesScoring_1);
 		TextView tvFullRulesScoring_2 = (TextView)findViewById(R.id.tvFullRulesScoring_2);
+		TextView tvFullRulesScoring_3 = (TextView)findViewById(R.id.tvFullRulesScoring_3);
+		TextView tvFullRulesScoring_4 = (TextView)findViewById(R.id.tvFullRulesScoring_4);
+		TextView tvFullRulesScoring_5 = (TextView)findViewById(R.id.tvFullRulesScoring_5);
+		TextView tvFullRulesScoring_6 = (TextView)findViewById(R.id.tvFullRulesScoring_6);
+		TextView tvFullRulesScoring_7 = (TextView)findViewById(R.id.tvFullRulesScoring_7);
+		
  		TextView tvFullRulesLetters_1_num = (TextView)findViewById(R.id.tvFullRulesLetters_1_num);
 		TextView tvFullRulesLetters_2_num = (TextView)findViewById(R.id.tvFullRulesLetters_2_num);
 		TextView tvFullRulesLetters_3_num = (TextView)findViewById(R.id.tvFullRulesLetters_3_num);
@@ -98,11 +111,22 @@ public class FullRules extends FragmentActivity{
 		tvFullRulesBasics_2.setTypeface(ApplicationContext.getMainFontTypeface());
 		tvFullRulesBasics_3.setTypeface(ApplicationContext.getMainFontTypeface());
 		tvFullRulesBasics_4.setTypeface(ApplicationContext.getMainFontTypeface());
-	//	tvFullRulesBasics_5.setTypeface(ApplicationContext.getMainFontTypeface());
-	//	tvFullRulesBasics_6.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesBasics_5.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesBasics_6.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesBasics_7.setTypeface(ApplicationContext.getMainFontTypeface());
+		
+		tvFullRulesLetters_1.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesLetters_2.setTypeface(ApplicationContext.getMainFontTypeface());
 
 	 	tvFullRulesScoring_1.setTypeface(ApplicationContext.getMainFontTypeface());
 		tvFullRulesScoring_2.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesScoring_3.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesScoring_4.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesScoring_5.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesScoring_6.setTypeface(ApplicationContext.getMainFontTypeface());
+		tvFullRulesScoring_7.setTypeface(ApplicationContext.getMainFontTypeface());
+		
+		
 	 	tvFullRulesLetters_1_num.setTypeface(ApplicationContext.getMainFontTypeface());
 		tvFullRulesLetters_2_num.setTypeface(ApplicationContext.getMainFontTypeface());
 		tvFullRulesLetters_3_num.setTypeface(ApplicationContext.getMainFontTypeface());

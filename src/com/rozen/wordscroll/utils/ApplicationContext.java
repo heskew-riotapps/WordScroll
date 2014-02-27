@@ -36,6 +36,9 @@ public class ApplicationContext extends com.riotapps.wordbase.utils.ApplicationC
  		else if (activity.equals(Constants.ACTIVITY_CLASS_ABOUT)){
  			openNewActivity(context,com.rozen.wordscroll.About.class, extras);
  		}
+ 		else if (activity.equals(Constants.ACTIVITY_CLASS_FULL_RULES)){
+ 			openNewActivity(context, com.rozen.wordscroll.FullRules.class, extras);
+		}
  	/*	else if (activity.equals(Constants.ACTIVITY_CLASS_MAIN)){
  			Logger.d(TAG, "startNewActivity Constants.ACTIVITY_CLASS_MAIN");
  			openNewActivity(context, com.riotapps.wordrace.Main.class, extras);
@@ -47,9 +50,7 @@ public class ApplicationContext extends com.riotapps.wordbase.utils.ApplicationC
  		else if (activity.equals(Constants.ACTIVITY_CLASS_COMPLETED_GAMES)){
  			openNewActivity(context, com.riotapps.wordrace.CompletedGames.class, extras);
 		}
-		else if (activity.equals(Constants.ACTIVITY_CLASS_FULL_RULES)){
- 			openNewActivity(context, com.riotapps.wordrace.FullRules.class, extras);
-		}
+		
 		else if (activity.equals(Constants.ACTIVITY_CLASS_GAME_LOOKUP)){
  			openNewActivity(context, com.riotapps.wordrace.GameLookup.class, extras);
 		}

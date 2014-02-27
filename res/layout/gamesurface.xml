@@ -5,13 +5,13 @@
     style="@style/GameboardLayoutStyle" 
     android:orientation="vertical"
 	>
+	
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 		<include android:id="@+id/topAreaLayout" layout="@layout/toparealayout" />
- 
-	</LinearLayout>
+
 	
      <LinearLayout  
          android:baselineAligned="false"
@@ -66,7 +66,22 @@
        	    style="@style/ListSeparatorStyle"
        	>
        	</LinearLayout>
+       		<LinearLayout
+       		    android:id="@+id/llStart"
+        	    android:layout_weight="1"
+        	    android:orientation="vertical"
+        	    android:layout_height="fill_parent"
+        	    android:background="@color/word_list_area_player_background"
+        	    android:gravity="center"
+        	    >
+			<ImageView 
+			    android:id="@+id/ivStart"
+				android:src="@drawable/start"
+				style="@style/StartButtonStyle"
+			/>
+			</LinearLayout>
         	<LinearLayout
+        	    android:id="@+id/llPlayedWords"
         	    android:layout_weight="1"
         	    android:orientation="vertical"
         	    android:layout_height="fill_parent"
@@ -90,7 +105,7 @@
     	</LinearLayout>
     <View style="@style/ScoreboardSeparatorStyle" />
          
-<RelativeLayout
+	<RelativeLayout
 	    android:layout_below="@id/topAreaLayout"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"  
@@ -287,7 +302,7 @@
 		</LinearLayout>
 				 
     <View 
-        android:visibility="invisible"
+        android:visibility="gone"
         android:layout_below="@+id/llRow3PlayedWord"
         style="@style/ScoreboardSeparatorStyle" />
 						 
@@ -328,4 +343,24 @@
         android:text="@string/button_play_word_3"
     />
     </LinearLayout>
+    <LinearLayout 	
+		    android:id="@+id/llAdWrapper"
+		    style="@style/GameBoardAdAreaStyle">
+		 <View
+		     android:id="@+id/vBottomFill"
+		     style="@style/GameBoardBottomFillStyle"
+		     android:visibility="gone"
+		     />	    
+		 <com.google.ads.AdView  
+          android:id="@+id/adView"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           ads:adUnitId="@string/admob_pub_id_game_surface"
+           android:layout_centerHorizontal="true" 
+           ads:adSize="SMART_BANNER"
+           ads:testDevices="TEST_EMULATOR"
+           ads:loadAdOnCreate="false"/>
+	   
+	</LinearLayout>
+	    </LinearLayout>
 </LinearLayout>

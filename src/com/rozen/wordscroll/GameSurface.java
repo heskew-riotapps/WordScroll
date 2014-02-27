@@ -19,19 +19,25 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 
  
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.chartboost.sdk.Chartboost;
+import com.chartboost.sdk.ChartboostDelegate;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
 import com.rozen.wordscroll.R;
 import com.rozen.wordscroll.hooks.Fragment;
 import com.rozen.wordscroll.hooks.FragmentService;
@@ -40,12 +46,15 @@ import com.rozen.wordscroll.hooks.PlayedTile;
 import com.rozen.wordscroll.hooks.Tile;
 import com.riotapps.wordbase.hooks.PlayedWord;
 import com.riotapps.wordbase.hooks.Player;
+import com.riotapps.wordbase.hooks.PlayerService;
 import com.riotapps.wordbase.hooks.StoreService;
 import com.riotapps.wordbase.hooks.WordService;
 import com.riotapps.wordbase.interfaces.ICloseDialog;
 import com.rozen.wordscroll.hooks.Game;
 import com.rozen.wordscroll.ui.GameSurfaceView;
 import com.riotapps.wordbase.services.WordLoaderService;
+import com.riotapps.wordbase.ui.CustomButtonDialog;
+import com.riotapps.wordbase.ui.CustomProgressDialog;
 import com.riotapps.wordbase.ui.CustomToast;
 import com.riotapps.wordbase.ui.MenuUtils;
 import com.riotapps.wordbase.utils.ApplicationContext;
@@ -53,6 +62,7 @@ import com.riotapps.wordbase.utils.Constants;
 import com.riotapps.wordbase.utils.DesignByContractException;
 import com.riotapps.wordbase.utils.ImageHelper;
 import com.riotapps.wordbase.utils.Logger;
+import com.riotapps.wordbase.utils.Utils;
  
  
 
@@ -65,6 +75,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private PopupMenu popupMenu;
 	private List<Fragment> fragments = new ArrayList<Fragment>();
 	private LoadFragmentsTask loadFragmentsTask;
+	private OnPauseTask onPauseTask;
 	private TextView ivRow1PlayedLetter1;
 	private TextView ivRow1PlayedLetter2;
 	private TextView ivRow1PlayedLetter3;
@@ -106,7 +117,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	private int defaultPlayedTileTextColor;
 	private int playedTileTextColor;
-
+	private boolean surfaceViewReadyToPause = false;
+	private boolean isPaused = false;
 	
 	private List<PlayedTile> row1Tiles = new ArrayList<PlayedTile>();
 	private List<PlayedTile> row2Tiles = new ArrayList<PlayedTile>();
@@ -120,15 +132,55 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private float letterTileSize;
 	private boolean freezeAction = false;
 	private ListView lvPlayedWords;
+	
+	private ImageView ivStart;
+	private LinearLayout llPlayedWords;
+	private LinearLayout llAdWrapper;
+	private LinearLayout llStart;
+	
 	private playedWordAdapter playedWordAdapter;
 	
 	private List<PlayedWord> playedWords =  new ArrayList<PlayedWord>();
 	
 	private CountDownTimer countdown = null;
 	protected boolean isCountdownRunning;
+	private boolean isChartBoostActive;
+	private CustomButtonDialog customDialog;
+	private CustomProgressDialog spinner;
+	private boolean hasPostAdRun;
+	private boolean hideInterstitialAd;
+	private Chartboost cb;
+	private Tracker tracker;
+	private LinearLayout llButtons;
+	private int bottomHeight;
 	
 	private static Bitmap bgTray = null;
 	
+	
+	
+	public int getBottomHeight() {
+		return bottomHeight;
+	}
+
+	public void setBottomHeight(int bottomHeight) {
+		this.bottomHeight = bottomHeight;
+	}
+
+	public boolean isSurfaceViewReadyToPause() {
+		return surfaceViewReadyToPause;
+	}
+
+	public void setSurfaceViewReadyToPause(boolean surfaceViewReadyToPause) {
+		this.surfaceViewReadyToPause = surfaceViewReadyToPause;
+	}
+	 public Tracker getTracker() {
+			if (this.tracker == null){
+				this.tracker = EasyTracker.getTracker();
+			}
+			return tracker;
+		 }
+
+
 	public Player getPlayer() {
 		//return player;
 		if (this.player == null){
@@ -164,7 +216,17 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 	@Override
 	public void dialogClose(int resultCode) {
-		// TODO Auto-generated method stub
+		 switch(resultCode) { 
+		   case Constants.RETURN_CODE_CUSTOM_TOAST_READY_FINISHED:
+			   this.onStartSet();
+			   break;
+		   case Constants.RETURN_CODE_CUSTOM_TOAST_SET_FINISHED:
+			   this.onStartGo();
+			   break;
+		   case Constants.RETURN_CODE_CUSTOM_TOAST_GO_FINISHED:
+			   this.onStartGoFinished();
+			   break;
+		 }
 		
 	}
 	
@@ -173,13 +235,25 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		Logger.d(TAG, "onPause");
 		super.onPause();
 		
+		this.isPaused = true;
 
 		this.gameSurfaceView.onPause();
+		
+		this.onPauseTask = new OnPauseTask();
+		this.onPauseTask.execute();
+		
+	}
+	
+	private void finishOnPause(){
+		Logger.d(TAG, "finishOnPause called");
+		this.onPauseTask = null;
+		//wait until surfaceview is ready to pause
 	    if (this.game.isActive()){
+			Logger.d(TAG, "saveGame about to be called");
 	    	GameService.saveGame(this.game);
 	    }
-
 	}
+	
 
 	@Override
 	protected void onDestroy() {
@@ -215,7 +289,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		// TODO Auto-generated method stub
 		Logger.d(TAG, "onResume");
 		super.onResume();
-		
+		this.isPaused = false;
+		this.surfaceViewReadyToPause = false;
 		if (this.game.isActive()){
 			this.gameSurfaceView.onResume();
 		}
@@ -263,10 +338,12 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	    }
 	    
 	private void kickoff(){
-
+		this.isPaused = false;
 		this.setGame(); 
 		this.defaultPlayedTileTextColor = this.getResources().getColor(com.rozen.wordscroll.R.color.default_played_tile_letter);
 		this.playedTileTextColor = this.getResources().getColor(com.rozen.wordscroll.R.color.played_tile_letter);
+		
+	 
 		
 		//temp
 //		String s = "";
@@ -281,13 +358,39 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 //	 	for (Tile t : this.game.getRow1Tiles()){
 //	 		Logger.d("TAG", "hopper id=" + t.getId() + " letter=" + t.getLetter() + " played=" + t.isPlayed());
 //	 	}
-	    this.gameSurfaceView = (GameSurfaceView)findViewById(R.id.gameSurface);
-	    this.gameSurfaceView.construct(this);
-	    
 	    
 		this.loadViews();
+		this.setBottom();
+
+	    this.gameSurfaceView = (GameSurfaceView)findViewById(R.id.gameSurface);
+	    this.gameSurfaceView.construct(this);
+
+	    
 		this.setupFonts();
 		this.setViewLayouts();
+		this.setStartArea();
+	
+		this.initializeGameOnBoard();
+		
+		
+				
+		
+	}
+	
+	private void setStartArea(){
+		//Logger.d(TAG, "setStartArea this.game.isStarted()=" + this.game.isStarted() + " status=" + this.game.getStatus());
+		if (this.game.isStarted()){
+			this.llPlayedWords.setVisibility(View.VISIBLE); 
+			this.llStart.setVisibility(View.GONE);
+		}
+		else {
+			this.llPlayedWords.setVisibility(View.GONE); 
+			this.llStart.setVisibility(View.VISIBLE);
+		}
+			
+ 	}
+	
+	private void initializeGameOnBoard(){
 		this.preloadPlayedTiles();		
 		this.initializeWordList();
 	
@@ -296,8 +399,50 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 		this.resetPoints();
 		this.setupMenu();
+		
 	}
 	
+	
+	private class OnPauseTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			// wait until the word loader service is finished because the first time 
+			//through the database will not have been copied over yet
+			//x is safety valve
+			
+			//this method will just whistle a tune until the database is copied over
+			//it should happen very fast
+			int x = 0;
+			
+			while( x < 5000 ){
+				
+				if ( GameSurface.this.surfaceViewReadyToPause){
+					Logger.d(TAG, "surface view finished its loop");
+					break;
+				}
+				else{
+					Logger.d(TAG, "surface view NOT finished its loop");
+				}
+				
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			 
+			
+			return null;
+		}
+		
+	      @Override
+	      protected void onPostExecute(Void arg0) {  
+	    	  GameSurface.this.finishOnPause();
+	    	 
+	      }
+	 }
  
 	private class LoadFragmentsTask extends AsyncTask<Void, Void, Void> {
 
@@ -341,7 +486,98 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	 }
 	
 
+	private void setupAdServer(){
+		Logger.d(TAG, "setupAdServer called");
+		
+	 	boolean isAdMob = Constants.INTERSTITIAL_ADMOB;
+	 	boolean isChartBoost = Constants.INTERSTITIAL_CHARTBOOST;
+		boolean isRevMob = false; //Constants.INTERSTITIAL_REVMOB;
+		final int useRevMob = 0;
+		
+	 	if (!StoreService.isHideInterstitialAdPurchased(this))
+	 	{
+	 	
+	 		if (isChartBoost){
+	 			Logger.d(TAG, "setupAdServer isCharBoost=true");
+	 			
+		 		this.isChartBoostActive = true;
+		 		this.setupChartBoost();
+	 		}
+		 	}
+	 	else{
+	 		this.hideInterstitialAd = true;
+	 	}
+	 		 		
+	 	
+	 	Logger.d(TAG,  " chartBoost=" + this.isChartBoostActive);
+	}
+
+	private void handleInterstitialAd(){
+    	this.hasPostAdRun = false; 
+    	if (this.hideInterstitialAd){
+    		this.handlePostAdServer();   		            	 					
+ 			}
+ 		else{
+ 			long hoursSinceLastReminder = PlayerService.getHoursSinceLastInterstitialPurchaseReminder();
+ 			
+ 			Logger.d(TAG, "handleInterstitialAd hoursSinceLastReminder=" + hoursSinceLastReminder);
+ 			
+ 			if (hoursSinceLastReminder == Constants.DEFAULT_HIDE_AD_PURCHASE_REMINDER){
+ 				//save it for the first time
+ 				PlayerService.setLastInterstitialPurchaseReminderTime();
+ 			}
+ 			
+ 			if (hoursSinceLastReminder >= 24  ){
+ 				this.customDialog = new CustomButtonDialog(this, 
+ 		    			this.getString(R.string.game_surface_interstital_purchase_title), 
+ 		    			this.getString(R.string.game_surface_interstital_purchase_text),
+ 		    			this.getString(R.string.go_to_store),
+ 		    			this.getString(R.string.no_thanks),
+ 		    			Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_OK_CLICKED,
+ 		    			Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CANCEL_CLICKED,
+ 		    			Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CLOSE_CLICKED);
+ 				
+ 				//public static final int RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_OK_CLICKED = 133;	
+ 				//public static final int RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CLOSE_CLICKED = 134;
+ 				//public static final int RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CANCEL_CLICKED = 135;	
+ 		    
+ 				PlayerService.setLastInterstitialPurchaseReminderTime();
+ 		    	this.customDialog.show();
+ 			}
+ 			else{
+	 			if (this.isChartBoostActive) {
+	 				if (this.spinner == null){
+	 					this.spinner = new CustomProgressDialog(this);
+	 					this.spinner.setMessage(this.getString(R.string.progress_almost_ready));
+	 					this.spinner.show();				
+	 				}
+	 				
+		 			this.cb.setTimeout((int)Constants.GAME_SURFACE_INTERSTITIAL_AD_CHECK_IN_MILLISECONDS);
+		 			this.cb.showInterstitial();
+			    	Logger.d(TAG, "showInterstitial from Chartboost");
+ 	 			}
+ 			}
+			}
+    }
+
 	
+	public void handlePostAdServer(){
+	    //	if (!this.hasPostAdRun &&  this.postTurnMessage.length() > 0){  //chartboost dismiss and close both call this, lets make sure its not run twice
+    		 	
+	    		//make sure the pre-primed hintlist is cleared
+	    	//	this.placedResultsForWordHints.clear();
+			//	this.hints.clear();
+
+	    	this.hasPostAdRun = true;
+    		// 	this.unfreezeButtons();
+    		// 	Logger.d(TAG, "unfreeze handlePostAdServer");
+    			if (spinner != null) {
+    		 		spinner.dismiss();
+    		 		spinner = null;
+    		 	}
+
+	    	//}
+	    }
 	private void initializePlayedLists(){
  
 		this.initializePlayedList_1();
@@ -467,7 +703,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 	
 	private void loadFragmentsAndView(){
-		this.loadFragments(30);
+		this.loadFragmentsTask = null;
+		
+		this.loadFragments(40);
 		this.initializePlayedLists();  ///this will have to change if game is already started
 		this.loadPlayedTileViews();
 	}
@@ -557,7 +795,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	private void loadFragments(int num){
 		Logger.d(TAG, "loadFragments WordLoaderService.isLoading=" + WordLoaderService.isLoading);
-		
+		this.fragments.clear();
 		
 		FragmentService fragmentService = new FragmentService(this);
 		this.fragments = fragmentService.getRandomFragments(30);
@@ -582,13 +820,17 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 
 	@Override
 	public void onClick(View v) {
-		Logger.d(TAG, "onClick called");
+		Logger.d(TAG, "onClick called this.isPaused=" + this.isPaused); 
+		if (this.isPaused){ return; }
 		
 		switch (v.getId()){
 			case R.id.options:
 			//	if (!this.game.isActive()){
 					popupMenu.show();
 			//	}
+				break;
+			case R.id.ivStart:
+				this.handleStartOnClick();
 				break;
 			case R.id.ivRow1PlayedLetter1:
 			case R.id.ivRow1PlayedLetter2:
@@ -630,6 +872,53 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		}		
 	}
 
+	public void handleStartOnClick(){
+		 //make countdown timer a variable so that it can be killed in stop/pause
+		   //change game status to started (5)
+		   //ApplicationContext.captureTime(TAG, "handleStartOnClick called");
+    		
+	   //		ApplicationContext.captureTime(TAG, "startGame about to be called");
+		   GameService.startGame(this.game);
+		   
+		//   ApplicationContext.captureTime(TAG, "startGame completed");
+
+		    this.setBottom();
+		    this.setStartArea();
+		    
+		  // ApplicationContext.captureTime(TAG, "loadbuttons completed");
+			
+		   //might need a start delay here at some point
+	/*	   int timerLength = this.getResources().getInteger(R.integer.gameTypeDashCountdownStart); //2 minutes
+		   if (this.game.isDoubleTimeType()){
+			   timerLength = this.getResources().getInteger(R.integer.gameTypeDoubleTimeCountdownStart);
+		   }
+		   else if(this.game.isSpeedRoundType()){
+			   timerLength = this.getResources().getInteger(R.integer.gameTypeSpeedRoundsCountdownStart);
+		   }
+		*/   
+		   //ready set go!!
+		   
+		    this.onStartReady();
+		   
+		   
+		 //  this.setCountdown(this.getTimerStart());
+		   
+		   ApplicationContext.captureTime(TAG, "handleStartOnClick completed");
+				
+	   }
+	   private void onStartReady(){
+		   new CustomToast(this, this.getString(R.string.game_surface_start_game_ready), 500, Constants.RETURN_CODE_CUSTOM_TOAST_READY_FINISHED).show();
+	   }
+	   private void onStartSet(){
+		   new CustomToast(this, this.getString(R.string.game_surface_start_game_set), 500, Constants.RETURN_CODE_CUSTOM_TOAST_SET_FINISHED).show();
+	   }
+	   private void onStartGo(){
+		   new CustomToast(this, this.getString(R.string.game_surface_start_game_go), 500, Constants.RETURN_CODE_CUSTOM_TOAST_GO_FINISHED).show();
+	   }
+	   private void onStartGoFinished(){
+		   this.setCountdown(this.getTimerStart());
+	   }
+ 
 	private void handleButtonClick(int id){
 
 		switch (id){
@@ -875,7 +1164,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 	
 	private void initializeWordList(){
-
+		this.playedWords.clear();
 	 	this.playedWordAdapter = new playedWordAdapter(this, this.playedWords);
 		this.lvPlayedWords.setAdapter(this.playedWordAdapter); 
 		
@@ -922,9 +1211,45 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		}
 	}
 	
+	private void setBottom(){
+		if (!this.game.isStarted()){
+			this.llAdWrapper.setVisibility(View.VISIBLE);
+			this.llButtons.setVisibility(View.GONE);
+			AdView adView = (AdView)this.findViewById(R.id.adView);
+	    	if (StoreService.isHideBannerAdsPurchased(this)){	
+				adView.setVisibility(View.GONE);
+			}
+	    	else {
+	    		adView.loadAd(new AdRequest());
+	    	}
+	    	this.setBottomHeight(this.llAdWrapper);
+		}
+		else {
+			this.llAdWrapper.setVisibility(View.GONE);
+			this.llButtons.setVisibility(View.VISIBLE);
+	    	this.setBottomHeight(this.llButtons);
+		}
+	}
+	
+	private void setBottomHeight(LinearLayout layout){
+		if (this.bottomHeight == 0) {
+    		LayoutParams params = layout.getLayoutParams();
+    	
+    		this.bottomHeight = params.height;  //Utils.convertPixelsToDensityPixels(this, params.height);
+    		Logger.d(TAG, "llAdWrapper.getHeight()=" + Utils.convertPixelsToDensityPixels(this, params.height));
+    	}
+	}
+	
+	
 	private void loadViews(){
  
 		this.lvPlayedWords = (ListView) findViewById(R.id.lvPlayedWords);
+		this.llAdWrapper = (LinearLayout)this.findViewById(R.id.llAdWrapper);
+		this.llButtons = (LinearLayout)this.findViewById(R.id.llButtons);
+		this.llStart = (LinearLayout)this.findViewById(R.id.llStart);
+		
+		this.ivStart = (ImageView) findViewById(R.id.ivStart);
+		this.llPlayedWords = (LinearLayout) findViewById(R.id.llPlayedWords);
 		
 		this.ivRow1PlayedLetter1 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter1);
 		this.ivRow1PlayedLetter2 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter2);
@@ -966,6 +1291,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		this.bPlay1 = (Button) findViewById(com.rozen.wordscroll.R.id.bPlay1);
 		this.bPlay2 = (Button) findViewById(com.rozen.wordscroll.R.id.bPlay2);
 		this.bPlay3 = (Button) findViewById(com.rozen.wordscroll.R.id.bPlay3);
+		
+		this.ivStart.setOnClickListener(this);
 		
 		this.ivRow1PlayedLetter1.setOnClickListener(this);
 		this.ivRow1PlayedLetter2.setOnClickListener(this);
@@ -1466,10 +1793,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		     
 		     public void onFinish() {
 		    	  Logger.d(TAG, "setCountdown onFinish");
-		    	  GameSurface.this.isCountdownRunning = false;
-		    	  GameSurface.this.freezeAction = true;
-		    	  
-		    	  GameSurface.this.game.setCountdown(0);
+		    	
 				   
 		        // mTextField.setText("done!");
 		    	 //GameSurface.this.restartCountdownView();
@@ -1492,21 +1816,38 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	   }
 	
 	   private void handleCompletion(){
-
+		   this.isCountdownRunning = false;
+	    	 this.freezeAction = true;
+	    	  
+	    	  this.game.setCountdown(0);
+		   this.gameSurfaceView.setReadyToDraw(false);
 		   //this.restartCountdownView();
-		  // Logger.d(TAG, "handleCompletion this.tvCountdown=" + this.tvCountdown.getText());
+		    Logger.d(TAG, "handleCompletion this.tvCountdown=" + this.tvCountdown.getText());
 
-		//   this.isCompletedThisSession = true;
-		  /* GameService.completeGame(this, this.player, this.game);
+		    //this.isCompletedThisSession = true;
+		    GameService.completeGame(this, this.player, this.game);
 		   this.setCompletedState();
 		   
-		
-		   this.pl0.clear();
-		   this.opponentWords.clear();
+		   this.row1Tiles.clear();
+		   this.row2Tiles.clear();
+		   this.row3Tiles.clear();
+		   this.playedWords.clear();
+		   
+		   try {
+			this.game = GameService.createGame(this, player);
+		} catch (DesignByContractException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		   
+		   
+			this.setStartArea();
+			
+			this.initializeGameOnBoard();
 		   
 		   //handle Ad or purchase reminder
-		   this.handleInterstitialAd();
-		   */
+		// come back to this   this.handleInterstitialAd();
+		    
 		   
 	   }
 	   
@@ -1628,5 +1969,350 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	  }
 	
 	} 	
+	private void setupChartBoost(){
+		this.cb = Chartboost.sharedChartboost();
+		this.cb.onCreate(this, this.getString(R.string.chartboost_app_id), this.getString(R.string.chartboost_app_signature), this.chartBoostDelegate);
+		this.cb.setImpressionsUseActivities(true);
+		this.cb.startSession();
+		this.cb.cacheInterstitial();
+
+	}
+	private ChartboostDelegate chartBoostDelegate = new ChartboostDelegate() { 
+
+		/*
+		 * Chartboost delegate methods
+		 * 
+		 * Implement the delegate methods below to finely control Chartboost's behavior in your app
+		 * 
+		 * Minimum recommended: shouldDisplayInterstitial()
+		 */
+
+
+		/* 
+		 * shouldDisplayInterstitial(String location)
+		 *
+		 * This is used to control when an interstitial should or should not be displayed
+		 * If you should not display an interstitial, return false
+		 *
+		 * For example: during gameplay, return false.
+		 *
+		 * Is fired on:
+		 * - showInterstitial()
+		 * - Interstitial is loaded & ready to display
+		 */
+		@Override
+		public boolean shouldDisplayInterstitial(String location) {
+			Logger.d(TAG, "SHOULD DISPLAY INTERSTITIAL '"+location+ "'?");
+			return true;
+		}
+
+		/*
+		 * shouldRequestInterstitial(String location)
+		 * 
+		 * This is used to control when an interstitial should or should not be requested
+		 * If you should not request an interstitial from the server, return false
+		 *
+		 * For example: user should not see interstitials for some reason, return false.
+		 *
+		 * Is fired on:
+		 * - cacheInterstitial()
+		 * - showInterstitial() if no interstitial is cached
+		 * 
+		 * Notes: 
+		 * - We do not recommend excluding purchasers with this delegate method
+		 * - Instead, use an exclusion list on your campaign so you can control it on the fly
+		 */
+		@Override
+		public boolean shouldRequestInterstitial(String location) {
+			Logger.d(TAG, "SHOULD REQUEST INSTERSTITIAL '"+location+ "'?");
+			return true;
+		}
+
+		/*
+		 * didCacheInterstitial(String location)
+		 * 
+		 * Passes in the location name that has successfully been cached
+		 * 
+		 * Is fired on:
+		 * - cacheInterstitial() success
+		 * - All assets are loaded
+		 * 
+		 * Notes:
+		 * - Similar to this is: cb.hasCachedInterstitial(String location) 
+		 * Which will return true if a cached interstitial exists for that location
+		 */
+		@Override
+		public void didCacheInterstitial(String location) {
+			Logger.d(TAG, "INTERSTITIAL '"+location+"' CACHED");
+		}
+
+		/*
+		 * didFailToLoadInterstitial(String location)
+		 * 
+		 * This is called when an interstitial has failed to load for any reason
+		 * 
+		 * Is fired on:
+		 * - cacheInterstitial() failure
+		 * - showInterstitial() failure if no interstitial was cached
+		 * 
+		 * Possible reasons:
+		 * - No network connection
+		 * - No publishing campaign matches for this user (go make a new one in the dashboard)
+		 */
+		@Override
+		public void didFailToLoadInterstitial(String location) {
+		    // Show a house ad or do something else when a chartboost interstitial fails to load
+
+			Logger.d(TAG, "ChartBoost INTERSTITIAL '"+location+"' REQUEST FAILED");
+			//Toast.makeText(context, "Interstitial '"+location+"' Load Failed",
+			//		Toast.LENGTH_SHORT).show();
+			handlePostAdServer();
+			//handlePostTurnFinalAction(postTurnAction);
+		}
+
+		/*
+		 * didDismissInterstitial(String location)
+		 *
+		 * This is called when an interstitial is dismissed
+		 *
+		 * Is fired on:
+		 * - Interstitial click
+		 * - Interstitial close
+		 *
+		 * #Pro Tip: Use the delegate method below to immediately re-cache interstitials
+		 */
+		@Override
+		public void didDismissInterstitial(String location) {
+
+			// Immediately re-caches an interstitial
+			cb.cacheInterstitial(location);
+			handlePostAdServer();
+			//handlePostTurnFinalAction(postTurnAction);
+
+
+			Logger.d(TAG, "ChartBoost INTERSTITIAL '"+location+"' DISMISSED");
+			//Toast.makeText(context, "Dismissed Interstitial '"+location+"'",
+			//		Toast.LENGTH_SHORT).show();
+			
+		}
+
+		/*
+		 * didCloseInterstitial(String location)
+		 *
+		 * This is called when an interstitial is closed
+		 *
+		 * Is fired on:
+		 * - Interstitial close
+		 */
+		@Override
+		public void didCloseInterstitial(String location) {
+			Logger.i(TAG, "ChartBoost INSTERSTITIAL '"+location+"' CLOSED");
+			//handlePostAdServer();
+			//handlePostTurnFinalAction(postTurnAction);
+			//Toast.makeText(context, "Closed Interstitial '"+location+"'",
+			//		Toast.LENGTH_SHORT).show();
+		}
+
+		/*
+		 * didClickInterstitial(String location)
+		 *
+		 * This is called when an interstitial is clicked
+		 *
+		 * Is fired on:
+		 * - Interstitial click
+		 */
+		@Override
+		public void didClickInterstitial(String location) {
+			Logger.i(TAG, "ChartBoost DID CLICK INTERSTITIAL '"+location+"'");
+			handlePostAdServer();
+			//handlePostTurnFinalAction(postTurnAction);
+			//Toast.makeText(context, "Clicked Interstitial '"+location+"'",
+			//		Toast.LENGTH_SHORT).show();
+		}
+
+		/*
+		 * didShowInterstitial(String location)
+		 *
+		 * This is called when an interstitial has been successfully shown
+		 *
+		 * Is fired on:
+		 * - showInterstitial() success
+		 */
+		@Override
+		public void didShowInterstitial(String location) {
+			Logger.i(TAG, "ChartBoost INTERSTITIAL '" + location + "' SHOWN");
+			//Toast.makeText(context, "Interstitial '"+location+"' shown",
+			//		Toast.LENGTH_SHORT).show();
+			
+			//Dont do it here because boost does not use full page interstitial and 
+			//tray can be seen through modal
+			//handlePostTurnFinalAction(postTurnAction);
+		}
+
+		/*
+		 * More Apps delegate methods
+		 */
+
+		/*
+		 * shouldDisplayLoadingViewForMoreApps()
+		 *
+		 * Return false to prevent the pretty More-Apps loading screen
+		 *
+		 * Is fired on:
+		 * - showMoreApps()
+		 */
+		@Override
+		public boolean shouldDisplayLoadingViewForMoreApps() {
+			return true;
+		}
+
+		/*
+		 * shouldRequestMoreApps()
+		 * 
+		 * Return false to prevent a More-Apps page request
+		 *
+		 * Is fired on:
+		 * - cacheMoreApps()
+		 * - showMoreApps() if no More-Apps page is cached
+		 */
+		@Override
+		public boolean shouldRequestMoreApps() {
+
+			return true;
+		}
+
+		/*
+		 * shouldDisplayMoreApps()
+		 * 
+		 * Return false to prevent the More-Apps page from displaying
+		 *
+		 * Is fired on:
+		 * - showMoreApps() 
+		 * - More-Apps page is loaded & ready to display
+		 */
+		@Override
+		public boolean shouldDisplayMoreApps() {
+			Logger.i(TAG, "ChartBoost SHOULD DISPLAY MORE APPS?");
+			return true;
+		}
+
+		/*
+		 * didFailToLoadMoreApps()
+		 * 
+		 * This is called when the More-Apps page has failed to load for any reason
+		 * 
+		 * Is fired on:
+		 * - cacheMoreApps() failure
+		 * - showMoreApps() failure if no More-Apps page was cached
+		 * 
+		 * Possible reasons:
+		 * - No network connection
+		 * - No publishing campaign matches for this user (go make a new one in the dashboard)
+		 */
+		@Override
+		public void didFailToLoadMoreApps() {
+			Logger.i(TAG, "ChartBoost MORE APPS REQUEST FAILED");
+			//Toast.makeText(context, "More Apps Load Failed",
+			//		Toast.LENGTH_SHORT).show();
+		}
+
+		/*
+		 * didCacheMoreApps()
+		 * 
+		 * Is fired on:
+		 * - cacheMoreApps() success
+		 * - All assets are loaded
+		 */
+		@Override
+		public void didCacheMoreApps() {
+			Logger.i(TAG, "ChartBoost MORE APPS CACHED");
+		}
+
+		/*
+		 * didDismissMoreApps()
+		 *
+		 * This is called when the More-Apps page is dismissed
+		 *
+		 * Is fired on:
+		 * - More-Apps click
+		 * - More-Apps close
+		 */
+		@Override
+		public void didDismissMoreApps() {
+			Logger.i(TAG, "ChartBoost MORE APPS DISMISSED");
+			//Toast.makeText(context, "Dismissed More Apps",
+			//		Toast.LENGTH_SHORT).show();
+		}
+
+		/*
+		 * didCloseMoreApps()
+		 *
+		 * This is called when the More-Apps page is closed
+		 *
+		 * Is fired on:
+		 * - More-Apps close
+		 */
+		@Override
+		public void didCloseMoreApps() {
+			Logger.i(TAG, "ChartBoost MORE APPS CLOSED");
+			//Toast.makeText(context, "Closed More Apps",
+			//		Toast.LENGTH_SHORT).show();
+		}
+
+		/*
+		 * didClickMoreApps()
+		 *
+		 * This is called when the More-Apps page is clicked
+		 *
+		 * Is fired on:
+		 * - More-Apps click
+		 */
+		@Override
+		public void didClickMoreApps() {
+			Logger.i(TAG, "ChartBoost MORE APPS CLICKED");
+			//Toast.makeText(context, "Clicked More Apps",
+			//		Toast.LENGTH_SHORT).show();
+		}
+
+		/*
+		 * didShowMoreApps()
+		 *
+		 * This is called when the More-Apps page has been successfully shown
+		 *
+		 * Is fired on:
+		 * - showMoreApps() success
+		 */
+		@Override
+		public void didShowMoreApps() {
+			Logger.i(TAG, "ChartBoost MORE APPS SHOWED");
+		}
+
+		/*
+		 * shouldRequestInterstitialsInFirstSession()
+		 *
+		 * Return false if the user should not request interstitials until the 2nd startSession()
+		 * 
+		 */
+		@Override
+		public boolean shouldRequestInterstitialsInFirstSession() {
+			return true;
+		}
+	};
+
+	
+    private void trackEvent(String action, String label, int value){
+    	this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, action, label, (long)value);
+    }
+	   
+	public void trackEvent(String category, String action, String label, long value){
+		try{
+			this.getTracker().sendEvent(category, action,label, value);
+		}
+		catch (Exception e){
+  			Logger.d(TAG, "trackEvent category=" + (category == null ? "null" : category) + " action=" + (action == null ? "null" : action) 
+  					 + " label=" + (label == null ? "null" : label)  + " value=" + value +" e=" + e.toString());
+  			
+		}
+	}
  
 }

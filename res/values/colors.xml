@@ -5,6 +5,7 @@
       <color name="played_tile_letter">#000000</color> 
     <color name="top_area_background">#ee5b92</color><!-- ee5b92 29cdf0 177efe -->
     <color name="gameboard_bottom_ad_background">#2a2a2a</color>
+    <color name="gameboard_bottom_add_background">#e03b7d</color>
     <color name="gameboard_bottom_fill_background">#e03b7d</color>
     <color name="word_list_area_middle_border">#3479b2</color> <!-- 29cdf0 A020F0   670099 -->
     <color name="word_list_area_player_title_text">#ffffff</color>
@@ -40,6 +41,7 @@
 
 	<color name="game_board_tray_border">#eec591</color>  
 	<color name="game_board_tray_tile_letter">#080808</color>
+	<color name="game_board_tray_tile_starter_letter">#f5f8e8</color>
 	<color name="game_board_bonus_tile_letter">#ffffff</color>
 	<color name="game_board_tray_tile_value">#000000</color> 
 	<color name="game_board_board_tile_letter">#080808</color>

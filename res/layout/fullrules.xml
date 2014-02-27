@@ -15,8 +15,8 @@
            ads:testDevices="TEST_EMULATOR"
            ads:loadAdOnCreate="false"/>
 <LinearLayout  
-    android:layout_above="@id/adView" 
-    style="@style/LayoutStyle"
+    android:layout_above="@id/adView"  
+    style="@style/GameboardLayoutStyle"
     android:layout_marginBottom="5dp"
     android:orientation="vertical" >
    
@@ -65,25 +65,38 @@
        android:id="@+id/tvFullRulesBasics_1"
         />
    <TextView
-       style="@style/ContentAreaTextAreaStyle"
+       style="@style/TextAreaStyle"
         android:text="@string/full_rules_2" 
         android:id="@+id/tvFullRulesBasics_2"
         />	
    <TextView
-       style="@style/ContentAreaTextAreaStyle"
+       style="@style/TextAreaStyle"
         android:text="@string/full_rules_3" 
          android:id="@+id/tvFullRulesBasics_3"
         />
    <TextView
-       style="@style/ContentAreaTextAreaStyle"
+       style="@style/TextAreaStyle"
         android:text="@string/full_rules_4" 
          android:id="@+id/tvFullRulesBasics_4"
         />
- 
- 
+    <TextView
+       style="@style/TextAreaStyle"
+        android:text="@string/full_rules_5" 
+         android:id="@+id/tvFullRulesBasics_5"
+        />
+   <TextView
+       style="@style/TextAreaStyle"
+        android:text="@string/full_rules_6" 
+         android:id="@+id/tvFullRulesBasics_6"
+        />
+   <TextView
+       style="@style/TextAreaStyle"
+        android:text="@string/full_rules_7" 
+         android:id="@+id/tvFullRulesBasics_7"
+        /> 
    <!-- scoring -->
  	 <TextView
-       style="@style/ContentAreaTextAreaStyle"
+       style="@style/ContentAreaTextStyle"
         android:text="@string/full_rules_scoring_1" 
         android:paddingBottom="1dp"
         android:id="@+id/tvFullRulesScoring_1"
@@ -96,13 +109,52 @@
         android:paddingTop="1dp"
         android:id="@+id/tvFullRulesScoring_2"
         />
-      
+ <TextView
+       style="@style/TextAreaStyle"
+        android:text="@string/full_rules_scoring_3" 
+        android:paddingLeft="10dp"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:id="@+id/tvFullRulesScoring_3"
+        />  
+  <TextView
+       style="@style/TextAreaStyle"
+        android:text="@string/full_rules_scoring_4" 
+        android:paddingLeft="10dp"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:id="@+id/tvFullRulesScoring_4"
+        /> 
+   <TextView
+       style="@style/TextAreaStyle"
+        android:text="@string/full_rules_scoring_5" 
+        android:paddingLeft="10dp"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:id="@+id/tvFullRulesScoring_5"
+        />   
+    <TextView
+       style="@style/TextAreaStyle"
+        android:text="@string/full_rules_scoring_6" 
+        android:paddingLeft="10dp"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:id="@+id/tvFullRulesScoring_6"
+        />   
+    <TextView
+       style="@style/TextAreaStyle"
+        android:text="@string/full_rules_scoring_7" 
+        android:paddingLeft="10dp"
+        android:paddingBottom="1dp"
+        android:paddingTop="1dp"
+        android:id="@+id/tvFullRulesScoring_7"
+        />                              
         <!-- the letters -->
    <TextView
-       style="@style/ContentAreaTextAreaStyle"
+       style="@style/ContentAreaTextStyle"
         android:text="@string/full_rules_letters_1" 
         android:paddingBottom="1dp"
-        android:id="@+id/tvFullRulesScoring_1"
+        android:id="@+id/tvFullRulesLetters_1"
         />
       <TextView
        style="@style/ContentAreaTextStyle"
@@ -110,12 +162,12 @@
         android:paddingLeft="10dp"
         android:paddingBottom="1dp"
         android:paddingTop="1dp"
-        android:id="@+id/tvFullRulesScoring_2"
+        android:id="@+id/tvFullRulesLetters_2"
         />
       
       
    <TableLayout
-       style="@style/ContentAreaTextAreaStyle" 
+       style="@style/TextAreaStyle" 
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" 
     android:stretchColumns="*">
@@ -273,7 +325,7 @@
   
  		<!-- dictionary -->
  		<TextView
-       style="@style/ContentAreaTextAreaStyle"
+       style="@style/ContentAreaTextStyle"
         android:text="@string/full_rules_dictionary_1" 
         android:id="@+id/tvFullRulesDictionary_1"
         />
