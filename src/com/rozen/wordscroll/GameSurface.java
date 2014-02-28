@@ -133,10 +133,10 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private boolean freezeAction = false;
 	private ListView lvPlayedWords;
 	
-	private ImageView ivStart;
+//	private ImageView ivStart;
 	private LinearLayout llPlayedWords;
 	private LinearLayout llAdWrapper;
-	private LinearLayout llStart;
+	//private LinearLayout llStart;
 	
 	private playedWordAdapter playedWordAdapter;
 	
@@ -379,7 +379,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	private void setStartArea(){
 		//Logger.d(TAG, "setStartArea this.game.isStarted()=" + this.game.isStarted() + " status=" + this.game.getStatus());
-		if (this.game.isStarted()){
+/*		if (this.game.isStarted()){
 			this.llPlayedWords.setVisibility(View.VISIBLE); 
 			this.llStart.setVisibility(View.GONE);
 		}
@@ -387,7 +387,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			this.llPlayedWords.setVisibility(View.GONE); 
 			this.llStart.setVisibility(View.VISIBLE);
 		}
-			
+	*/		
  	}
 	
 	private void initializeGameOnBoard(){
@@ -829,9 +829,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 					popupMenu.show();
 			//	}
 				break;
-			case R.id.ivStart:
-				this.handleStartOnClick();
-				break;
+		//	case R.id.ivStart:
+		//		this.handleStartOnClick();
+		//		break;
 			case R.id.ivRow1PlayedLetter1:
 			case R.id.ivRow1PlayedLetter2:
 			case R.id.ivRow1PlayedLetter3:
@@ -907,13 +907,13 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				
 	   }
 	   private void onStartReady(){
-		   new CustomToast(this, this.getString(R.string.game_surface_start_game_ready), 500, Constants.RETURN_CODE_CUSTOM_TOAST_READY_FINISHED).show();
+		   new CustomToast(this, this.getString(R.string.game_surface_start_game_ready), 800, Constants.RETURN_CODE_CUSTOM_TOAST_READY_FINISHED).show();
 	   }
 	   private void onStartSet(){
-		   new CustomToast(this, this.getString(R.string.game_surface_start_game_set), 500, Constants.RETURN_CODE_CUSTOM_TOAST_SET_FINISHED).show();
+		   new CustomToast(this, this.getString(R.string.game_surface_start_game_set), 800, Constants.RETURN_CODE_CUSTOM_TOAST_SET_FINISHED).show();
 	   }
 	   private void onStartGo(){
-		   new CustomToast(this, this.getString(R.string.game_surface_start_game_go), 500, Constants.RETURN_CODE_CUSTOM_TOAST_GO_FINISHED).show();
+		   new CustomToast(this, this.getString(R.string.game_surface_start_game_go), 800, Constants.RETURN_CODE_CUSTOM_TOAST_GO_FINISHED).show();
 	   }
 	   private void onStartGoFinished(){
 		   this.setCountdown(this.getTimerStart());
@@ -1246,9 +1246,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		this.lvPlayedWords = (ListView) findViewById(R.id.lvPlayedWords);
 		this.llAdWrapper = (LinearLayout)this.findViewById(R.id.llAdWrapper);
 		this.llButtons = (LinearLayout)this.findViewById(R.id.llButtons);
-		this.llStart = (LinearLayout)this.findViewById(R.id.llStart);
+		//this.llStart = (LinearLayout)this.findViewById(R.id.llStart);
 		
-		this.ivStart = (ImageView) findViewById(R.id.ivStart);
+		//this.ivStart = (ImageView) findViewById(R.id.ivStart);
 		this.llPlayedWords = (LinearLayout) findViewById(R.id.llPlayedWords);
 		
 		this.ivRow1PlayedLetter1 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter1);
@@ -1292,7 +1292,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		this.bPlay2 = (Button) findViewById(com.rozen.wordscroll.R.id.bPlay2);
 		this.bPlay3 = (Button) findViewById(com.rozen.wordscroll.R.id.bPlay3);
 		
-		this.ivStart.setOnClickListener(this);
+	//	this.ivStart.setOnClickListener(this);
 		
 		this.ivRow1PlayedLetter1.setOnClickListener(this);
 		this.ivRow1PlayedLetter2.setOnClickListener(this);

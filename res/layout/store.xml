@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+     xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+<LinearLayout  
+    style="@style/LayoutStyle"
+  
+    android:orientation="vertical" >
+   
+     <include android:id="@+id/topAreaLayout" layout="@layout/toparealayout" />
+
+   <LinearLayout
+         style="@style/LayoutFormStyle"
+         android:layout_height="fill_parent"
+    >
+	<LinearLayout
+		style="@style/FormBackgroundStyle"
+		android:layout_marginTop="5dp"
+		 android:layout_marginBottom="5dp"
+		 android:orientation="vertical"
+		 android:layout_width="fill_parent"
+		 android:layout_height="wrap_content"
+	>
+		<TextView
+		        style="@style/ContentAreaTextTopStyle"
+		        android:paddingTop="0dp"
+		        android:layout_height="12dp"
+		        />
+		 
+		<LinearLayout 
+        style="@style/ContentAreaTextBottomStyle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+         android:orientation="vertical"
+        >
+        <TextView
+            android:id="@+id/tvNotConnected"
+            style="@style/TextLargeStyle"
+           
+         	android:visibility="gone"
+        />
+    <ScrollView   
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent" 
+    	android:fadingEdge="none"
+    	android:id="@+id/svStore"
+    	 
+    	
+    	 >
+		<LinearLayout 
+		   	android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content" 
+			android:orientation="vertical"
+		    > 
+		
+			<RelativeLayout 
+				   	android:layout_width="fill_parent"
+			    	android:layout_height="wrap_content" 
+					android:id="@+id/rlPremiumUpgrade"
+			> 
+		 
+				 <TextView
+				        style="@style/StoreItemTitleStyle"
+						android:id="@+id/tvPremiumUpgradeTitle"
+				  />
+				 <LinearLayout 
+			  	    android:id="@+id/llPremiumUpgradePriceWrapper"	
+			  	    style="@style/StoreItemPriceWrapperStyle"  	    
+				 >
+	 				  <Button 
+					  	    style="@style/StoreItemPriceButtonStyle"
+					  	    android:id="@+id/bPremiumUpgradePrice"
+					    />
+	 				  <ImageView
+	 				      style="@style/StoreItemCheckStyle"
+	 				      android:id="@+id/ivPremiumUpgradePurchased"
+	 				   />
+ 				  </LinearLayout>
+				  <TextView
+				        style="@style/ContentAreaTextStyle"
+						android:id="@+id/tvPremiumUpgradeDescription"
+				
+				        android:layout_below="@id/tvPremiumUpgradeTitle"
+				        android:layout_toLeftOf="@id/llPremiumUpgradePriceWrapper"
+				        />
+				  <View
+				      android:layout_width="fill_parent"
+				      android:layout_height="2dp" 
+				      android:background="@color/store_item_divider_color" 
+				     
+				      android:layout_marginTop="3dp"
+				      android:layout_below="@id/tvPremiumUpgradeDescription"
+				      />
+			  </RelativeLayout>
+						  
+		</LinearLayout>
+ 	</ScrollView> 
+</LinearLayout>
+</LinearLayout> 
+   </LinearLayout> 
+
+</LinearLayout> 
+</RelativeLayout>

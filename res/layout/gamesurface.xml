@@ -66,21 +66,7 @@
        	    style="@style/ListSeparatorStyle"
        	>
        	</LinearLayout>
-       		<LinearLayout
-       		    android:id="@+id/llStart"
-        	    android:layout_weight="1"
-        	    android:orientation="vertical"
-        	    android:layout_height="fill_parent"
-        	    android:background="@color/word_list_area_player_background"
-        	    android:gravity="center"
-        	    >
-			<ImageView 
-			    android:id="@+id/ivStart"
-				android:src="@drawable/start"
-				style="@style/StartButtonStyle"
-			/>
-			</LinearLayout>
-        	<LinearLayout
+       	      	<LinearLayout
         	    android:id="@+id/llPlayedWords"
         	    android:layout_weight="1"
         	    android:orientation="vertical"

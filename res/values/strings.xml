@@ -84,8 +84,8 @@
 	 <string name="game_surface_interstital_purchase_title">get rid of ads?</string>
 	 <string name="game_surface_interstital_purchase_text">Want to get rid of ads between games?  No problem.  Just get a Premium Upgrade or a No Ads Between Games Upgrade.</string>
 
-	 <string name="game_surface_start_game_ready">ready&#8230;</string>
-	 <string name="game_surface_start_game_set">set&#8230;</string>
+	 <string name="game_surface_start_game_ready">READY&#8230;</string>
+	 <string name="game_surface_start_game_set">SET&#8230;</string>
 	 <string name="game_surface_start_game_go">GO!!!</string>
 	 <string name="game_surface_first_time_alert_message">Tap START to begin the game.  Tap (don\'t drag) the letters in your tray to
 form a word.  Tap the PLAY button when you

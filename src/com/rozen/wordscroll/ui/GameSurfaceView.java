@@ -64,22 +64,26 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 
 	private int loopCount = 0;
 	private int speedDirection = 0;
-	private int speedDistanceMin = 5;
-	private int speedDistanceMax = 12;
+	
+	private int speedStarterDistanceMin = 4;
+	private int speedStarterDistanceMax = 8;
+
+	private int speedDistanceMin = 6;
+	private int speedDistanceMax = 13;
 	private int lastSpeedChange = 0;
 	private int updateSpeedInterval = 30;
 	private int bonusCount = 0;
 	
 	private int backoffDistanceFromEdge = 5;
-	private int speedDistance = 5;
+	private int speedDistance = 6;
 	private float speedDistancePercentageOfTileSize = .03125f; ///????? change to dp conversion
 	private float rowHeightDivisor = 3.5f;
 	private int maxTileSize = 170;
 	
 	private int row1Position = 0;
 	private int row2Position = 0;
-	private int tileStarterMaxDistance;
-	private float tileStarterPercentage = .3f;
+//	private int tileStarterMaxDistance;
+//	private float tileStarterPercentage = .3f;
 
 	private int borderVisibleWidth = 24;
 	private int tileSize = 160;
@@ -101,7 +105,8 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	private int borderTotalWidth;
 	private boolean isDrawing;
 	private int startWidth;
-	private float startButtonPercentageOfHeight = .75f;
+	private float startButtonPercentageOfHeight = .8f;
+	private int maxStartButtonSize = 200;
 	private int horizontalMidPoint;
 	private int startXPosition;
 	private RectArea startButtonArea;
@@ -262,6 +267,10 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 	  this.height = this.getHeight() - this.parent.getBottomHeight();
 //		 		 Utils.convertDensityPixelsToPixels(parent, this.parent.getResources().getInteger(com.riotapps.wordbase.R.integer.gameboard_button_area_height));// - 
  
+	 	 this.speedDistanceMax = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedDistanceMax);
+	 	 this.speedDistanceMin = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedDistanceMin);
+	 	 this.maxStartButtonSize = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.maxStartButtonSize);
+	 	 this.maxTileSize = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.maxTileSize);
 	 	  
 	 	 this.verticalMidPoint = Math.round(this.height / 2); 
 	 	 this.horizontalMidPoint = Math.round(this.fullWidth / 2); 	 	 
@@ -287,7 +296,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 		 this.tileSize = this.maxTileSize; 
 	 	 }
 	 	 
-	 	 this.tileStarterMaxDistance = Math.round(this.tileSize * this.tileStarterPercentage) + this.borderVisibleWidth; //convert relative dp to xxhdpi
+	 	// this.tileStarterMaxDistance = Math.round(this.tileSize * this.tileStarterPercentage) + this.borderVisibleWidth; //convert relative dp to xxhdpi
 	 	 
 	 	 Logger.d(TAG, "SetDerivedValues h=" +  this.height + " tileSize=" + this.tileSize );
 	 	 this.borderTotalWidth = Math.round(this.height / 4);
