@@ -1,4 +1,4 @@
-package com.rozen.wordscroll.hooks;
+package com.riotapps.loopd.hooks;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +11,7 @@ import java.util.SortedSet;
 import android.app.ActivityManager;
 import android.content.Context;
 
+import com.riotapps.loopd.data.FragmentData;
 import com.riotapps.wordbase.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,7 +19,6 @@ import com.riotapps.wordbase.data.DatabaseHelper;
 import com.riotapps.wordbase.utils.ApplicationContext;
 import com.riotapps.wordbase.utils.Cache;
 import com.riotapps.wordbase.utils.Logger;
-import com.rozen.wordscroll.data.FragmentData;
 
 public class FragmentService {
 	private static final String TAG = FragmentService.class.getSimpleName();

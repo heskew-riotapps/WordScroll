@@ -2,6 +2,6 @@
 <resources>
     <integer name="database_version">4</integer>
  	<integer name="minWordLength">2</integer>
-	<integer name="defaultCountdownStart">300000</integer>
+	<integer name="defaultCountdownStart">248000</integer>
 	
 </resources>

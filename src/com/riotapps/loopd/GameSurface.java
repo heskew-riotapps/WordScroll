@@ -1,4 +1,4 @@
-package com.rozen.wordscroll;
+package com.riotapps.loopd;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,20 +38,20 @@ import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
-import com.rozen.wordscroll.R;
-import com.rozen.wordscroll.hooks.Fragment;
-import com.rozen.wordscroll.hooks.FragmentService;
-import com.rozen.wordscroll.hooks.GameService;
-import com.rozen.wordscroll.hooks.PlayedTile;
-import com.rozen.wordscroll.hooks.Tile;
+import com.riotapps.loopd.R;
+import com.riotapps.loopd.hooks.Fragment;
+import com.riotapps.loopd.hooks.FragmentService;
+import com.riotapps.loopd.hooks.Game;
+import com.riotapps.loopd.hooks.GameService;
+import com.riotapps.loopd.hooks.PlayedTile;
+import com.riotapps.loopd.hooks.Tile;
+import com.riotapps.loopd.ui.GameSurfaceView;
 import com.riotapps.wordbase.hooks.PlayedWord;
 import com.riotapps.wordbase.hooks.Player;
 import com.riotapps.wordbase.hooks.PlayerService;
 import com.riotapps.wordbase.hooks.StoreService;
 import com.riotapps.wordbase.hooks.WordService;
 import com.riotapps.wordbase.interfaces.ICloseDialog;
-import com.rozen.wordscroll.hooks.Game;
-import com.rozen.wordscroll.ui.GameSurfaceView;
 import com.riotapps.wordbase.services.WordLoaderService;
 import com.riotapps.wordbase.ui.CustomButtonDialog;
 import com.riotapps.wordbase.ui.CustomProgressDialog;
@@ -153,6 +153,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private Tracker tracker;
 	private LinearLayout llButtons;
 	private int bottomHeight;
+	private int valueOfBlankTilesBeforeFirstDefault = 2;
 	
 	private static Bitmap bgTray = null;
 	
@@ -340,8 +341,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private void kickoff(){
 		this.isPaused = false;
 		this.setGame(); 
-		this.defaultPlayedTileTextColor = this.getResources().getColor(com.rozen.wordscroll.R.color.default_played_tile_letter);
-		this.playedTileTextColor = this.getResources().getColor(com.rozen.wordscroll.R.color.played_tile_letter);
+		this.defaultPlayedTileTextColor = this.getResources().getColor(R.color.default_played_tile_letter);
+		this.playedTileTextColor = this.getResources().getColor(R.color.played_tile_letter);
 		
 	 
 		
@@ -368,27 +369,12 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	    
 		this.setupFonts();
 		this.setViewLayouts();
-		this.setStartArea();
-	
-		this.initializeGameOnBoard();
-		
-		
-				
+ 
+		this.initializeGameOnBoard();		
 		
 	}
 	
-	private void setStartArea(){
-		//Logger.d(TAG, "setStartArea this.game.isStarted()=" + this.game.isStarted() + " status=" + this.game.getStatus());
-/*		if (this.game.isStarted()){
-			this.llPlayedWords.setVisibility(View.VISIBLE); 
-			this.llStart.setVisibility(View.GONE);
-		}
-		else {
-			this.llPlayedWords.setVisibility(View.GONE); 
-			this.llStart.setVisibility(View.VISIBLE);
-		}
-	*/		
- 	}
+ 
 	
 	private void initializeGameOnBoard(){
 		this.preloadPlayedTiles();		
@@ -878,12 +864,11 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   //ApplicationContext.captureTime(TAG, "handleStartOnClick called");
     		
 	   //		ApplicationContext.captureTime(TAG, "startGame about to be called");
-		   GameService.startGame(this.game);
+		   
 		   
 		//   ApplicationContext.captureTime(TAG, "startGame completed");
 
-		    this.setBottom();
-		    this.setStartArea();
+		    
 		    
 		  // ApplicationContext.captureTime(TAG, "loadbuttons completed");
 			
@@ -916,6 +901,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   new CustomToast(this, this.getString(R.string.game_surface_start_game_go), 800, Constants.RETURN_CODE_CUSTOM_TOAST_GO_FINISHED).show();
 	   }
 	   private void onStartGoFinished(){
+		   GameService.startGame(this.game);
+		   this.setBottom();
 		   this.setCountdown(this.getTimerStart());
 	   }
  
@@ -1039,6 +1026,11 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				}
 			}
 		}*/
+		
+		int blankTiles = 0;
+		boolean stopCountingBlanks = false;
+				
+		
 		//tiles 1,2,3 worth 1 point each
 		//tiles 4,5,6 worth 3 point each
 		//tiles 7,8,9 worth 5 points each
@@ -1046,6 +1038,15 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		//bonus worth 10 points
 		for (int i = 0; i < playedTiles.size(); i++){
 			PlayedTile tile = playedTiles.get(i);
+			if (tile.isDefault()){
+				stopCountingBlanks = true;
+			}
+			else {
+				if (!stopCountingBlanks){
+					blankTiles += valueOfBlankTilesBeforeFirstDefault;
+				}
+			}
+				
 			if (!tile.getLetter().equals("")){
 				if (i < 3){
 					points += 1;
@@ -1064,6 +1065,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				}
 			}
 		}
+		//add 2 points for each blank tile before the starter tile		
+		points += blankTiles;
 		return points;
 	}
 	
@@ -1251,46 +1254,46 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		//this.ivStart = (ImageView) findViewById(R.id.ivStart);
 		this.llPlayedWords = (LinearLayout) findViewById(R.id.llPlayedWords);
 		
-		this.ivRow1PlayedLetter1 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter1);
-		this.ivRow1PlayedLetter2 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter2);
-		this.ivRow1PlayedLetter3 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter3);
-		this.ivRow1PlayedLetter4 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter4);
-		this.ivRow1PlayedLetter5 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter5);
-		this.ivRow1PlayedLetter6 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter6);
-		this.ivRow1PlayedLetter7 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter7);
-		this.ivRow1PlayedLetter8 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter8);
-		this.ivRow1PlayedLetter9 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter9);
-		this.ivRow1PlayedLetter10 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow1PlayedLetter10);
+		this.ivRow1PlayedLetter1 = (TextView) findViewById(R.id.ivRow1PlayedLetter1);
+		this.ivRow1PlayedLetter2 = (TextView) findViewById(R.id.ivRow1PlayedLetter2);
+		this.ivRow1PlayedLetter3 = (TextView) findViewById(R.id.ivRow1PlayedLetter3);
+		this.ivRow1PlayedLetter4 = (TextView) findViewById(R.id.ivRow1PlayedLetter4);
+		this.ivRow1PlayedLetter5 = (TextView) findViewById(R.id.ivRow1PlayedLetter5);
+		this.ivRow1PlayedLetter6 = (TextView) findViewById(R.id.ivRow1PlayedLetter6);
+		this.ivRow1PlayedLetter7 = (TextView) findViewById(R.id.ivRow1PlayedLetter7);
+		this.ivRow1PlayedLetter8 = (TextView) findViewById(R.id.ivRow1PlayedLetter8);
+		this.ivRow1PlayedLetter9 = (TextView) findViewById(R.id.ivRow1PlayedLetter9);
+		this.ivRow1PlayedLetter10 = (TextView) findViewById(R.id.ivRow1PlayedLetter10);
 		 
-		this.ivRow2PlayedLetter1 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter1);
-		this.ivRow2PlayedLetter2 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter2);
-		this.ivRow2PlayedLetter3 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter3);
-		this.ivRow2PlayedLetter4 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter4);
-		this.ivRow2PlayedLetter5 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter5);
-		this.ivRow2PlayedLetter6 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter6);
-		this.ivRow2PlayedLetter7 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter7);
-		this.ivRow2PlayedLetter8 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter8);
-		this.ivRow2PlayedLetter9 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter9);
-		this.ivRow2PlayedLetter10 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow2PlayedLetter10);
+		this.ivRow2PlayedLetter1 = (TextView) findViewById(R.id.ivRow2PlayedLetter1);
+		this.ivRow2PlayedLetter2 = (TextView) findViewById(R.id.ivRow2PlayedLetter2);
+		this.ivRow2PlayedLetter3 = (TextView) findViewById(R.id.ivRow2PlayedLetter3);
+		this.ivRow2PlayedLetter4 = (TextView) findViewById(R.id.ivRow2PlayedLetter4);
+		this.ivRow2PlayedLetter5 = (TextView) findViewById(R.id.ivRow2PlayedLetter5);
+		this.ivRow2PlayedLetter6 = (TextView) findViewById(R.id.ivRow2PlayedLetter6);
+		this.ivRow2PlayedLetter7 = (TextView) findViewById(R.id.ivRow2PlayedLetter7);
+		this.ivRow2PlayedLetter8 = (TextView) findViewById(R.id.ivRow2PlayedLetter8);
+		this.ivRow2PlayedLetter9 = (TextView) findViewById(R.id.ivRow2PlayedLetter9);
+		this.ivRow2PlayedLetter10 = (TextView) findViewById(R.id.ivRow2PlayedLetter10);
 		
-		this.ivRow3PlayedLetter1 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter1);
-		this.ivRow3PlayedLetter2 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter2);
-		this.ivRow3PlayedLetter3 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter3);
-		this.ivRow3PlayedLetter4 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter4);
-		this.ivRow3PlayedLetter5 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter5);
-		this.ivRow3PlayedLetter6 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter6);
-		this.ivRow3PlayedLetter7 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter7);
-		this.ivRow3PlayedLetter8 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter8);
-		this.ivRow3PlayedLetter9 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter9);
-		this.ivRow3PlayedLetter10 = (TextView) findViewById(com.rozen.wordscroll.R.id.ivRow3PlayedLetter10);
+		this.ivRow3PlayedLetter1 = (TextView) findViewById(R.id.ivRow3PlayedLetter1);
+		this.ivRow3PlayedLetter2 = (TextView) findViewById(R.id.ivRow3PlayedLetter2);
+		this.ivRow3PlayedLetter3 = (TextView) findViewById(R.id.ivRow3PlayedLetter3);
+		this.ivRow3PlayedLetter4 = (TextView) findViewById(R.id.ivRow3PlayedLetter4);
+		this.ivRow3PlayedLetter5 = (TextView) findViewById(R.id.ivRow3PlayedLetter5);
+		this.ivRow3PlayedLetter6 = (TextView) findViewById(R.id.ivRow3PlayedLetter6);
+		this.ivRow3PlayedLetter7 = (TextView) findViewById(R.id.ivRow3PlayedLetter7);
+		this.ivRow3PlayedLetter8 = (TextView) findViewById(R.id.ivRow3PlayedLetter8);
+		this.ivRow3PlayedLetter9 = (TextView) findViewById(R.id.ivRow3PlayedLetter9);
+		this.ivRow3PlayedLetter10 = (TextView) findViewById(R.id.ivRow3PlayedLetter10);
 
-		this.tvPlayedWord1Title = (TextView) findViewById(com.rozen.wordscroll.R.id.tvPlayedWord1Title); 
-		this.tvPlayedWord2Title = (TextView) findViewById(com.rozen.wordscroll.R.id.tvPlayedWord2Title); 
-		this.tvPlayedWord3Title = (TextView) findViewById(com.rozen.wordscroll.R.id.tvPlayedWord3Title); 
+		this.tvPlayedWord1Title = (TextView) findViewById(R.id.tvPlayedWord1Title); 
+		this.tvPlayedWord2Title = (TextView) findViewById(R.id.tvPlayedWord2Title); 
+		this.tvPlayedWord3Title = (TextView) findViewById(R.id.tvPlayedWord3Title); 
 		
-		this.bPlay1 = (Button) findViewById(com.rozen.wordscroll.R.id.bPlay1);
-		this.bPlay2 = (Button) findViewById(com.rozen.wordscroll.R.id.bPlay2);
-		this.bPlay3 = (Button) findViewById(com.rozen.wordscroll.R.id.bPlay3);
+		this.bPlay1 = (Button) findViewById(R.id.bPlay1);
+		this.bPlay2 = (Button) findViewById(R.id.bPlay2);
+		this.bPlay3 = (Button) findViewById(R.id.bPlay3);
 		
 	//	this.ivStart.setOnClickListener(this);
 		
@@ -1331,9 +1334,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		this.bPlay2.setOnClickListener(this);		
 		this.bPlay3.setOnClickListener(this);
 		
-		this.tvCountdown = (TextView) findViewById(com.rozen.wordscroll.R.id.tvCountdown);
-		this.tvScore = (TextView) findViewById(com.rozen.wordscroll.R.id.tvScore); 
-		this.tvTopScore = (TextView) findViewById(com.rozen.wordscroll.R.id.tvTopScore); 
+		this.tvCountdown = (TextView) findViewById(R.id.tvCountdown);
+		this.tvScore = (TextView) findViewById(R.id.tvScore); 
+		this.tvTopScore = (TextView) findViewById(R.id.tvTopScore); 
 		
  
 		this.tvScore.setText("0");
@@ -1541,7 +1544,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	private void preloadPlayedTiles(){
 		 if (GameSurface.bgTray == null){
-			 GameSurface.bgTray = ImageHelper.decodeSampledBitmapFromResource(this.getResources(), com.rozen.wordscroll.R.drawable.tray_letter_bg2, this.playedLetterTileSize, this.playedLetterTileSize);
+			 GameSurface.bgTray = ImageHelper.decodeSampledBitmapFromResource(this.getResources(), R.drawable.tray_letter_bg2, this.playedLetterTileSize, this.playedLetterTileSize);
 		 }
  
 			this.ivRow1PlayedLetter1.setBackground(new BitmapDrawable(getResources(), GameSurface.bgTray));
@@ -1839,10 +1842,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		   
-		   
-			this.setStartArea();
-			
+ 
 			this.initializeGameOnBoard();
 		   
 		   //handle Ad or purchase reminder

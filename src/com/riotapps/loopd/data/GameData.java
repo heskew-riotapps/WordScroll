@@ -1,4 +1,4 @@
-package com.rozen.wordscroll.data;
+package com.riotapps.loopd.data;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -8,14 +8,18 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.rozen.wordscroll.hooks.Game;
  
+import com.riotapps.loopd.hooks.Game;
+import com.riotapps.loopd.hooks.GameService;
 import com.riotapps.wordbase.hooks.CompletedGame;
 import com.riotapps.wordbase.hooks.Player;
 import com.riotapps.wordbase.utils.Constants;
+import com.riotapps.wordbase.utils.Logger;
 import com.riotapps.wordbase.utils.Storage;
 
 public class GameData {
+
+	private static final String TAG = GameData.class.getSimpleName();
 
 	public static List<Game> getLocalActiveGames(){
 		
@@ -79,13 +83,18 @@ public class GameData {
  	}	
 	
 	public static void saveGame(Game game){
+		Logger.d(TAG, "saveGame called");
 		Gson gson = new Gson(); 
 		SharedPreferences settings = Storage.getGameSharedPreferences();
         SharedPreferences.Editor editor = settings.edit();
-		
-		editor.putString(String.format(Constants.USER_PREFS_GAME_JSON, game.getId()), gson.toJson(game));
-		editor.apply();
-        
+		try{
+			editor.putString(String.format(Constants.USER_PREFS_GAME_JSON, game.getId()), gson.toJson(game));
+			editor.apply();
+		}
+		catch (java.util.ConcurrentModificationException  e){
+			///for the moment swallow this error
+			Logger.d(TAG, "saveGame called java.util.ConcurrentModificationException thrown");
+		}
 		editor = null;
 		settings = null;
 		gson = null;

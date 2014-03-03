@@ -1,4 +1,4 @@
-package com.rozen.wordscroll.utils;
+package com.riotapps.loopd.utils;
  
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +28,16 @@ public class ApplicationContext extends com.riotapps.wordbase.utils.ApplicationC
 	public void startNewActivity(Context context, String activity, List<IntentExtra> extras){
 		Logger.d(TAG, "startNewActivity " + activity);
  		if (activity.equals(Constants.ACTIVITY_CLASS_SPLASH)){
- 			openNewActivity(context, com.rozen.wordscroll.Splash.class, extras);
+ 			openNewActivity(context, com.riotapps.loopd.Splash.class, extras);
  		}
  		else if (activity.equals(Constants.ACTIVITY_CLASS_GAME_SURFACE)){
- 			openNewActivity(context, com.rozen.wordscroll.GameSurface.class, extras);
+ 			openNewActivity(context, com.riotapps.loopd.GameSurface.class, extras);
 		}
  		else if (activity.equals(Constants.ACTIVITY_CLASS_ABOUT)){
- 			openNewActivity(context,com.rozen.wordscroll.About.class, extras);
+ 			openNewActivity(context,com.riotapps.loopd.About.class, extras);
  		}
  		else if (activity.equals(Constants.ACTIVITY_CLASS_FULL_RULES)){
- 			openNewActivity(context, com.rozen.wordscroll.FullRules.class, extras);
+ 			openNewActivity(context, com.riotapps.loopd.FullRules.class, extras);
 		}
  	/*	else if (activity.equals(Constants.ACTIVITY_CLASS_MAIN)){
  			Logger.d(TAG, "startNewActivity Constants.ACTIVITY_CLASS_MAIN");

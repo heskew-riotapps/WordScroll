@@ -16,51 +16,76 @@
      <LinearLayout  
          android:baselineAligned="false"
          android:orientation="horizontal"
+         android:gravity="center"
          android:id="@+id/rlWordLists"
         style="@style/GameboardListAreaStyle"
 		 >
 		<RelativeLayout
 		     android:layout_weight="1"
 		     android:layout_height="fill_parent"
-		     android:layout_width="wrap_content"
+		     android:layout_width="fill_parent"
+		     android:orientation="vertical"
 		     >
 		    <TextView
 			    android:id="@+id/tvCountdown"
 			    style="@style/CountdownTextStyle" 
 			    android:text="@string/scoreboard_countdown_start"
+			    android:layout_centerHorizontal="true"	      
 			/>
 		    <TextView
+		        android:layout_below="@id/tvCountdown"
 			    android:id="@+id/tvCountdownLabel"
 			    style="@style/CountdownLabelTextStyle" 
 			    android:text="@string/game_surface_countdown"
-			    android:layout_toLeftOf="@id/tvCountdown"
-			   
-			    android:layout_alignBaseline="@id/tvCountdown"
+			    android:layout_centerHorizontal="true"
+			    android:visibility="gone" 
 			/>
-	 	    <TextView
-	 	        android:layout_below="@id/tvCountdown"
-			    android:id="@+id/tvScore"
-			    style="@style/CountdownTextStyle" 
-			/>
-	 	    <TextView
-			    android:id="@+id/tvScoreLabel"
-			    android:text="@string/game_surface_score" 
-			    android:layout_toLeftOf="@id/tvScore"
-			    style="@style/CountdownLabelTextStyle" 
-			    android:layout_alignBaseline="@id/tvScore" 
-			/>
-	 	    <TextView
-	 	        android:layout_below="@id/tvScore"
-			    android:id="@+id/tvTopScore"
-			    style="@style/CountdownTextStyle" 
-			/>  
-			<TextView
-			    android:id="@+id/tvTopScoreLabel"
-			    android:text="@string/game_surface_top_score" 
-			    android:layout_toLeftOf="@id/tvTopScore"
-			    style="@style/CountdownLabelTextStyle" 
-			    android:layout_alignBaseline="@id/tvTopScore"
-			/>
+		     <LinearLayout  
+		         android:layout_below="@id/tvCountdown"
+				 
+		         android:orientation="horizontal"
+		         style="@style/ScoreboardScoreAreaStyle">
+		    	<RelativeLayout
+ 					 android:layout_width="fill_parent"
+		    	     android:layout_weight="1"
+				     android:layout_height="fill_parent"
+				 >   
+			 	    <TextView
+			 	    
+			 	        android:layout_centerHorizontal="true"
+					    android:id="@+id/tvScore"
+					    style="@style/ScoreTextStyle" 
+					    		   
+					/>
+			 	    <TextView
+			 	        android:layout_below="@id/tvScore"
+					    android:id="@+id/tvScoreLabel"
+					    android:text="@string/game_surface_score" 
+					    style="@style/ScoreLabelTextStyle" 
+					 	android:layout_centerHorizontal="true"		 
+					/>
+			 	</RelativeLayout>
+			 	<RelativeLayout
+			    	 android:layout_weight="1"
+					 android:layout_height="fill_parent"
+					  android:layout_width="fill_parent"
+				  >
+			 	     <TextView
+			 	        android:layout_centerHorizontal="true" 	        		 
+					    android:id="@+id/tvTopScore"
+					    style="@style/ScoreTextStyle" 
+					 	 
+					/>  
+			 	 	<TextView
+						android:layout_below="@id/tvTopScore"
+					    android:id="@+id/tvTopScoreLabel"
+					    android:text="@string/game_surface_top_score" 
+					    style="@style/ScoreLabelTextStyle" 
+					    android:layout_centerHorizontal="true" 		     
+					/>
+			 	   
+				</RelativeLayout>
+			</LinearLayout>
        	</RelativeLayout>
        	<LinearLayout
        	    style="@style/ListSeparatorStyle"
@@ -292,7 +317,7 @@
         android:layout_below="@+id/llRow3PlayedWord"
         style="@style/ScoreboardSeparatorStyle" />
 						 
-    	<com.rozen.wordscroll.ui.GameSurfaceView
+    	<com.riotapps.loopd.ui.GameSurfaceView
     	   android:layout_below="@id/llRow3PlayedWord"
         	android:id="@+id/gameSurface"
         	android:layout_margin="0dp"

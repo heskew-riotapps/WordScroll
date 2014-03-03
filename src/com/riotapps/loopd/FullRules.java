@@ -1,4 +1,4 @@
-package com.rozen.wordscroll;
+package com.riotapps.loopd;
 
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
@@ -6,6 +6,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.riotapps.wordbase.hooks.StoreService;
 import com.riotapps.wordbase.ui.MenuUtils;
 import com.riotapps.wordbase.utils.ApplicationContext;
+import com.riotapps.loopd.R;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -77,6 +78,7 @@ public class FullRules extends FragmentActivity{
 		TextView tvFullRulesScoring_5 = (TextView)findViewById(R.id.tvFullRulesScoring_5);
 		TextView tvFullRulesScoring_6 = (TextView)findViewById(R.id.tvFullRulesScoring_6);
 		TextView tvFullRulesScoring_7 = (TextView)findViewById(R.id.tvFullRulesScoring_7);
+		TextView tvFullRulesScoring_8 = (TextView)findViewById(R.id.tvFullRulesScoring_8);
 		
  		TextView tvFullRulesLetters_1_num = (TextView)findViewById(R.id.tvFullRulesLetters_1_num);
 		TextView tvFullRulesLetters_2_num = (TextView)findViewById(R.id.tvFullRulesLetters_2_num);
@@ -125,7 +127,7 @@ public class FullRules extends FragmentActivity{
 		tvFullRulesScoring_5.setTypeface(ApplicationContext.getMainFontTypeface());
 		tvFullRulesScoring_6.setTypeface(ApplicationContext.getMainFontTypeface());
 		tvFullRulesScoring_7.setTypeface(ApplicationContext.getMainFontTypeface());
-		
+		tvFullRulesScoring_8.setTypeface(ApplicationContext.getMainFontTypeface());
 		
 	 	tvFullRulesLetters_1_num.setTypeface(ApplicationContext.getMainFontTypeface());
 		tvFullRulesLetters_2_num.setTypeface(ApplicationContext.getMainFontTypeface());

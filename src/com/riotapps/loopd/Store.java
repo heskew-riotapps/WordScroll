@@ -1,4 +1,4 @@
-package com.rozen.wordscroll;
+package com.riotapps.loopd;
 
 import com.google.ads.AdRequest;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -15,6 +15,7 @@ import com.riotapps.wordbase.utils.ApplicationContext;
 import com.riotapps.wordbase.utils.Constants;
 import com.riotapps.wordbase.utils.Logger;
 import com.riotapps.wordbase.utils.NetworkConnectivity;
+import com.riotapps.loopd.R;
 
 import android.content.Context;
 import android.content.Intent;

@@ -1,16 +1,16 @@
-package com.rozen.wordscroll.ui;
+package com.riotapps.loopd.ui;
 
 import java.util.List;
 
-import com.riotapps.wordbase.R;
+import com.riotapps.loopd.GameSurface;
+import com.riotapps.loopd.hooks.Tile;
+import com.riotapps.loopd.R;
 import com.riotapps.wordbase.ui.Coordinate;
 import com.riotapps.wordbase.ui.RectArea;
 import com.riotapps.wordbase.utils.ApplicationContext;
 import com.riotapps.wordbase.utils.ImageHelper;
 import com.riotapps.wordbase.utils.Logger;
 import com.riotapps.wordbase.utils.Utils;
-import com.rozen.wordscroll.GameSurface;
-import com.rozen.wordscroll.hooks.Tile;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -66,7 +66,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	private int speedDirection = 0;
 	
 	private int speedStarterDistanceMin = 4;
-	private int speedStarterDistanceMax = 8;
+	private int speedStarterDistanceMax = 6;
 
 	private int speedDistanceMin = 6;
 	private int speedDistanceMax = 13;
@@ -267,6 +267,8 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 	  this.height = this.getHeight() - this.parent.getBottomHeight();
 //		 		 Utils.convertDensityPixelsToPixels(parent, this.parent.getResources().getInteger(com.riotapps.wordbase.R.integer.gameboard_button_area_height));// - 
  
+		 this.speedStarterDistanceMax = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedStarterDistanceMax);
+		 this.speedStarterDistanceMin = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedStarterDistanceMin);
 	 	 this.speedDistanceMax = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedDistanceMax);
 	 	 this.speedDistanceMin = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedDistanceMin);
 	 	 this.maxStartButtonSize = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.maxStartButtonSize);
@@ -330,37 +332,37 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		//this.fullViewTileWidth = Math.round(this.fullWidth/15) - this.tileGap; //-1 for the space between each tile
 		
 	 	 if (GameSurfaceView.bgTile == null) {
-	 		 GameSurfaceView.bgTile = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_bg, this.tileSize, this.tileSize);
+	 		 GameSurfaceView.bgTile = ImageHelper.decodeSampledBitmapFromResource(getResources(), R.drawable.letter_bg, this.tileSize, this.tileSize);
 	 		 GameSurfaceView.bgTile = ImageHelper.getResizedBitmap(GameSurfaceView.bgTile, this.tileSize, this.tileSize);
 		 }
 	 	 
 	 	 if (GameSurfaceView.bgTilePlayed == null) {
-	 		 GameSurfaceView.bgTilePlayed = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_played_bg, this.tileSize, this.tileSize);
+	 		 GameSurfaceView.bgTilePlayed = ImageHelper.decodeSampledBitmapFromResource(getResources(), R.drawable.letter_played_bg, this.tileSize, this.tileSize);
 	 		GameSurfaceView.bgTilePlayed = ImageHelper.getResizedBitmap(GameSurfaceView.bgTilePlayed, this.tileSize, this.tileSize);
 		 } 
 	 	 
 	 	 if (GameSurfaceView.bgTileBonus == null) {     
-	 		 GameSurfaceView.bgTileBonus = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_bonus_bg, this.tileSize, this.tileSize);
+	 		 GameSurfaceView.bgTileBonus = ImageHelper.decodeSampledBitmapFromResource(getResources(), R.drawable.letter_bonus_bg, this.tileSize, this.tileSize);
 	 		 GameSurfaceView.bgTileBonus = ImageHelper.getResizedBitmap(GameSurfaceView.bgTileBonus, this.tileSize, this.tileSize);
 		 } 
 	 	
 	 	 if (GameSurfaceView.bgTileStarter == null) {     
-	 		 GameSurfaceView.bgTileStarter = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.letter_starter_bg, this.tileSize, this.tileSize);
+	 		 GameSurfaceView.bgTileStarter = ImageHelper.decodeSampledBitmapFromResource(getResources(), R.drawable.letter_starter_bg, this.tileSize, this.tileSize);
 	 		 GameSurfaceView.bgTileStarter = ImageHelper.getResizedBitmap(GameSurfaceView.bgTileStarter, this.tileSize, this.tileSize);
 		 } 
 	 	 
 	 	 if (GameSurfaceView.bgBorder == null) {
-	 		 GameSurfaceView.bgBorder = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.border, this.borderTotalWidth, this.height);
+	 		 GameSurfaceView.bgBorder = ImageHelper.decodeSampledBitmapFromResource(getResources(), R.drawable.border, this.borderTotalWidth, this.height);
 	 		GameSurfaceView.bgBorder = ImageHelper.getResizedBitmap(GameSurfaceView.bgBorder, this.borderTotalWidth, this.height);
 		 } 
 	 	 
 	 	if (GameSurfaceView.bgStart == null) {
-	 		 GameSurfaceView.bgStart = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.start, this.startWidth, this.startWidth);
+	 		 GameSurfaceView.bgStart = ImageHelper.decodeSampledBitmapFromResource(getResources(), R.drawable.start, this.startWidth, this.startWidth);
 	 		GameSurfaceView.bgStart = ImageHelper.getResizedBitmap(GameSurfaceView.bgStart, this.startWidth, this.startWidth);
 		 } 
 	 	
 	 	if (GameSurfaceView.bgStartPressed == null) {
-	 		 GameSurfaceView.bgStartPressed = ImageHelper.decodeSampledBitmapFromResource(getResources(), com.rozen.wordscroll.R.drawable.start_pressed, this.startWidth, this.startWidth);
+	 		 GameSurfaceView.bgStartPressed = ImageHelper.decodeSampledBitmapFromResource(getResources(), R.drawable.start_pressed, this.startWidth, this.startWidth);
 	 		GameSurfaceView.bgStartPressed = ImageHelper.getResizedBitmap(GameSurfaceView.bgStartPressed, this.startWidth, this.startWidth);
 		 } 
 		 this.parent.captureTime("SetDerivedValues after bitmap loads");
@@ -387,11 +389,15 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		Logger.w(TAG, "surfaceDestroyed called");
-		this.parent.captureTime("surfaceDestroyed starting");
+		Logger.w(TAG, "surfaceDest	royed called");
+		if (this.parent != null) {
+			this.parent.captureTime("surfaceDestroyed starting");
+		}
 	    this.stopThread();
 	    this.surfaceCreated = false;
-	    this.parent.captureTime("surfaceDestroyed ending");
+	    if (this.parent != null) {
+	    	this.parent.captureTime("surfaceDestroyed ending");
+	    }
 	}
 	
 	private void dismissDialog(){
@@ -728,21 +734,29 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		if (this.loopCount - this.lastSpeedChange >= this.updateSpeedInterval){
 			this.lastSpeedChange = this.loopCount;
 			
+			int speedMax =  this.speedDistanceMax;
+			int speedMin =  this.speedDistanceMin;
+			
+			if (!this.parent.getGame().isStarted()){
+				 speedMax =  this.speedStarterDistanceMax;
+				 speedMin =  this.speedStarterDistanceMin;
+			}
+			
 			//faster
-			if (this.speedDirection == 0 && this.speedDistance < this.speedDistanceMax ){ 
+			if (this.speedDirection == 0 && this.speedDistance < speedMax ){ 
 				this.speedDistance += 1;
 			}
 			//faster but we've reached the max, so flip speed direction
-			else if (this.speedDirection == 0 && this.speedDistance >= this.speedDistanceMax ){ 
+			else if (this.speedDirection == 0 && this.speedDistance >= speedMax ){ 
 				this.speedDirection = 1;
 				this.speedDistance -= 1;
 			}
 			//slower
-			if (this.speedDirection == 1 && this.speedDistance > this.speedDistanceMin ){ 
+			if (this.speedDirection == 1 && this.speedDistance > speedMin ){ 
 				this.speedDistance -= 1;
 			}
 			//slower but we've reached the min, so flip speed direction
-			else if (this.speedDirection == 1 && this.speedDistance <= this.speedDistanceMin ){ 				
+			else if (this.speedDirection == 1 && this.speedDistance <= speedMin ){ 				
 				this.speedDirection = 0;
 				this.speedDistance += 1;
 			}
@@ -850,8 +864,8 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			canvas.drawBitmap(GameSurfaceView.bgTile, xPosition, yPosition, null);
 		}
     	 Paint pLetter = new Paint();
-    	 int baseTextColor = this.parent.getGame().isActive() ? Color.parseColor(this.parent.getString(com.rozen.wordscroll.R.color.game_board_tray_tile_starter_letter)) : Color.parseColor(this.parent.getString(com.rozen.wordscroll.R.color.game_board_tray_tile_letter));
-    	 pLetter.setColor(isBonus ? Color.parseColor(this.parent.getString(com.rozen.wordscroll.R.color.game_board_bonus_tile_letter)) : baseTextColor );
+    	 int baseTextColor = this.parent.getGame().isActive() ? Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_starter_letter)) : Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_letter));
+    	 pLetter.setColor(isBonus ? Color.parseColor(this.parent.getString(R.color.game_board_bonus_tile_letter)) : baseTextColor );
     	 pLetter.setTextSize(Math.round(this.tileSize  * .70));
     	 pLetter.setAntiAlias(true); 
     	 pLetter.setTypeface(ApplicationContext.getLetterTypeface()); //(this.letterTypeface);

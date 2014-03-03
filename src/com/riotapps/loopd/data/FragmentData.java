@@ -1,12 +1,12 @@
-package com.rozen.wordscroll.data;
+package com.riotapps.loopd.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.riotapps.loopd.hooks.Fragment;
 import com.riotapps.wordbase.data.DatabaseHelper;
 import com.riotapps.wordbase.hooks.WordService;
 import com.riotapps.wordbase.utils.Logger;
-import com.rozen.wordscroll.hooks.Fragment;
 
 import android.content.Context;
 import android.database.Cursor;

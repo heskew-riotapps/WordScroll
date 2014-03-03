@@ -1,4 +1,4 @@
-package com.rozen.wordscroll.hooks;
+package com.riotapps.loopd.hooks;
 
 import com.riotapps.wordbase.ui.Coordinate;
 

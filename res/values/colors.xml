@@ -29,6 +29,7 @@
 	<color name="sub_scoreboard_background">#29cdf0</color><!-- 177efe -->
  <color name="sub_scoreboard_text_color">#ffffff</color>
  <color name="countdown_text_color">#ffffff</color>
+ <color name="score_text_color">#ffffff</color>
  <color name="countdown_finish_text_color">#ff0000</color>
  <color name="gameboard_winner_text">#ffffff</color>
   <color name="gameboard_lookup_definition_text">#ffffff</color>

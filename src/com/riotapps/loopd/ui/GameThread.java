@@ -1,4 +1,4 @@
-package com.rozen.wordscroll.ui;
+package com.riotapps.loopd.ui;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;

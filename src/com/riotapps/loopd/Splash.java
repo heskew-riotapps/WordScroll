@@ -1,4 +1,4 @@
-package com.rozen.wordscroll;
+package com.riotapps.loopd;
 
  
 import com.riotapps.wordbase.billing.IabHelper;

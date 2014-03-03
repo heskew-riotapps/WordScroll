@@ -1,5 +1,5 @@
 /** Automatically generated file. DO NOT MODIFY */
-package com.rozen.wordscroll;
+package com.riotapps.loopd;
 
 public final class BuildConfig {
     public final static boolean DEBUG = true;

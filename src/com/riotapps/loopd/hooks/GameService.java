@@ -1,4 +1,4 @@
-package com.rozen.wordscroll.hooks;
+package com.riotapps.loopd.hooks;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,9 +8,10 @@ import java.util.Locale;
 
 import android.content.Context;
 
-import com.rozen.wordscroll.hooks.Game;
+import com.riotapps.loopd.GameSurface;
+import com.riotapps.loopd.data.GameData;
+import com.riotapps.loopd.hooks.Game;
 import com.riotapps.wordbase.R;
-import com.rozen.wordscroll.data.GameData;
 import com.riotapps.wordbase.hooks.AlphabetService;
 import com.riotapps.wordbase.hooks.OpponentService;
 import com.riotapps.wordbase.hooks.Player;
@@ -19,10 +20,14 @@ import com.riotapps.wordbase.ui.Coordinate;
 import com.riotapps.wordbase.utils.Check;
 import com.riotapps.wordbase.utils.Constants;
 import com.riotapps.wordbase.utils.DesignByContractException;
+import com.riotapps.wordbase.utils.Logger;
 
 public class GameService {
 
+	private static final String TAG = GameService.class.getSimpleName();
+
 	public static Game createGame(Context ctx, Player contextPlayer) throws DesignByContractException{
+		Logger.d(TAG, "createGame called");
 		Check.Require(contextPlayer.getActiveGameId().length() == 0, ctx.getString(R.string.validation_create_game_duplicate));
 		
 		
@@ -58,7 +63,7 @@ public class GameService {
 	}
 	
 	public static void saveGame(Game game){
-	 
+		Logger.d(TAG, "saveGame called");
 		GameData.saveGame(game);
 	}
 	

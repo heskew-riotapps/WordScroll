@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rozen.wordscroll"
+    package="com.riotapps.loopd"
     android:versionCode="5"
     android:versionName="1.0006"
     >
@@ -18,23 +18,23 @@
         android:icon="@drawable/icon_launcher"
         android:label="@string/app_name"
          android:theme="@style/MainStyle" 
-        android:name="com.rozen.wordscroll.utils.ApplicationContext" >
+        android:name="com.riotapps.loopd.utils.ApplicationContext" >
         
          <meta-data android:name="DefaultAppStore" android:value="com.android.vending" />
         <meta-data android:name="AppStore" android:value="com.android.vending" />
         
         <service android:enabled="true" android:name="com.riotapps.wordbase.services.WordLoaderService" />  
         
-        <activity android:name=".Splash" android:label="@string/app_name" android:noHistory="true" android:screenOrientation="portrait">
+        <activity android:name="com.riotapps.loopd.Splash" android:label="@string/app_name" android:noHistory="true" android:screenOrientation="portrait">
  		    <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
          </activity>   
-	 	<activity android:name=".GameSurface" android:label="@string/app_name" android:screenOrientation="portrait" />
-  	  	<activity android:name=".About" android:label="@string/app_name" android:screenOrientation="portrait" />	
-  	  	<activity android:name=".FullRules" android:label="@string/app_name" android:screenOrientation="portrait" />				
-  		  	<activity android:name=".Store" android:label="@string/app_name" android:screenOrientation="portrait" />				
+	 	<activity android:name="com.riotapps.loopd.GameSurface" android:label="@string/app_name" android:screenOrientation="portrait" />
+  	  	<activity android:name="com.riotapps.loopd.About" android:label="@string/app_name" android:screenOrientation="portrait" />	
+  	  	<activity android:name="com.riotapps.loopd.FullRules" android:label="@string/app_name" android:screenOrientation="portrait" />				
+  		  	<activity android:name="com.riotapps.loopd.Store" android:label="@string/app_name" android:screenOrientation="portrait" />				
   	  	
   	  	
   		<activity android:name="com.google.ads.AdActivity"
