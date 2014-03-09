@@ -36,53 +36,58 @@ containing a value of this type.
         public static final int isTablet=0x7f070002;
     }
     public static final class color {
-        public static final int alert_background_color=0x7f08003b;
-        public static final int alert_text_button_color=0x7f08003a;
+        public static final int alert_background_color=0x7f08003c;
+        /**  0000cc d81c93 DDA0DD 4B0082 137ccd 
+         */
+        public static final int alert_font_color=0x7f08001f;
+        public static final int alert_text_button_color=0x7f08003b;
         public static final int button_area_background=0x7f080000;
-        public static final int button_area_background_color=0x7f080027;
-        public static final int button_text_color=0x7f08002f;
+        public static final int button_area_background_color=0x7f080028;
+        /** 3479b2 7D26CD 551A8B 8A2BE2 137ccd 
+         */
+        public static final int button_text_color=0x7f080030;
         public static final int button_text_color_off=0x7f080007;
         public static final int button_text_color_on=0x7f080003;
         public static final int content_area_background_color=0x7f08001c;
         public static final int content_area_background_pressed_color=0x7f08001d;
         public static final int content_area_font_color=0x7f08001b;
         public static final int content_font_color=0x7f08001e;
-        public static final int countdown_finish_text_color=0x7f080052;
-        public static final int countdown_text_color=0x7f080050;
+        public static final int countdown_finish_text_color=0x7f080053;
+        public static final int countdown_text_color=0x7f080051;
         /**  FF0000  
          */
-        public static final int create_game_bottom_option_background=0x7f080057;
-        public static final int create_game_bottom_option_pressed=0x7f080058;
-        public static final int create_game_bottom_option_text=0x7f080059;
-        public static final int create_game_option_1_background=0x7f08005a;
+        public static final int create_game_bottom_option_background=0x7f080058;
+        public static final int create_game_bottom_option_pressed=0x7f080059;
+        public static final int create_game_bottom_option_text=0x7f08005a;
+        public static final int create_game_option_1_background=0x7f08005b;
         /**  cada39 
          */
-        public static final int create_game_option_1_pressed=0x7f08005b;
-        public static final int create_game_option_1_text=0x7f08005c;
-        public static final int create_game_option_2_background=0x7f08005d;
+        public static final int create_game_option_1_pressed=0x7f08005c;
+        public static final int create_game_option_1_text=0x7f08005d;
+        public static final int create_game_option_2_background=0x7f08005e;
         /**  29cdf0 
          */
-        public static final int create_game_option_2_pressed=0x7f08005e;
-        public static final int create_game_option_2_text=0x7f08005f;
+        public static final int create_game_option_2_pressed=0x7f08005f;
+        public static final int create_game_option_2_text=0x7f080060;
         /** 11ace2 29cdf0 
          */
-        public static final int default_played_tile_letter=0x7f08003e;
-        public static final int dialog_background_color=0x7f08002e;
+        public static final int default_played_tile_letter=0x7f08003f;
+        public static final int dialog_background_color=0x7f08002f;
         public static final int field_background=0x7f080004;
-        public static final int field_button_text_color=0x7f080031;
+        public static final int field_button_text_color=0x7f080032;
         public static final int form_background_color=0x7f080019;
         /**  1874CD 
          */
-        public static final int form_border_color=0x7f08001f;
-        public static final int form_header_background_color=0x7f080026;
-        public static final int form_header_sub_text_color=0x7f080025;
-        public static final int form_header_text_color=0x7f080024;
+        public static final int form_border_color=0x7f080020;
+        public static final int form_header_background_color=0x7f080027;
+        public static final int form_header_sub_text_color=0x7f080026;
+        public static final int form_header_text_color=0x7f080025;
         public static final int game_board_board_last_played_tile_letter=0x7f080012;
         public static final int game_board_board_last_played_tile_value=0x7f080013;
         public static final int game_board_board_tile_letter=0x7f080010;
         public static final int game_board_board_tile_value=0x7f080011;
         public static final int game_board_bonus_text=0x7f080016;
-        public static final int game_board_bonus_tile_letter=0x7f080056;
+        public static final int game_board_bonus_tile_letter=0x7f080057;
         public static final int game_board_dragging_tile_letter=0x7f080014;
         public static final int game_board_dragging_tile_value=0x7f080015;
         /**  #ffecaa eec591  
@@ -98,96 +103,102 @@ containing a value of this type.
          */
         public static final int game_board_tray_border=0x7f08000d;
         public static final int game_board_tray_tile_letter=0x7f08000e;
-        public static final int game_board_tray_tile_starter_letter=0x7f080055;
+        public static final int game_board_tray_tile_starter_letter=0x7f080056;
         public static final int game_board_tray_tile_value=0x7f08000f;
         /**  B23AEE 
          */
-        public static final int game_complete_area_background=0x7f08004d;
-        public static final int game_surface_fill_color=0x7f080034;
+        public static final int game_complete_area_background=0x7f08004e;
+        public static final int game_surface_fill_color=0x7f080035;
         /** e03b7d 
          */
-        public static final int game_type_text=0x7f080061;
-        public static final int game_type_text_background=0x7f080060;
-        public static final int game_type_text_border=0x7f080062;
-        /**  ee5b92 29cdf0 177efe 
+        public static final int game_type_text=0x7f080062;
+        public static final int game_type_text_background=0x7f080061;
+        public static final int game_type_text_border=0x7f080063;
+        /**  d81c93 ee5b92 29cdf0 177efe 
          */
-        public static final int gameboard_bottom_ad_background=0x7f080041;
-        public static final int gameboard_bottom_add_background=0x7f080042;
-        public static final int gameboard_bottom_fill_background=0x7f080043;
-        public static final int gameboard_lookup_definition_text=0x7f080054;
-        public static final int gameboard_winner_text=0x7f080053;
-        public static final int header_bottom_border_color=0x7f080038;
-        public static final int header_text_color=0x7f080036;
-        public static final int inline_header_text_color=0x7f08003c;
-        public static final int list_text_background_color=0x7f080035;
-        public static final int logo_area_bottom_background_color=0x7f080023;
+        public static final int gameboard_bottom_ad_background=0x7f080042;
+        public static final int gameboard_bottom_add_background=0x7f080043;
+        public static final int gameboard_bottom_fill_background=0x7f080044;
+        public static final int gameboard_lookup_definition_text=0x7f080055;
+        /** d81c93 d81c93 551A8B ff0000 
+         */
+        public static final int gameboard_winner_text=0x7f080054;
+        public static final int header_bottom_border_color=0x7f080039;
+        public static final int header_text_color=0x7f080037;
+        /**  fff5ee 
+         */
+        public static final int inline_header_text_color=0x7f08003d;
+        public static final int list_text_background_color=0x7f080036;
+        public static final int logo_area_bottom_background_color=0x7f080024;
         public static final int main_opponent_choose_background=0x7f080005;
         public static final int main_opponent_choose_text=0x7f080006;
         /** custom color for pressed state 
 custom color for pressed state 
          */
         public static final int normal_color=0x7f080018;
-        public static final int played_tile_letter=0x7f08003f;
+        public static final int played_tile_letter=0x7f080040;
         /**  ee5b92 
          */
-        public static final int played_word_area_background=0x7f08004c;
-        public static final int player_image_background_color=0x7f080033;
-        public static final int player_image_border_color=0x7f080032;
+        public static final int played_word_area_background=0x7f08004d;
+        public static final int player_image_background_color=0x7f080034;
+        public static final int player_image_border_color=0x7f080033;
         public static final int pressed_color=0x7f080017;
-        public static final int progress_background=0x7f080064;
-        public static final int progress_background_color=0x7f080029;
+        public static final int progress_background=0x7f080065;
+        public static final int progress_background_color=0x7f08002a;
         /**  3366dd 
          */
-        public static final int progress_text_color=0x7f08002a;
-        public static final int score_text_color=0x7f080051;
-        public static final int scoreboard_area_background_color=0x7f080065;
+        public static final int progress_text_color=0x7f08002b;
+        public static final int score_text_color=0x7f080052;
+        public static final int scoreboard_area_background_color=0x7f080066;
         /**  B23AEE 
          */
         public static final int scoreboard_background=0x7f080001;
-        public static final int scoreboard_separator=0x7f08003d;
+        public static final int scoreboard_separator=0x7f08003e;
         /**  FF0000  
          */
-        public static final int scoreboard_text_color=0x7f080021;
+        public static final int scoreboard_text_color=0x7f080022;
         /**  #fff5ee 
          */
-        public static final int scoreboard_text_last_played_color=0x7f080022;
-        public static final int secondary_button_text_color=0x7f080030;
-        public static final int short_info_text=0x7f080063;
-        public static final int store_item_divider_color=0x7f080037;
+        public static final int scoreboard_text_last_played_color=0x7f080023;
+        public static final int secondary_button_text_color=0x7f080031;
+        public static final int short_info_text=0x7f080064;
+        public static final int store_item_divider_color=0x7f080038;
         /**  26afdc ee5b92 
          */
-        public static final int store_item_title_color=0x7f080039;
+        public static final int store_item_title_color=0x7f08003a;
         /**  #FF0000 
          */
-        public static final int sub_scoreboard_background=0x7f08004e;
+        public static final int sub_scoreboard_background=0x7f08004f;
         /**  177efe 
          */
-        public static final int sub_scoreboard_text_color=0x7f08004f;
+        public static final int sub_scoreboard_text_color=0x7f080050;
         /**  #ee5b92 
          */
-        public static final int sub_text_color=0x7f080028;
+        public static final int sub_text_color=0x7f080029;
         public static final int tab_background_color=0x7f08001a;
         /**  previously 3366dd 
  previously 3366dd 
          */
-        public static final int title_bar_background_color=0x7f080020;
-        public static final int toast_background_color=0x7f08002b;
-        public static final int toast_inner_background_color=0x7f08002c;
-        public static final int toast_text_color=0x7f08002d;
-        public static final int top_area_background=0x7f080040;
+        public static final int title_bar_background_color=0x7f080021;
+        public static final int toast_background_color=0x7f08002c;
+        /** ee5b92 551A8B ae1d18 
+         */
+        public static final int toast_inner_background_color=0x7f08002d;
+        public static final int toast_text_color=0x7f08002e;
+        public static final int top_area_background=0x7f080041;
         /**  d42931 ae1d18 CD96CD DB70DB 024bc4 137ccd 64908A 
          */
         public static final int tray_background=0x7f080002;
-        public static final int word_list_area_background=0x7f08004b;
-        public static final int word_list_area_middle_border=0x7f080044;
-        public static final int word_list_area_opponent_background=0x7f080049;
-        public static final int word_list_area_opponent_title_background=0x7f080048;
-        public static final int word_list_area_opponent_title_text=0x7f080046;
-        public static final int word_list_area_player_background=0x7f08004a;
-        public static final int word_list_area_player_title_background=0x7f080047;
+        public static final int word_list_area_background=0x7f08004c;
+        public static final int word_list_area_middle_border=0x7f080045;
+        public static final int word_list_area_opponent_background=0x7f08004a;
+        public static final int word_list_area_opponent_title_background=0x7f080049;
+        public static final int word_list_area_opponent_title_text=0x7f080047;
+        public static final int word_list_area_player_background=0x7f08004b;
+        public static final int word_list_area_player_title_background=0x7f080048;
         /**  29cdf0 A020F0   670099 
          */
-        public static final int word_list_area_player_title_text=0x7f080045;
+        public static final int word_list_area_player_title_text=0x7f080046;
     }
     public static final class drawable {
         public static final int alert_background=0x7f020000;
@@ -719,6 +730,22 @@ custom color for pressed state
         public static final int game_alert_game_over_2_player=0x7f0600fa;
         public static final int game_alert_game_over_2_player_context=0x7f0600f9;
         public static final int game_alert_game_over_2_player_draw=0x7f0600fb;
+        public static final int game_completed_first_time_message=0x7f06017b;
+        public static final int game_completed_first_time_title=0x7f06017a;
+        public static final int game_completed_new_top_score_in_x_games_message=0x7f06017f;
+        public static final int game_completed_new_top_score_in_x_games_title=0x7f06017e;
+        public static final int game_completed_new_top_score_message=0x7f06017d;
+        public static final int game_completed_new_top_score_title=0x7f06017c;
+        public static final int game_completed_no_top_score_message=0x7f060185;
+        public static final int game_completed_no_top_score_title=0x7f060184;
+        public static final int game_completed_since_last_top_score_message=0x7f060183;
+        public static final int game_completed_since_last_top_score_title=0x7f060182;
+        public static final int game_completed_tied_top_score_message=0x7f060181;
+        public static final int game_completed_tied_top_score_title=0x7f060180;
+        public static final int game_completed_within_10_top_score_message=0x7f060187;
+        public static final int game_completed_within_10_top_score_title=0x7f060186;
+        public static final int game_completed_within_3_top_score_message=0x7f060189;
+        public static final int game_completed_within_3_top_score_title=0x7f060188;
         public static final int game_draw_message=0x7f06015c;
         public static final int game_history_title=0x7f0600f7;
         public static final int game_history_turn_info=0x7f0600f6;
@@ -966,6 +993,8 @@ custom color for pressed state
     public static final class style {
         public static final int ActivityTitleStyle=0x7f050000;
         public static final int AlertButtonAreaStyle=0x7f050001;
+        public static final int AlertTextLargeStyle=0x7f050002;
+        public static final int AlertTextStyle=0x7f050003;
         /** 
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
@@ -1007,124 +1036,124 @@ custom color for pressed state
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f050049;
+        public static final int AppBaseTheme=0x7f05004b;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f05004a;
-        public static final int BadgeLineStyle=0x7f050002;
-        public static final int ButtonStyle=0x7f050003;
-        public static final int ContentAreaLinkStyle=0x7f050004;
-        public static final int ContentAreaTextAreaBottomStyle=0x7f050005;
-        public static final int ContentAreaTextAreaStyle=0x7f050006;
-        public static final int ContentAreaTextBottomStyle=0x7f05000b;
-        public static final int ContentAreaTextStyle=0x7f050007;
-        public static final int ContentAreaTextTopStyle=0x7f050008;
-        public static final int ContentAreaTitleStyle=0x7f050009;
-        public static final int ContentAreaTopStyle=0x7f05000a;
-        public static final int CountdownLabelTextStyle=0x7f050060;
-        public static final int CountdownTextStyle=0x7f050061;
-        public static final int CustomProgressStyle=0x7f05000c;
-        public static final int DialogInnerStyle=0x7f05000d;
-        public static final int DialogStyle=0x7f05000e;
-        public static final int DialogTitleStyle=0x7f05000f;
-        public static final int FormBackgroundStyle=0x7f050010;
-        public static final int FormButtonAreaStyle=0x7f050011;
-        public static final int FormFieldBackgroundNoHeaderStyle=0x7f050012;
-        public static final int FormHeaderAreaSubTextStyle=0x7f050013;
-        public static final int FormHeaderAreaTextStyle=0x7f050014;
-        public static final int FormHeaderWrapperStyle=0x7f050015;
-        public static final int FormHeaderWrapperWithSubtitleStyle=0x7f050016;
-        public static final int GameBoardAdAreaStyle=0x7f050062;
-        public static final int GameBoardBottomFillStyle=0x7f050063;
-        public static final int GameBoardButtonAreaStyle=0x7f050017;
-        public static final int GameBoardButtonStyle=0x7f050018;
-        public static final int GameBoardSecondaryButtonStyle=0x7f050019;
-        public static final int GameboardLayoutStyle=0x7f050064;
-        public static final int GameboardListAreaStyle=0x7f050065;
-        public static final int GameboardWordListAreaStyle=0x7f050066;
-        public static final int HeaderSubTextStyle=0x7f05001a;
-        public static final int HeaderTextStyle=0x7f05001b;
-        public static final int HeaderTopLayoutStyle=0x7f05001c;
-        public static final int HintDialogInnerStyle=0x7f05001d;
-        public static final int HintDialogStyle=0x7f05001e;
-        public static final int HopperPeekDialogInnerStyle=0x7f05001f;
-        public static final int HopperPeekDialogStyle=0x7f050020;
-        public static final int InlineHeaderStyle=0x7f050021;
-        public static final int LayoutFormStyle=0x7f050024;
-        public static final int LayoutStyle=0x7f050025;
-        public static final int LayoutStyleThin=0x7f050022;
-        public static final int LayoutThinStyle=0x7f050023;
-        public static final int LetterValueStyle=0x7f050026;
-        public static final int ListSeparatorStyle=0x7f050067;
-        public static final int MainLandingButtonStyle=0x7f050027;
-        public static final int MainScrollStyle=0x7f050028;
-        public static final int MainStyle=0x7f050029;
-        public static final int MainWinsStyle=0x7f05002a;
-        public static final int MiniTextStyle=0x7f05002b;
-        public static final int OpponentChooseStyle=0x7f05002c;
-        public static final int OpponentImageListStyle=0x7f05002d;
-        public static final int OpponentNameStyle=0x7f05002e;
-        public static final int OpponentRecordStyle=0x7f05002f;
-        public static final int OpponentRecordWrapperStyle=0x7f050030;
-        public static final int OpponentSkillLevelStyle=0x7f050031;
-        public static final int PlayedWordPlayerImageStyle=0x7f050032;
-        public static final int PlayedWordTileSetStyle=0x7f050068;
-        public static final int PlayedWordTileSetTitleStyle=0x7f050069;
-        public static final int ProgressBarStyle=0x7f050033;
-        public static final int ProgressTextStyle=0x7f050034;
-        public static final int RulesTableRowStyle=0x7f050035;
-        public static final int ScoreLabelTextStyle=0x7f05006c;
-        public static final int ScoreTextStyle=0x7f05006d;
-        public static final int ScoreboardBadgeStyle=0x7f050036;
-        public static final int ScoreboardImageStyle=0x7f050037;
-        public static final int ScoreboardLayoutStyle=0x7f050038;
-        public static final int ScoreboardLettersLeftStyle=0x7f050039;
-        public static final int ScoreboardNumPointsStyle=0x7f05003a;
-        public static final int ScoreboardOpponentNameStyle=0x7f05003b;
-        public static final int ScoreboardOpponentScoreStyle=0x7f05003c;
-        public static final int ScoreboardOptionStyle=0x7f05003d;
-        public static final int ScoreboardPlayerNameStyle=0x7f05003e;
-        public static final int ScoreboardPlayerScoreStyle=0x7f05003f;
-        public static final int ScoreboardPlayerStyle=0x7f050040;
-        public static final int ScoreboardScoreAreaStyle=0x7f05006a;
-        public static final int ScoreboardScoreStyle=0x7f050041;
-        public static final int ScoreboardSeparatorStyle=0x7f05006b;
-        public static final int ScoreboardTurnStyle=0x7f050042;
-        public static final int SplashLayoutStyle=0x7f050043;
-        public static final int SplashLogoStyle=0x7f050044;
-        public static final int StartButtonStyle=0x7f05006e;
-        public static final int StoreItemCheckStyle=0x7f050045;
-        public static final int StoreItemPriceButtonStyle=0x7f050046;
-        public static final int StoreItemPriceWrapperStyle=0x7f050047;
-        public static final int StoreItemTitleStyle=0x7f050048;
-        public static final int SubTextStyle=0x7f05004b;
-        public static final int SwapDialogInnerStyle=0x7f05004c;
-        public static final int SwapDialogStyle=0x7f05004d;
-        public static final int SwapLetterStyle=0x7f05004e;
-        public static final int SwapTileStyle=0x7f05004f;
-        public static final int SwapTitleStyle=0x7f050050;
-        public static final int SwapValueStyle=0x7f050051;
-        public static final int TabContentBackgroundStyle=0x7f050052;
-        public static final int TabFormBackgroundStyle=0x7f050053;
-        public static final int TextAreaStyle=0x7f05006f;
-        public static final int TextClickableStyle=0x7f050054;
-        public static final int TextLargeStyle=0x7f050055;
-        public static final int TextLineItemCenteredStyle=0x7f050056;
-        public static final int TextLineItemStyle=0x7f050057;
-        public static final int TextMiniStyle=0x7f050058;
-        public static final int TextStyle=0x7f050059;
-        public static final int ToastTextStyle=0x7f05005a;
-        public static final int TopLogoAreaBottomStyle=0x7f05005b;
-        public static final int TopLogoAreaStyle=0x7f05005c;
-        public static final int TopLogoBoardStyle=0x7f05005d;
-        public static final int TopLogoNoContextStyle=0x7f05005e;
-        public static final int TopLogoStyle=0x7f05005f;
-        public static final int WordListAreaTextStyle=0x7f050070;
-        public static final int WordListItemTextStyle=0x7f050071;
-        public static final int WordListTitleStyle=0x7f050072;
+        public static final int AppTheme=0x7f05004c;
+        public static final int BadgeLineStyle=0x7f050004;
+        public static final int ButtonStyle=0x7f050005;
+        public static final int ContentAreaLinkStyle=0x7f050006;
+        public static final int ContentAreaTextAreaBottomStyle=0x7f050007;
+        public static final int ContentAreaTextAreaStyle=0x7f050008;
+        public static final int ContentAreaTextBottomStyle=0x7f05000d;
+        public static final int ContentAreaTextStyle=0x7f050009;
+        public static final int ContentAreaTextTopStyle=0x7f05000a;
+        public static final int ContentAreaTitleStyle=0x7f05000b;
+        public static final int ContentAreaTopStyle=0x7f05000c;
+        public static final int CountdownLabelTextStyle=0x7f050062;
+        public static final int CountdownTextStyle=0x7f050063;
+        public static final int CustomProgressStyle=0x7f05000e;
+        public static final int DialogInnerStyle=0x7f05000f;
+        public static final int DialogStyle=0x7f050010;
+        public static final int DialogTitleStyle=0x7f050011;
+        public static final int FormBackgroundStyle=0x7f050012;
+        public static final int FormButtonAreaStyle=0x7f050013;
+        public static final int FormFieldBackgroundNoHeaderStyle=0x7f050014;
+        public static final int FormHeaderAreaSubTextStyle=0x7f050015;
+        public static final int FormHeaderAreaTextStyle=0x7f050016;
+        public static final int FormHeaderWrapperStyle=0x7f050017;
+        public static final int FormHeaderWrapperWithSubtitleStyle=0x7f050018;
+        public static final int GameBoardAdAreaStyle=0x7f050064;
+        public static final int GameBoardBottomFillStyle=0x7f050065;
+        public static final int GameBoardButtonAreaStyle=0x7f050019;
+        public static final int GameBoardButtonStyle=0x7f05001a;
+        public static final int GameBoardSecondaryButtonStyle=0x7f05001b;
+        public static final int GameboardLayoutStyle=0x7f050066;
+        public static final int GameboardListAreaStyle=0x7f050067;
+        public static final int GameboardWordListAreaStyle=0x7f050068;
+        public static final int HeaderSubTextStyle=0x7f05001c;
+        public static final int HeaderTextStyle=0x7f05001d;
+        public static final int HeaderTopLayoutStyle=0x7f05001e;
+        public static final int HintDialogInnerStyle=0x7f05001f;
+        public static final int HintDialogStyle=0x7f050020;
+        public static final int HopperPeekDialogInnerStyle=0x7f050021;
+        public static final int HopperPeekDialogStyle=0x7f050022;
+        public static final int InlineHeaderStyle=0x7f050023;
+        public static final int LayoutFormStyle=0x7f050026;
+        public static final int LayoutStyle=0x7f050027;
+        public static final int LayoutStyleThin=0x7f050024;
+        public static final int LayoutThinStyle=0x7f050025;
+        public static final int LetterValueStyle=0x7f050028;
+        public static final int ListSeparatorStyle=0x7f050069;
+        public static final int MainLandingButtonStyle=0x7f050029;
+        public static final int MainScrollStyle=0x7f05002a;
+        public static final int MainStyle=0x7f05002b;
+        public static final int MainWinsStyle=0x7f05002c;
+        public static final int MiniTextStyle=0x7f05002d;
+        public static final int OpponentChooseStyle=0x7f05002e;
+        public static final int OpponentImageListStyle=0x7f05002f;
+        public static final int OpponentNameStyle=0x7f050030;
+        public static final int OpponentRecordStyle=0x7f050031;
+        public static final int OpponentRecordWrapperStyle=0x7f050032;
+        public static final int OpponentSkillLevelStyle=0x7f050033;
+        public static final int PlayedWordPlayerImageStyle=0x7f050034;
+        public static final int PlayedWordTileSetStyle=0x7f05006a;
+        public static final int PlayedWordTileSetTitleStyle=0x7f05006b;
+        public static final int ProgressBarStyle=0x7f050035;
+        public static final int ProgressTextStyle=0x7f050036;
+        public static final int RulesTableRowStyle=0x7f050037;
+        public static final int ScoreLabelTextStyle=0x7f05006e;
+        public static final int ScoreTextStyle=0x7f05006f;
+        public static final int ScoreboardBadgeStyle=0x7f050038;
+        public static final int ScoreboardImageStyle=0x7f050039;
+        public static final int ScoreboardLayoutStyle=0x7f05003a;
+        public static final int ScoreboardLettersLeftStyle=0x7f05003b;
+        public static final int ScoreboardNumPointsStyle=0x7f05003c;
+        public static final int ScoreboardOpponentNameStyle=0x7f05003d;
+        public static final int ScoreboardOpponentScoreStyle=0x7f05003e;
+        public static final int ScoreboardOptionStyle=0x7f05003f;
+        public static final int ScoreboardPlayerNameStyle=0x7f050040;
+        public static final int ScoreboardPlayerScoreStyle=0x7f050041;
+        public static final int ScoreboardPlayerStyle=0x7f050042;
+        public static final int ScoreboardScoreAreaStyle=0x7f05006c;
+        public static final int ScoreboardScoreStyle=0x7f050043;
+        public static final int ScoreboardSeparatorStyle=0x7f05006d;
+        public static final int ScoreboardTurnStyle=0x7f050044;
+        public static final int SplashLayoutStyle=0x7f050045;
+        public static final int SplashLogoStyle=0x7f050046;
+        public static final int StartButtonStyle=0x7f050070;
+        public static final int StoreItemCheckStyle=0x7f050047;
+        public static final int StoreItemPriceButtonStyle=0x7f050048;
+        public static final int StoreItemPriceWrapperStyle=0x7f050049;
+        public static final int StoreItemTitleStyle=0x7f05004a;
+        public static final int SubTextStyle=0x7f05004d;
+        public static final int SwapDialogInnerStyle=0x7f05004e;
+        public static final int SwapDialogStyle=0x7f05004f;
+        public static final int SwapLetterStyle=0x7f050050;
+        public static final int SwapTileStyle=0x7f050051;
+        public static final int SwapTitleStyle=0x7f050052;
+        public static final int SwapValueStyle=0x7f050053;
+        public static final int TabContentBackgroundStyle=0x7f050054;
+        public static final int TabFormBackgroundStyle=0x7f050055;
+        public static final int TextAreaStyle=0x7f050071;
+        public static final int TextClickableStyle=0x7f050056;
+        public static final int TextLargeStyle=0x7f050057;
+        public static final int TextLineItemCenteredStyle=0x7f050058;
+        public static final int TextLineItemStyle=0x7f050059;
+        public static final int TextMiniStyle=0x7f05005a;
+        public static final int TextStyle=0x7f05005b;
+        public static final int ToastTextStyle=0x7f05005c;
+        public static final int TopLogoAreaBottomStyle=0x7f05005d;
+        public static final int TopLogoAreaStyle=0x7f05005e;
+        public static final int TopLogoBoardStyle=0x7f05005f;
+        public static final int TopLogoNoContextStyle=0x7f050060;
+        public static final int TopLogoStyle=0x7f050061;
+        public static final int WordListAreaTextStyle=0x7f050072;
+        public static final int WordListItemTextStyle=0x7f050073;
+        public static final int WordListTitleStyle=0x7f050074;
     }
     public static final class styleable {
         /** Attributes that can be used with a TypefacedTextView.

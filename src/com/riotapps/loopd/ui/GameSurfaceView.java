@@ -456,14 +456,16 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		 this.stopThread();
 		 }
 	 
-	public void onResume() {
+	public void onResume() { 
 		Logger.w(TAG, "onResume called");
 		
 		//make sure surface has been created first because onresume is initially called before surfacecreated and starting the 
 		//thread then kills things (canvas is null in onDraw)
 		this.parent.captureTime("startThread starting");
+		this.isPaused = false;
+		
 	 	if (this.surfaceCreated) {this.startThread();}
-	 	this.isPaused = false;
+	 	
 		this.parent.captureTime("startThread ended");
 	}
 	
@@ -539,20 +541,20 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
              case MotionEvent.ACTION_DOWN:  ///0
             	 this.tapCheck = currentTouchTime;
             	 
-            	 Logger.d(TAG, "onTouchEVent  this.tapCheck=" +  this.tapCheck);
+            	 Logger.d(TAG, "onTouchEVent  this.tapCheck=" +  this.tapCheck + " status=" + this.parent.getGame().getStatus());
  
 	          
             	 this.previousX = this.currentX;
             	 this.previousY = this.currentY;
 	  
-            	 if (this.parent.getGame().isActive()){
+            	 if (this.parent.getGame().isActive() || this.parent.getGame().isCompleted()){
 	            		if (this.startButtonArea.isCoordinateWithinArea(this.currentX, this.currentY)){
 						 Logger.d(TAG, "onTouchEVent ACTION_DOWN  this.startButtonArea.isCoordinateWithinArea=true");
 						
 						 this.isStartButtonPressed = true;
 	            		}
 	            	}
-            	 else {
+            	 else if (this.parent.getGame().isStarted()) {
             		 this.setTileOnDown(this.findTapTargetTile(this.currentX, this.currentY));
             	 }
             	 Logger.d(TAG, "onTouchEvent ACTION_DOWN tapped id=" + this.getTileOnDown());
@@ -566,7 +568,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
             	 this.isStartButtonPressed = false;
             	 
             	 if (this.tapCheck > 0 && currentTouchTime - this.tapCheck <= SINGLE_TAP_DURATION_IN_MILLISECONDS) {
-	            	if (this.parent.getGame().isActive()){
+	            	if (this.parent.getGame().isActive() || this.parent.getGame().isCompleted()){
 	            		if (this.startButtonArea.isCoordinateWithinArea(this.currentX, this.currentY)){
    						 Logger.d(TAG, "onTouchEVent  this.startButtonArea.isCoordinateWithinArea=true");
    						 this.parent.handleStartOnClick();
@@ -575,9 +577,9 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	   						 Logger.d(TAG, "onTouchEVent  this.startButtonArea.isCoordinateWithinArea=false");
 	   					 }
 	            	}
-            		 if (this.getTileOnDown() >= 0) {
+	            	else if (this.parent.getGame().isStarted() && this.getTileOnDown() >= 0) {
 	            		// int actionUpTile = this.findTapTargetTile(this.currentX, this.currentY);
-	            		 
+	            		 Logger.d(TAG, "onTouchEVent UP tile this.isPaused=" + this.isPaused);
 	            		 //Logger.d(TAG, "onTouchEvent ACTION_UP tapped actionUpTile=" + actionUpTile);
 	            		 //if (actionUpTile == this.getTileOnDown()){
 	            			 if (!this.isPaused){
@@ -711,7 +713,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	private void drawStartButton(Canvas canvas){
 		
 		//work on down state of button 
-		if (this.parent.getGame().isActive()){
+		if (this.parent.getGame().isActive() || this.parent.getGame().isCompleted()){
 			if (this.isStartButtonPressed){
 				canvas.drawBitmap(GameSurfaceView.bgStartPressed, this.startButtonArea.getLeft(), startButtonArea.getTop(), null);
 			}
@@ -754,7 +756,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			//slower
 			if (this.speedDirection == 1 && this.speedDistance > speedMin ){ 
 				this.speedDistance -= 1;
-			}
+			} 
 			//slower but we've reached the min, so flip speed direction
 			else if (this.speedDirection == 1 && this.speedDistance <= speedMin ){ 				
 				this.speedDirection = 0;
@@ -857,11 +859,11 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		else if (isBonus) { 
 			canvas.drawBitmap(GameSurfaceView.bgTileBonus, xPosition, yPosition, null);
 		}
-		else if (this.parent.getGame().isActive()) {
+		else if (!this.parent.getGame().isStarted()) {
 			canvas.drawBitmap(GameSurfaceView.bgTileStarter, xPosition, yPosition, null);
 		}
 		else  {
-			canvas.drawBitmap(GameSurfaceView.bgTile, xPosition, yPosition, null);
+			canvas.drawBitmap(GameSurfaceView.bgTile, xPosition, yPosition, null);  
 		}
     	 Paint pLetter = new Paint();
     	 int baseTextColor = this.parent.getGame().isActive() ? Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_starter_letter)) : Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_letter));

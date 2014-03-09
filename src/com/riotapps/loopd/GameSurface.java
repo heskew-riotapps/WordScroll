@@ -56,6 +56,7 @@ import com.riotapps.wordbase.services.WordLoaderService;
 import com.riotapps.wordbase.ui.CustomButtonDialog;
 import com.riotapps.wordbase.ui.CustomProgressDialog;
 import com.riotapps.wordbase.ui.CustomToast;
+import com.riotapps.wordbase.ui.DialogManager;
 import com.riotapps.wordbase.ui.MenuUtils;
 import com.riotapps.wordbase.utils.ApplicationContext;
 import com.riotapps.wordbase.utils.Constants;
@@ -148,12 +149,22 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private CustomButtonDialog customDialog;
 	private CustomProgressDialog spinner;
 	private boolean hasPostAdRun;
-	private boolean hideInterstitialAd;
+	private boolean hideInterstitialAd = false;
 	private Chartboost cb;
 	private Tracker tracker;
 	private LinearLayout llButtons;
 	private int bottomHeight;
 	private int valueOfBlankTilesBeforeFirstDefault = 2;
+	private int newTopScore;
+	private int prevTopScore;
+	private int topScoreDiff;
+	private int topScoreDiffWithPrevScore;
+	private int prevNumGamesSinceLastTopScore;
+	private int prevMostGamesBetweenTopScores;
+	private boolean resetOnStart = false;
+	private boolean hideAds= false;
+	private View vBottomFill;
+	private AdView adView;
 	
 	private static Bitmap bgTray = null;
 	
@@ -215,6 +226,14 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 		this.kickoff();
 	}
+	
+    private void dismissCustomDialog(){
+		if (this.customDialog != null){
+			customDialog.dismiss();
+			customDialog = null;
+		}
+	}
+	
 	@Override
 	public void dialogClose(int resultCode) {
 		 switch(resultCode) { 
@@ -227,6 +246,23 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   case Constants.RETURN_CODE_CUSTOM_TOAST_GO_FINISHED:
 			   this.onStartGoFinished();
 			   break;
+		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CANCEL_CLICKED:
+			   this.dismissCustomDialog();
+			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
+					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_DISMISS, Constants.TRACKER_DEFAULT_OPTION_VALUE);
+			   break;
+		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CLOSE_CLICKED:
+			   this.dismissCustomDialog();
+			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
+					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_CANCEL, Constants.TRACKER_DEFAULT_OPTION_VALUE);
+			   break;  
+		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_OK_CLICKED:
+			   this.dismissCustomDialog();
+			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
+					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_OK, Constants.TRACKER_DEFAULT_OPTION_VALUE);
+			  
+			   ((ApplicationContext)this.getApplication()).startNewActivity(this, Constants.ACTIVITY_CLASS_STORE);
+			   break; 
 		 }
 		
 	}
@@ -260,14 +296,27 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	protected void onDestroy() {
 		Logger.d(TAG, "onDestroy");
 		super.onDestroy();
-		
+		if (this.isChartBoostActive){
+			
+			this.cb.onDestroy(this);
+			this.cb = null;
+		}
 		this.gameSurfaceView.onDestroy();
 	}
 
 	@Override
 	protected void onStart() {
-		Logger.d(TAG, "onStart");
+		Logger.d(TAG, "onStart called");
 		super.onStart();
+		EasyTracker.getInstance().activityStart(this); // Add this method.
+
+		if (this.isChartBoostActive) {
+			if (this.cb == null) {
+				this.setupChartBoost();	
+			}
+			this.cb.onStart(this);
+		}
+ 
 	}
 	
 	@Override
@@ -281,6 +330,15 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	protected void onStop() {
 		Logger.d(TAG, "onStop");
 		super.onStop();
+ 
+		 EasyTracker.getInstance().activityStop(this);
+		if (this.isChartBoostActive){
+			
+			if (this.cb.hasCachedInterstitial()){ this.cb.clearCache(); }
+			this.cb.onStop(this);
+		 
+			//this.cb = n//ull;
+		}
 		
 		this.gameSurfaceView.onStop();
 	}
@@ -292,9 +350,12 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		super.onResume();
 		this.isPaused = false;
 		this.surfaceViewReadyToPause = false;
-		if (this.game.isActive()){
+		//if (this.game.isActive()){
 			this.gameSurfaceView.onResume();
-		}
+		//}
+		//check to see if user has purchased premium upgrade 
+		 
+		
 	}
 
 	@Override
@@ -366,15 +427,24 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	    this.gameSurfaceView = (GameSurfaceView)findViewById(R.id.gameSurface);
 	    this.gameSurfaceView.construct(this);
 
+	    this.setPrevFields();
 	    
 		this.setupFonts();
 		this.setViewLayouts();
  
-		this.initializeGameOnBoard();		
+		this.initializeGameOnBoard();	
+		this.setupAdServer();
 		
 	}
 	
  
+	private void setPrevFields(){
+
+	    this.prevTopScore = player.getHighScore();
+	    this.prevNumGamesSinceLastTopScore = player.getNumGamesSinceLastTopScore();
+	    this.prevMostGamesBetweenTopScores = player.getMostGamesBetweenTopScores();
+	    	
+	}
 	
 	private void initializeGameOnBoard(){
 		this.preloadPlayedTiles();		
@@ -522,10 +592,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
  		    			Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_OK_CLICKED,
  		    			Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CANCEL_CLICKED,
  		    			Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CLOSE_CLICKED);
- 				
- 				//public static final int RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_OK_CLICKED = 133;	
- 				//public static final int RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CLOSE_CLICKED = 134;
- 				//public static final int RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CANCEL_CLICKED = 135;	
+ 
  		    
  				PlayerService.setLastInterstitialPurchaseReminderTime();
  		    	this.customDialog.show();
@@ -543,7 +610,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			    	Logger.d(TAG, "showInterstitial from Chartboost");
  	 			}
  			}
-			}
+ 			
+		}
     }
 
 	
@@ -553,6 +621,56 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	    		//make sure the pre-primed hintlist is cleared
 	    	//	this.placedResultsForWordHints.clear();
 			//	this.hints.clear();
+		// this.prevNumGamesSinceLastTopScore
+		//if first game over
+		
+		Logger.d(TAG, "handlePostAdServer numPlayed=" + this.player.getNumPlayed() + " topScoreDiff=" + this.topScoreDiff + 
+				" newTopScore=" + this.newTopScore + " prevTopScore" + this.prevTopScore + 
+				" player.getNumGamesSinceLastTopScore" + player.getNumGamesSinceLastTopScore());
+		if (player.getNumPlayed() == 1) {
+			Logger.d(TAG, "1");
+			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_first_time_title), this.getString(R.string.game_completed_first_time_message));
+		}
+		else if (this.topScoreDiff > 0) {
+			Logger.d(TAG, "2");
+			//new top score message
+			if (this.prevNumGamesSinceLastTopScore > 0  && this.prevNumGamesSinceLastTopScore % 10 == 0) {
+				Logger.d(TAG, "3");
+				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_new_top_score_in_x_games_title), String.format(this.getString(R.string.game_completed_new_top_score_in_x_games_message, this.prevNumGamesSinceLastTopScore)));				
+			}
+			else {
+				Logger.d(TAG, "4");
+				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_first_time_title), this.getString(R.string.game_completed_first_time_message));
+			}
+		}
+		else if (this.topScoreDiff == 0 && this.newTopScore > 0){
+			Logger.d(TAG, "5");
+			//top score tied
+			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_tied_top_score_title), this.getString(R.string.game_completed_tied_top_score_message));
+
+		}
+		else if (this.game.getScore() > 0 && this.topScoreDiff > -4) {
+			Logger.d(TAG, "6");
+			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_within_3_top_score_title), this.getString(R.string.game_completed_within_3_top_score_message));
+		}
+		else if (this.game.getScore() > 0 && this.topScoreDiff > -11) {
+			Logger.d(TAG, "7");
+			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_within_10_top_score_title), this.getString(R.string.game_completed_within_10_top_score_message));
+		}
+		else if (this.prevTopScore > 0 && player.getNumGamesSinceLastTopScore() % 5 == 0) {
+			Logger.d(TAG, "8");
+			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_since_last_top_score_title), String.format(this.getString(R.string.game_completed_since_last_top_score_message, this.prevNumGamesSinceLastTopScore)));
+		}
+		else {
+			Logger.d(TAG, "9");
+			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_no_top_score_title), this.getString(R.string.game_completed_no_top_score_message));			
+		}
+		
+		 //if new top score set
+		 
+		 //if top score not set but close
+		 
+		
 
 	    	this.hasPostAdRun = true;
     		// 	this.unfreezeButtons();
@@ -794,7 +912,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	@Override
 	public void dialogClose(int resultCode, String returnValue) {
-		// TODO Auto-generated method stub
+
+
+	
 		
 	}
 
@@ -901,9 +1021,13 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   new CustomToast(this, this.getString(R.string.game_surface_start_game_go), 800, Constants.RETURN_CODE_CUSTOM_TOAST_GO_FINISHED).show();
 	   }
 	   private void onStartGoFinished(){
+		   if (this.resetOnStart ){
+			   this.initializeGame();
+		   }
+		   
 		   GameService.startGame(this.game);
 		   this.setBottom();
-		   this.setCountdown(this.getTimerStart());
+		   this.setCountdown(15000); //this.getTimerStart());
 	   }
  
 	private void handleButtonClick(int id){
@@ -1215,22 +1339,28 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 	
 	private void setBottom(){
-		if (!this.game.isStarted()){
-			this.llAdWrapper.setVisibility(View.VISIBLE);
-			this.llButtons.setVisibility(View.GONE);
-			AdView adView = (AdView)this.findViewById(R.id.adView);
-	    	if (StoreService.isHideBannerAdsPurchased(this)){	
-				adView.setVisibility(View.GONE);
+		if (this.game != null){
+			if (!this.game.isStarted()){
+				this.llAdWrapper.setVisibility(View.VISIBLE);
+				this.llButtons.setVisibility(View.GONE);
+				
+				if (StoreService.isHideBannerAdsPurchased(this)){	
+						adView.setVisibility(View.GONE);
+						this.vBottomFill.setVisibility(View.VISIBLE);
+				}
+		    	else {
+		    		this.vBottomFill.setVisibility(View.GONE);
+		    		this.adView.setVisibility(View.VISIBLE);
+		    		this.adView.loadAd(new AdRequest());
+			    }
+				
+		    	this.setBottomHeight(this.llAdWrapper);
 			}
-	    	else {
-	    		adView.loadAd(new AdRequest());
-	    	}
-	    	this.setBottomHeight(this.llAdWrapper);
-		}
-		else {
-			this.llAdWrapper.setVisibility(View.GONE);
-			this.llButtons.setVisibility(View.VISIBLE);
-	    	this.setBottomHeight(this.llButtons);
+			else {
+				this.llAdWrapper.setVisibility(View.GONE);
+				this.llButtons.setVisibility(View.VISIBLE);
+		    	this.setBottomHeight(this.llButtons);
+			}
 		}
 	}
 	
@@ -1246,9 +1376,11 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	private void loadViews(){
  
+		this.vBottomFill = (View) findViewById(R.id.vBottomFill);
 		this.lvPlayedWords = (ListView) findViewById(R.id.lvPlayedWords);
 		this.llAdWrapper = (LinearLayout)this.findViewById(R.id.llAdWrapper);
 		this.llButtons = (LinearLayout)this.findViewById(R.id.llButtons);
+		this.adView = (AdView)this.findViewById(R.id.adView);
 		//this.llStart = (LinearLayout)this.findViewById(R.id.llStart);
 		
 		//this.ivStart = (ImageView) findViewById(R.id.ivStart);
@@ -1340,7 +1472,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
  
 		this.tvScore.setText("0");
-		this.tvTopScore.setText("0");
+		this.tvTopScore.setText(String.valueOf(this.player.getHighScore()));
 		
 	}
 
@@ -1582,6 +1714,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
  
 	}
 	
+ 
 	
 	public void captureTime(String text){
 		ApplicationContext.captureTime(TAG, text);
@@ -1589,7 +1722,12 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 	
 	public boolean onTileClick(Tile tile){
-		if (tile.isPlayed()) { return false; }
+		Logger.d(TAG, "onTileClick called");
+		if (tile.isPlayed()) { 
+			Logger.d(TAG, "onTileClick tile.isPlayed");
+			return false; 
+		}
+		
 		if (tile.getRow() == 1){ 
 			boolean isFull = true;
 			for (PlayedTile t : this.row1Tiles){
@@ -1598,7 +1736,10 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				}
 			}				
 			//10 is the max size
-			if (isFull) {return false;}
+			if (isFull) {
+				Logger.d(TAG, "onTileClick row1 isFull");
+				return false;
+			}
 		}
 		else if (tile.getRow() == 2){ 
 			boolean isFull = true;
@@ -1608,7 +1749,10 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				}
 			}				
 			//10 is the max size
-			if (isFull) {return false;}
+			if (isFull) {
+				Logger.d(TAG, "onTileClick row2 isFull");
+				return false;
+			}
 		}
 		else if (tile.getRow() == 3){ 
 			boolean isFull = true;
@@ -1618,7 +1762,10 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				}
 			}				
 			//10 is the max size
-			if (isFull) {return false;}
+			if (isFull) {
+				Logger.d(TAG, "onTileClick row3 isFull");
+				return false;
+			}
 		}
 		
 		if (tile.getRow() == 1){  
@@ -1664,12 +1811,12 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 		String gameId = "";
 	 	//String gameId = i.getStringExtra(Constants.EXTRA_GAME_ID);
-	 	boolean fromCompletedGameList = i.getBooleanExtra(Constants.EXTRA_FROM_COMPLETED_GAME_LIST, false);
+	// 	boolean fromCompletedGameList = i.getBooleanExtra(Constants.EXTRA_FROM_COMPLETED_GAME_LIST, false);
 	 	
 	 	//do this so that back button does not get crazy if one navigates to game from completed game list continuously
-	 	if (fromCompletedGameList){
-	 		MenuUtils.hideMenu(this);
-	 	}
+	 //	if (fromCompletedGameList){
+	 //		MenuUtils.hideMenu(this);
+	 //	}
 	 	//this.game = (Game) i.getParcelableExtra(Constants.EXTRA_GAME);
 	 	
 	 	this.captureTime("get game from local starting");
@@ -1685,9 +1832,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	 	if (this.game == null || gameId.equals("")){
 		 	gameId = this.getPlayer().getActiveGameId();
 		 	
-		 	if (fromCompletedGameList){
-		 		gameId = i.getStringExtra(Constants.EXTRA_GAME_ID);
-		 	} 
+		// 	if (fromCompletedGameList){
+		// 		gameId = i.getStringExtra(Constants.EXTRA_GAME_ID);
+		// 	} 
 	 	}
 	 	
 	 	if (gameId == null || gameId.equals("")){
@@ -1820,7 +1967,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	   private void handleCompletion(){
 		   this.isCountdownRunning = false;
-	    	 this.freezeAction = true;
+	    	this.freezeAction = true;
 	    	  
 	    	  this.game.setCountdown(0);
 		   this.gameSurfaceView.setReadyToDraw(false);
@@ -1828,13 +1975,31 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		    Logger.d(TAG, "handleCompletion this.tvCountdown=" + this.tvCountdown.getText());
 
 		    //this.isCompletedThisSession = true;
-		    GameService.completeGame(this, this.player, this.game);
-		   this.setCompletedState();
+		   this.newTopScore = GameService.completeGame(this, this.player, this.game);
+		   this.topScoreDiff = this.game.getScore() - this.prevTopScore;
+		 
+		 
+			this.tvTopScore.setText(String.valueOf(this.newTopScore));
+			this.prevTopScore = this.newTopScore;
+			this.setBottom();
 		   
 		   this.row1Tiles.clear();
 		   this.row2Tiles.clear();
 		   this.row3Tiles.clear();
+		   
+		   this.resetOnStart = true;
+ 
+		   //handle Ad or purchase reminder
+		   this.handleInterstitialAd(); 
+    
+	   }
+	   private void initializeGame(){
+		   //DO not do this yet.  in this case wait until start is clicked
 		   this.playedWords.clear();
+		   
+		   if (this.game != null){
+			   GameService.removeGame(game.getId());
+		   }
 		   
 		   try {
 			this.game = GameService.createGame(this, player);
@@ -1844,65 +2009,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		}
  
 			this.initializeGameOnBoard();
-		   
-		   //handle Ad or purchase reminder
-		// come back to this   this.handleInterstitialAd();
-		    
-		   
+			this.resetOnStart = false;
 	   }
 	   
-	   private void setCompletedState(){
-			if (this.game.isCompleted()){
-				/*
-				this.tvShortInfo.setVisibility(View.VISIBLE);
-				 this.tvShortInfo.setText(this.getString(R.string.game_surface_game_over));
-				 this.tvNumPoints.setVisibility(View.INVISIBLE);
-	 		 
-				 Button bRematch = (Button) this.findViewById(R.id.bRematch);
-				 bRematch.setVisibility(View.VISIBLE);
-				 bRematch.setText(String.format(this.getString(R.string.game_surface_rematch), this.game.getOpponent().getName()));
-				 bRematch.setClickable(true);
-				 bRematch.setOnClickListener(this);
-				 this.tvCountdown.setVisibility(View.GONE);
-		 	 
-				 
-				// GameSurface.this.runOnUiThread(new handleCountdownViewState(0));
-				 LinearLayout llPlayedWord = (LinearLayout) this.findViewById(R.id.llPlayedWord);
-				 RelativeLayout llGameComplete = (RelativeLayout) this.findViewById(R.id.llGameComplete);
-				 llPlayedWord.setVisibility(View.GONE);
-				 llGameComplete.setVisibility(View.VISIBLE);
-
-				this.llButtons.setVisibility(View.GONE);
-				this.llAdWrapper.setVisibility(View.VISIBLE);
-				
-				AdView adView = (AdView)this.findViewById(R.id.adView);
-				View vBottomFill = (View)this.findViewById(R.id.vBottomFill);
-		 
-		    	if (StoreService.isHideBannerAdsPurchased(this)){	
-					adView.setVisibility(View.GONE);
-					vBottomFill.setVisibility(View.VISIBLE);
-				}
-		    	else {
-		    		NetworkConnectivity connection = new NetworkConnectivity(this);
-		    		boolean isConnected = connection.checkNetworkConnectivity();
-		    		
-		    		if (isConnected){
-		    			vBottomFill.setVisibility(View.GONE);
-		    			adView.loadAd(new AdRequest());
-		    			
-		    		}
-		    		else{
-		    			adView.setVisibility(View.GONE);
-		    			vBottomFill.setVisibility(View.VISIBLE);
-		    		}
-		    	}
-				
-		    	this.initializeHopper();
-				this.initializeTray();
-				this.setListenerOnLists();
-				*/
-			}
-		}   
 	   
 	private class fragmentLetter{
 		private String letter;
@@ -1970,6 +2079,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	} 	
 	private void setupChartBoost(){
+		Logger.d(TAG, "setupChartBoost called");
 		this.cb = Chartboost.sharedChartboost();
 		this.cb.onCreate(this, this.getString(R.string.chartboost_app_id), this.getString(R.string.chartboost_app_signature), this.chartBoostDelegate);
 		this.cb.setImpressionsUseActivities(true);
@@ -2297,6 +2407,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		public boolean shouldRequestInterstitialsInFirstSession() {
 			return true;
 		}
+		
 	};
 
 	

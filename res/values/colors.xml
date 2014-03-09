@@ -3,7 +3,7 @@
           <color name="scoreboard_separator">#3479b2</color> <!--11ace2 29cdf0 -->
       <color name="default_played_tile_letter">#696969</color> 
       <color name="played_tile_letter">#000000</color> 
-    <color name="top_area_background">#ee5b92</color><!-- ee5b92 29cdf0 177efe -->
+    <color name="top_area_background">#ee5b92</color><!-- d81c93 ee5b92 29cdf0 177efe -->
     <color name="gameboard_bottom_ad_background">#2a2a2a</color>
     <color name="gameboard_bottom_add_background">#e03b7d</color>
     <color name="gameboard_bottom_fill_background">#e03b7d</color>
@@ -30,7 +30,7 @@
  <color name="sub_scoreboard_text_color">#ffffff</color>
  <color name="countdown_text_color">#ffffff</color>
  <color name="score_text_color">#ffffff</color>
- <color name="countdown_finish_text_color">#ff0000</color>
+ <color name="countdown_finish_text_color">#f9dd1a</color> <!--d81c93 d81c93 551A8B ff0000 -->
  <color name="gameboard_winner_text">#ffffff</color>
   <color name="gameboard_lookup_definition_text">#ffffff</color>
 	<color name="button_text_color_off">#790909</color>
@@ -89,10 +89,11 @@
     <color name="progress_background_color">#cada39</color><!-- 3366dd -->
     <color name="progress_text_color">#000000</color> 
     <color name="progress_background">#137ccd</color>
-    <color name="toast_background_color">#ae1d18</color>
-    <color name="toast_inner_background_color">#ae1d18</color>
+    <color name="toast_background_color">#d81c93</color> <!--ee5b92 551A8B ae1d18 -->
+    <color name="toast_inner_background_color">#d81c93</color>
     <color name="toast_text_color">#ffffff</color>
-    <color name="dialog_background_color">#137ccd</color> 
+    <color name="dialog_background_color">#3479b2</color> <!-- 0000cc d81c93 DDA0DD 4B0082 137ccd -->
+    <color name="alert_font_color">#6f6fff</color> <!--3479b2 7D26CD 551A8B 8A2BE2 137ccd -->
         
     <color name="button_text_color">#fff5ee</color>
     <color name="secondary_button_text_color">#fff5ee</color>
@@ -101,13 +102,13 @@
 	<color name="player_image_background_color">#d2bfa6</color>
 	<color name="game_surface_fill_color">#eec591</color>
 	<color name="list_text_background_color">#40000000</color>
- 	<color name="scoreboard_area_background_color">#20000000</color>
+ 	<color name="scoreboard_area_background_color">#20000000</color> 
 	
 	<color name="header_text_color">#fff5ee</color>
 	<color name="store_item_divider_color">#f62222</color>
 	<color name="header_bottom_border_color">#f175a4</color> <!-- 26afdc ee5b92 -->
 	<color name="store_item_title_color">#f62222</color>
 	<color name="alert_text_button_color">#fff5ee</color> 
-	<color name="alert_background_color">#fff5ee</color> 
+	<color name="alert_background_color">#ffffff</color> <!-- fff5ee -->
 	<color name="inline_header_text_color">#fff5ee</color> 
 </resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SplashLogoStyle">
+        <item name="android:src">@drawable/top_logo</item>
+	    <item name="android:layout_width">250dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_marginRight">15dp</item>
+        <item name="android:contentDescription">@string/logo</item>
+    
+    </style>
+</resources>

@@ -39,6 +39,9 @@ public class ApplicationContext extends com.riotapps.wordbase.utils.ApplicationC
  		else if (activity.equals(Constants.ACTIVITY_CLASS_FULL_RULES)){
  			openNewActivity(context, com.riotapps.loopd.FullRules.class, extras);
 		}
+ 		else if (activity.equals(Constants.ACTIVITY_CLASS_STORE)){
+ 			openNewActivity(context, com.riotapps.loopd.Store.class, extras);
+		}
  	/*	else if (activity.equals(Constants.ACTIVITY_CLASS_MAIN)){
  			Logger.d(TAG, "startNewActivity Constants.ACTIVITY_CLASS_MAIN");
  			openNewActivity(context, com.riotapps.wordrace.Main.class, extras);
@@ -55,9 +58,7 @@ public class ApplicationContext extends com.riotapps.wordbase.utils.ApplicationC
  			openNewActivity(context, com.riotapps.wordrace.GameLookup.class, extras);
 		}
 		
-		else if (activity.equals(Constants.ACTIVITY_CLASS_STORE)){
- 			openNewActivity(context, com.riotapps.wordrace.Store.class, extras);
-		} */
+		 */
 
 	}
 	

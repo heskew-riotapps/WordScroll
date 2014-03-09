@@ -89,24 +89,33 @@ public class GameService {
     	//add 1 to opponent's wins, save opponent 
     	//add 1 to player's losses, save player
     	player.setActiveGameId(Constants.EMPTY_STRING);
-    	
+    	player.setNumPlayed(player.getNumPlayed() + 1);
 
     	///update high score
     	int highScore = game.getScore();
     	
+    	
 		if (highScore > player.getHighScore()){
 			player.setHighScore(highScore);
-			PlayerService.savePlayer(player);
+			player.setNumTopScoreUpdates(player.getNumTopScoreUpdates() + 1);
+			player.setNumGamesSinceLastTopScore(0);
 		}
 		else {
 			highScore = player.getHighScore();
+			player.setNumGamesSinceLastTopScore(player.getNumGamesSinceLastTopScore() + 1);
+			if (player.getNumGamesSinceLastTopScore() > player.getMostGamesBetweenTopScores()){
+				player.setMostGamesBetweenTopScores(player.getNumGamesSinceLastTopScore());
+			}
 		}
-        	  
+        	
+		PlayerService.savePlayer(player);
+		
     	game.setStatus(3); //sets up enum for game status and playerGame status
      	
-    	saveGame(game);
+    	//no need to save game until page is left
+    	//saveGame(game);
 
-    	removeGame(game.getId());
+    	
 				
     	return highScore;
 	}

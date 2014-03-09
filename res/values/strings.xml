@@ -8,8 +8,8 @@
 	<string name="namespace">com.riotapps.loopd</string>
 	
 	<string name="wordnik_apiKey">48f31f368d20791114b01067e1d05b68ca177aabdbab4150b</string>
-    <string name="chartboost_app_id">5298cf352d42da443f2a3ec9</string>
-    <string name="chartboost_app_signature">ac3a8580a3e11c07f085f791f93d0c1098891666</string>
+    <string name="chartboost_app_id">53160b0d2d42da7e0a8abd0c</string>
+    <string name="chartboost_app_signature">f51b10ec91823264e06e9cc5c44e0b69b2c85d74</string>
       
     <string name="IAB_1">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8</string>
 	<string name="IAB_2">AMIIBCgKCAQEAlBIwQuDnuhgVuFLgheCrB7</string>
@@ -50,6 +50,8 @@
 	<string name="game_surface_countdown">countdown:</string>
 	<string name="game_surface_score">score</string>
 	<string name="game_surface_top_score">top score</string>
+	
+	<string name="store_item_premium_upgrade_description">Enjoy the purest Loopd experience. No more third party ads at all.  Ever.  Woohoo!!</string>
 	
 	<string name="main_menu_about">About Loopd</string>
 	<string name="about_device_specs">This device is %1$s size with %2$s resolution.</string>
@@ -113,4 +115,21 @@
 	 <string name="game_surface_first_time_alert_message">Tap START to begin the game.  Tap (don\'t drag) the letters in your tray to
 form a word.  Tap the PLAY button when you
 have created your word.  Do this as many times as you can...but do it quickly!\n\nRemember, you\'re racing the clock AND your opponent!</string>
+
+	 <string name="game_completed_first_time_title">First game down!</string>
+	 <string name="game_completed_first_time_message">Now the idea is to keep trying to raise your top score!</string>
+	 <string name="game_completed_new_top_score_title">Yes!</string>
+	 <string name="game_completed_new_top_score_message">A new top score!</string>
+	 <string name="game_completed_new_top_score_in_x_games_title">Congratulations!</string>
+	 <string name="game_completed_new_top_score_in_x_games_message">Your first new top score in %s games!</string>
+	 <string name="game_completed_tied_top_score_title">Well done!</string>
+	 <string name="game_completed_tied_top_score_message">You tied your top score!</string>
+	 <string name="game_completed_since_last_top_score_title">Keep trying!</string>
+	 <string name="game_completed_since_last_top_score_message">It\'s been %s games since your last top score!</string>
+	 <string name="game_completed_no_top_score_title">Keep at it!</string>
+	 <string name="game_completed_no_top_score_message">Your new top score could only be a game away!</string>
+	 <string name="game_completed_within_10_top_score_title">So close!</string>
+	 <string name="game_completed_within_10_top_score_message">You\'re not far from a new top score!</string>
+	 <string name="game_completed_within_3_top_score_title">Almost!</string>
+	 <string name="game_completed_within_3_top_score_message">So close to your top score!</string>
 </resources>
