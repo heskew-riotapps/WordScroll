@@ -168,7 +168,10 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	}
 
 	public void construct( GameSurface parent) {
-		//Logger.w(TAG, "construct called");
+		this.construct(parent, false);
+	}
+	public void construct( GameSurface parent, boolean onResume) {
+		 Logger.w(TAG, "construct called");
 		this.parent = parent;
 		//this.appContext = appContext;
 		this.parent.captureTime(TAG + " construct starting");
@@ -189,37 +192,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
   		//  		 this.parent.getResources().getInteger(R.integer.derived_device_screen_size) == Constants.SCREEN_SIZE_LARGE){
 		//	 this.autoZoom = false;
 		// }
- 	 
-		 this.post(new Runnable() 
-		    {   
-		        @Override
-		        public void run() {
-
-		    		me.parent.captureTime(TAG + " runnable starting"); 	
-		   		me.SetDerivedValues();
-				me.parent.captureTime(TAG + " setDerivedValues ended");
-		   	   // me.LoadTiles();
-		   	   // me.LoadTray();
-		   	  
-		   	    Logger.w(TAG, "run called");
-		   	    
-		   	    
-		  
-		   	     LayoutParams lp = me.getLayoutParams();
-			 	  lp.height = me.height;
-			 	  
-				  me.parent.captureTime(TAG + " load game starting");
-			 	  //me.loadGame();
-				  me.parent.captureTime(TAG + " load game ended");
-			//	  // Apply to new dimension
-			 	  me.setLayoutParams( lp );
-			 //	  me.setInitialRecallShuffleState();
-			//	  me.resetPointsView();
-			 	  me.readyToDraw = true;
-		        }
-
-		     });
-		 
+ 			this.kickoff(onResume);
 			this.parent.captureTime(TAG + " construct ended");
 	}
 
@@ -229,7 +202,43 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 
 	  //  this.parent.callback();
 	//}
+ private void kickoff(boolean onResume){
+     final boolean  handleOnResume = onResume;
+	 this.post(new Runnable() 
+	    {   
+	        @Override
+	        public void run() {
 
+	    		me.parent.captureTime(TAG + " runnable starting"); 	
+	   		me.SetDerivedValues();
+			me.parent.captureTime(TAG + " setDerivedValues ended");
+	   	   // me.LoadTiles();
+	   	   // me.LoadTray();
+	   	  
+	   	    Logger.w(TAG, "run called");
+	   	    
+	   	    
+	  
+	   	     LayoutParams lp = me.getLayoutParams();
+		 	  lp.height = me.height;
+		 	  
+			  me.parent.captureTime(TAG + " load game starting");
+		 	  //me.loadGame();
+			  me.parent.captureTime(TAG + " load game ended");
+		//	  // Apply to new dimension
+		 	  me.setLayoutParams( lp );
+		 //	  me.setInitialRecallShuffleState();
+		//	  me.resetPointsView();
+		 	  me.readyToDraw = true;
+		 	  
+		 	  if (handleOnResume) {
+		 		 if (GameSurfaceView.this.surfaceCreated) {GameSurfaceView.this.startThread();}
+		 	  }
+	        }
+
+	     });
+	 
+ }
 	
 	private void SetDerivedValues(){
 		me.getLayoutParams();
@@ -463,9 +472,16 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		//thread then kills things (canvas is null in onDraw)
 		this.parent.captureTime("startThread starting");
 		this.isPaused = false;
-		
-	 	if (this.surfaceCreated) {this.startThread();}
-	 	
+		if (GameSurfaceView.bgBorder == null){
+			Logger.w(TAG, "onResume construct called");
+			this.construct(this.parent, true);
+		}
+		else{
+			if (this.surfaceCreated) {this.startThread();}
+			this.readyToDraw = true;
+		}
+	 
+ 
 		this.parent.captureTime("startThread ended");
 	}
 	
@@ -547,7 +563,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
             	 this.previousX = this.currentX;
             	 this.previousY = this.currentY;
 	  
-            	 if (this.parent.getGame().isActive() || this.parent.getGame().isCompleted()){
+            	 if (this.parent.getGame().isActive() || (this.parent.getGame().isCompleted() && this.parent.isStartButtonVisible)){
 	            		if (this.startButtonArea.isCoordinateWithinArea(this.currentX, this.currentY)){
 						 Logger.d(TAG, "onTouchEVent ACTION_DOWN  this.startButtonArea.isCoordinateWithinArea=true");
 						
@@ -568,7 +584,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
             	 this.isStartButtonPressed = false;
             	 
             	 if (this.tapCheck > 0 && currentTouchTime - this.tapCheck <= SINGLE_TAP_DURATION_IN_MILLISECONDS) {
-	            	if (this.parent.getGame().isActive() || this.parent.getGame().isCompleted()){
+	            	if (this.parent.getGame().isActive() || (this.parent.getGame().isCompleted() && this.parent.isStartButtonVisible)){
 	            		if (this.startButtonArea.isCoordinateWithinArea(this.currentX, this.currentY)){
    						 Logger.d(TAG, "onTouchEVent  this.startButtonArea.isCoordinateWithinArea=true");
    						 this.parent.handleStartOnClick();
@@ -667,7 +683,9 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		// this.parent.captureTime(TAG + " onDraw started");
 		 
 		 this.drawField(canvas);
-		 
+		 if (!this.readyToDraw){
+			 Logger.d(TAG, "onDraw readyToDraw=" + this.readyToDraw);
+		 }
 		 this.isDrawing = false;
 		 if (this.isPaused){
 			 this.parent.setSurfaceViewReadyToPause(true);
@@ -713,7 +731,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	private void drawStartButton(Canvas canvas){
 		
 		//work on down state of button 
-		if (this.parent.getGame().isActive() || this.parent.getGame().isCompleted()){
+		if (this.parent.getGame().isActive() || (this.parent.getGame().isCompleted() && this.parent.isStartButtonVisible)){
 			if (this.isStartButtonPressed){
 				canvas.drawBitmap(GameSurfaceView.bgStartPressed, this.startButtonArea.getLeft(), startButtonArea.getTop(), null);
 			}

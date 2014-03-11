@@ -165,6 +165,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private boolean hideAds= false;
 	private View vBottomFill;
 	private AdView adView;
+	public boolean isStartButtonVisible;
+ 
 	
 	private static Bitmap bgTray = null;
 	
@@ -248,16 +250,19 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			   break;
 		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CANCEL_CLICKED:
 			   this.dismissCustomDialog();
+			   this.isStartButtonVisible = true;
 			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
 					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_DISMISS, Constants.TRACKER_DEFAULT_OPTION_VALUE);
 			   break;
 		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CLOSE_CLICKED:
 			   this.dismissCustomDialog();
+			   this.isStartButtonVisible = true;
 			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
 					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_CANCEL, Constants.TRACKER_DEFAULT_OPTION_VALUE);
 			   break;  
 		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_OK_CLICKED:
 			   this.dismissCustomDialog();
+			   this.isStartButtonVisible = true;
 			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
 					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_OK, Constants.TRACKER_DEFAULT_OPTION_VALUE);
 			  
@@ -274,7 +279,6 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 		this.isPaused = true;
 
-		this.gameSurfaceView.onPause();
 		
 		this.onPauseTask = new OnPauseTask();
 		this.onPauseTask.execute();
@@ -285,10 +289,12 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		Logger.d(TAG, "finishOnPause called");
 		this.onPauseTask = null;
 		//wait until surfaceview is ready to pause
-	    if (this.game.isActive()){
+
+		this.gameSurfaceView.onPause();
+	    //if (this.game.isActive()){
 			Logger.d(TAG, "saveGame about to be called");
 	    	GameService.saveGame(this.game);
-	    }
+	    //}
 	}
 	
 
@@ -353,6 +359,11 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		//if (this.game.isActive()){
 			this.gameSurfaceView.onResume();
 		//}
+			
+			if (spinner != null) {
+		 		spinner.dismiss();
+		 		spinner = null;
+		 	}
 		//check to see if user has purchased premium upgrade 
 		 
 		
@@ -447,11 +458,17 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 	
 	private void initializeGameOnBoard(){
+		Logger.d(TAG, "initializeGameOnBoard called");
 		this.preloadPlayedTiles();		
 		this.initializeWordList();
 	
-		this.loadFragmentsTask = new LoadFragmentsTask();
-		this.loadFragmentsTask.execute(); 
+		if (!WordLoaderService.isLoading) {
+			this.loadFragmentsAndView();
+		}
+		else {
+			this.loadFragmentsTask = new LoadFragmentsTask();
+			this.loadFragmentsTask.execute(); 
+		}
 		
 		this.resetPoints();
 		this.setupMenu();
@@ -469,20 +486,21 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			
 			//this method will just whistle a tune until the database is copied over
 			//it should happen very fast
-			int x = 0;
+			Logger.d(GameSurface.TAG, "OnPauseTask doInBackground GameSurface.this.surfaceViewReadyToPause=" + GameSurface.this.surfaceViewReadyToPause);
+		 
 			
-			while( x < 5000 ){
+			for (int x = 0; x < 5000; x++ ){
 				
 				if ( GameSurface.this.surfaceViewReadyToPause){
-					Logger.d(TAG, "surface view finished its loop");
+					Logger.d(TAG, "surface view finished its loop, x=" + x);
 					break;
 				}
 				else{
-					Logger.d(TAG, "surface view NOT finished its loop");
+					if (x < 11 ) {Logger.d(TAG, "surface view NOT finished its loop");}
 				}
-				
+			 
 				try {
-					Thread.sleep(10);
+					Thread.sleep(5);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -510,9 +528,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			
 			//this method will just whistle a tune until the database is copied over
 			//it should happen very fast
-			int x = 0;
+		 
 			
-			while( x < 5000 ){
+			for(int x = 0; x < 5000; x++ ){
 				
 				if ( !WordLoaderService.isLoading){
 					Logger.d(TAG, "LoadFragmentsTask WordLoaderService is FINISHED loading");
@@ -523,14 +541,13 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				}
 				
 				try {
-					Thread.sleep(20);
+					Thread.sleep(10);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			 
-			
+
 			return null;
 		}
 		
@@ -663,7 +680,20 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		}
 		else {
 			Logger.d(TAG, "9");
-			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_no_top_score_title), this.getString(R.string.game_completed_no_top_score_message));			
+			int random = Utils.getRandomNumberFromRange(1, 4);
+			
+			if (random == 1) {
+				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_no_top_score_title_1), this.getString(R.string.game_completed_no_top_score_message_1));
+			}
+			else if (random == 2) {
+				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_no_top_score_title_2), this.getString(R.string.game_completed_no_top_score_message_2));
+			}
+			else if (random == 3) {
+				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_no_top_score_title_3), this.getString(R.string.game_completed_no_top_score_message_3));
+			}
+			else if (random == 4) {
+				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_no_top_score_title_4), this.getString(R.string.game_completed_no_top_score_message_4));
+			}
 		}
 		
 		 //if new top score set
@@ -671,7 +701,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		 //if top score not set but close
 		 
 		
-
+			this.isStartButtonVisible = true;
 	    	this.hasPostAdRun = true;
     		// 	this.unfreezeButtons();
     		// 	Logger.d(TAG, "unfreeze handlePostAdServer");
@@ -683,7 +713,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	    	//}
 	    }
 	private void initializePlayedLists(){
- 
+ Logger.d(TAG, "initializePlayedLists called");
 		this.initializePlayedList_1();
 		this.initializePlayedList_2();
 		this.initializePlayedList_3();
@@ -807,6 +837,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 	
 	private void loadFragmentsAndView(){
+		Logger.d(TAG, "loadFragmentsAndView called");
 		this.loadFragmentsTask = null;
 		
 		this.loadFragments(40);
@@ -928,53 +959,62 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	public void onClick(View v) {
 		Logger.d(TAG, "onClick called this.isPaused=" + this.isPaused); 
 		if (this.isPaused){ return; }
-		
-		switch (v.getId()){
-			case R.id.options:
-			//	if (!this.game.isActive()){
-					popupMenu.show();
-			//	}
-				break;
-		//	case R.id.ivStart:
-		//		this.handleStartOnClick();
-		//		break;
-			case R.id.ivRow1PlayedLetter1:
-			case R.id.ivRow1PlayedLetter2:
-			case R.id.ivRow1PlayedLetter3:
-			case R.id.ivRow1PlayedLetter4:
-			case R.id.ivRow1PlayedLetter5:
-			case R.id.ivRow1PlayedLetter6:
-			case R.id.ivRow1PlayedLetter7:
-			case R.id.ivRow1PlayedLetter8:
-			case R.id.ivRow1PlayedLetter9:
-			case R.id.ivRow1PlayedLetter10:
-			case R.id.ivRow2PlayedLetter1:
-			case R.id.ivRow2PlayedLetter2:
-			case R.id.ivRow2PlayedLetter3:
-			case R.id.ivRow2PlayedLetter4:
-			case R.id.ivRow2PlayedLetter5:
-			case R.id.ivRow2PlayedLetter6:
-			case R.id.ivRow2PlayedLetter7:
-			case R.id.ivRow2PlayedLetter8:
-			case R.id.ivRow2PlayedLetter9:
-			case R.id.ivRow2PlayedLetter10:
-			case R.id.ivRow3PlayedLetter1:
-			case R.id.ivRow3PlayedLetter2:
-			case R.id.ivRow3PlayedLetter3:
-			case R.id.ivRow3PlayedLetter4:
-			case R.id.ivRow3PlayedLetter5:
-			case R.id.ivRow3PlayedLetter6:
-			case R.id.ivRow3PlayedLetter7:
-			case R.id.ivRow3PlayedLetter8:
-			case R.id.ivRow3PlayedLetter9:
-			case R.id.ivRow3PlayedLetter10:
-				this.handlePlayedTileClick(v.getId());
-				break;
-			case R.id.bPlay1:
-			case R.id.bPlay2:
-			case R.id.bPlay3:
-				this.handleButtonClick(v.getId());
-				break;
+
+		if (v.getId() == R.id.options){
+			if (!this.game.isStarted()){
+				popupMenu.show();
+			}
+		}
+		else {
+			if (this.freezeAction){ return; }
+			
+			switch (v.getId()){
+				case R.id.options:
+				//	if (!this.game.isActive()){
+						
+				//	}
+					break;
+			//	case R.id.ivStart:
+			//		this.handleStartOnClick();
+			//		break;
+				case R.id.ivRow1PlayedLetter1:
+				case R.id.ivRow1PlayedLetter2:
+				case R.id.ivRow1PlayedLetter3:
+				case R.id.ivRow1PlayedLetter4:
+				case R.id.ivRow1PlayedLetter5:
+				case R.id.ivRow1PlayedLetter6:
+				case R.id.ivRow1PlayedLetter7:
+				case R.id.ivRow1PlayedLetter8:
+				case R.id.ivRow1PlayedLetter9:
+				case R.id.ivRow1PlayedLetter10:
+				case R.id.ivRow2PlayedLetter1:
+				case R.id.ivRow2PlayedLetter2:
+				case R.id.ivRow2PlayedLetter3:
+				case R.id.ivRow2PlayedLetter4:
+				case R.id.ivRow2PlayedLetter5:
+				case R.id.ivRow2PlayedLetter6:
+				case R.id.ivRow2PlayedLetter7:
+				case R.id.ivRow2PlayedLetter8:
+				case R.id.ivRow2PlayedLetter9:
+				case R.id.ivRow2PlayedLetter10:
+				case R.id.ivRow3PlayedLetter1:
+				case R.id.ivRow3PlayedLetter2:
+				case R.id.ivRow3PlayedLetter3:
+				case R.id.ivRow3PlayedLetter4:
+				case R.id.ivRow3PlayedLetter5:
+				case R.id.ivRow3PlayedLetter6:
+				case R.id.ivRow3PlayedLetter7:
+				case R.id.ivRow3PlayedLetter8:
+				case R.id.ivRow3PlayedLetter9:
+				case R.id.ivRow3PlayedLetter10:
+					this.handlePlayedTileClick(v.getId());
+					break;
+				case R.id.bPlay1:
+				case R.id.bPlay2:
+				case R.id.bPlay3:
+					this.handleButtonClick(v.getId());
+					break;
+			}	
 		}		
 	}
 
@@ -1028,6 +1068,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   GameService.startGame(this.game);
 		   this.setBottom();
 		   this.setCountdown(15000); //this.getTimerStart());
+		   this.freezeAction = false;
 	   }
  
 	private void handleButtonClick(int id){
@@ -1851,6 +1892,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	 	else{
 	 		Logger.d(TAG, "setGame gameId=" + gameId);
 	 		this.game = GameService.getGame(gameId);
+	 		if (this.game.isCompleted()){
+	 			this.isStartButtonVisible = true;
+	 		}
 	 	}
   }
 	
@@ -1966,8 +2010,11 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	   }
 	
 	   private void handleCompletion(){
+		   Logger.d(TAG, "handleCompletion called");
 		   this.isCountdownRunning = false;
+		   
 	    	this.freezeAction = true;
+	    	this.isStartButtonVisible = false;
 	    	  
 	    	  this.game.setCountdown(0);
 		   this.gameSurfaceView.setReadyToDraw(false);
@@ -1994,6 +2041,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
     
 	   }
 	   private void initializeGame(){
+		   Logger.d(TAG, "initializeGame called");
 		   //DO not do this yet.  in this case wait until start is clicked
 		   this.playedWords.clear();
 		   
@@ -2002,11 +2050,11 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   }
 		   
 		   try {
-			this.game = GameService.createGame(this, player);
-		} catch (DesignByContractException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			   this.game = GameService.createGame(this, player);
+			} catch (DesignByContractException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
  
 			this.initializeGameOnBoard();
 			this.resetOnStart = false;
@@ -2409,6 +2457,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		}
 		
 	};
+
 
 	
     private void trackEvent(String action, String label, int value){
