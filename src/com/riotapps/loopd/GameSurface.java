@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -53,10 +54,12 @@ import com.riotapps.wordbase.hooks.StoreService;
 import com.riotapps.wordbase.hooks.WordService;
 import com.riotapps.wordbase.interfaces.ICloseDialog;
 import com.riotapps.wordbase.services.WordLoaderService;
+import com.riotapps.wordbase.ui.Coordinate;
 import com.riotapps.wordbase.ui.CustomButtonDialog;
 import com.riotapps.wordbase.ui.CustomProgressDialog;
 import com.riotapps.wordbase.ui.CustomToast;
 import com.riotapps.wordbase.ui.DialogManager;
+import com.riotapps.wordbase.ui.Location;
 import com.riotapps.wordbase.ui.MenuUtils;
 import com.riotapps.wordbase.utils.ApplicationContext;
 import com.riotapps.wordbase.utils.Constants;
@@ -131,7 +134,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	
 	private int playedLetterTileSize;
 	private float letterTileSize;
-	private boolean freezeAction = false;
+	private boolean freezeAction = true;
 	private ListView lvPlayedWords;
 	
 //	private ImageView ivStart;
@@ -166,12 +169,30 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private View vBottomFill;
 	private AdView adView;
 	public boolean isStartButtonVisible;
+	private float pixelsPerInch;
+	private boolean isStartClicked;
  
 	
 	private static Bitmap bgTray = null;
 	
 	
 	
+	public float getPixelsPerInch() {
+		return pixelsPerInch;
+	}
+
+	public void setPixelsPerInch(float pixelsPerInch) {
+		this.pixelsPerInch = pixelsPerInch;
+	}
+
+	public boolean isPaused() {
+		return isPaused;
+	}
+
+	public void setPaused(boolean isPaused) {
+		this.isPaused = isPaused;
+	}
+
 	public int getBottomHeight() {
 		return bottomHeight;
 	}
@@ -185,6 +206,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 
 	public void setSurfaceViewReadyToPause(boolean surfaceViewReadyToPause) {
+		//Logger.d("TAG", "setSurfaceViewReadyToPause called = "+ surfaceViewReadyToPause);
 		this.surfaceViewReadyToPause = surfaceViewReadyToPause;
 	}
 	 public Tracker getTracker() {
@@ -250,18 +272,24 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			   break;
 		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CANCEL_CLICKED:
 			   this.dismissCustomDialog();
+			   Logger.d(TAG, "handlePostAdServer 1");
+			   this.handlePostAdServer();
 			   this.isStartButtonVisible = true;
 			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
 					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_DISMISS, Constants.TRACKER_DEFAULT_OPTION_VALUE);
 			   break;
 		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_CLOSE_CLICKED:
 			   this.dismissCustomDialog();
+			   Logger.d(TAG, "handlePostAdServer 2");
+			   this.handlePostAdServer();
 			   this.isStartButtonVisible = true;
 			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
 					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_CANCEL, Constants.TRACKER_DEFAULT_OPTION_VALUE);
 			   break;  
 		   case Constants.RETURN_CODE_CUSTOM_DIALOG_INTERSTITIAL_REMINDER_OK_CLICKED:
 			   this.dismissCustomDialog();
+			   Logger.d(TAG, "handlePostAdServer 3");
+			   this.handlePostAdServer();
 			   this.isStartButtonVisible = true;
 			   this.trackEvent(Constants.TRACKER_CATEGORY_GAMEBOARD, Constants.TRACKER_ACTION_BUTTON_TAPPED,
 					     			Constants.TRACKER_LABEL_HIDE_INTERSTITIAL_REMINDER_OK, Constants.TRACKER_DEFAULT_OPTION_VALUE);
@@ -275,26 +303,56 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	@Override
 	protected void onPause() {
 		Logger.d(TAG, "onPause");
-		super.onPause();
 		
+		super.onPause();
 		this.isPaused = true;
 
-		
-		this.onPauseTask = new OnPauseTask();
-		this.onPauseTask.execute();
-		
+		if (this.gameSurfaceView.isFullDrawLoopCompleted()){
+			Logger.d(TAG, "onPause isFullDrawLoopCompleted");
+			this.finishOnPause();
+		}
+		else {
+			Logger.d(TAG, "onPause OnPauseTask about to be called");
+			this.onPauseTask = new OnPauseTask();
+			this.onPauseTask.execute();
+		}
 	}
 	
 	private void finishOnPause(){
+		
+		
 		Logger.d(TAG, "finishOnPause called");
 		this.onPauseTask = null;
 		//wait until surfaceview is ready to pause
 
 		this.gameSurfaceView.onPause();
 	    //if (this.game.isActive()){
-			Logger.d(TAG, "saveGame about to be called");
-	    	GameService.saveGame(this.game);
-	    //}
+		Logger.d(TAG, "saveGame about to be called");
+			
+			
+		if (!this.game.isStarted()){
+			Logger.d(TAG, "reset tile positions");
+			this.game.getRow1Tiles().clear();
+			this.game.getRow2Tiles().clear();
+			this.game.getRow3Tiles().clear();
+			
+			String x = "";
+			for (int i = 0; i < game.getHopper().size(); i++) {  
+	    		Tile tile = new Tile();
+	    		tile.setLetter(game.getHopper().get(i));
+	    		tile.setPlayed(false);
+	    		tile.setId(i); //java.util.UUID.randomUUID().toString());
+	    		tile.setRow(1);
+	    		tile.setLocation(new Coordinate());
+	    		game.getRow1Tiles().add(tile);
+	    		
+	    		x += game.getHopper().get(i);
+	    	}
+			Logger.d(TAG, "hopper=" + x);
+		}
+			
+	    GameService.saveGame(this.game);
+	 
 	}
 	
 
@@ -364,6 +422,10 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		 		spinner.dismiss();
 		 		spinner = null;
 		 	}
+			
+			if (this.game.isStarted()){
+				this.setCountdown(this.game.getCountdown());  
+			}
 		//check to see if user has purchased premium upgrade 
 		 
 		
@@ -435,6 +497,8 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		this.loadViews();
 		this.setBottom();
 
+		this.setDerivedValues();
+		
 	    this.gameSurfaceView = (GameSurfaceView)findViewById(R.id.gameSurface);
 	    this.gameSurfaceView.construct(this);
 
@@ -448,7 +512,16 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 	}
 	
- 
+	private void setDerivedValues(){
+		DisplayMetrics dm = new DisplayMetrics();
+		
+		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		this.pixelsPerInch = dm.xdpi;
+		
+		Logger.d(TAG, "setDerivedValues pixelsPerInch=" + this.pixelsPerInch);
+	}
+	
+	
 	private void setPrevFields(){
 
 	    this.prevTopScore = player.getHighScore();
@@ -500,7 +573,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				}
 			 
 				try {
-					Thread.sleep(5);
+					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -588,6 +661,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private void handleInterstitialAd(){
     	this.hasPostAdRun = false; 
     	if (this.hideInterstitialAd){
+			   Logger.d(TAG, "handlePostAdServer 4");
     		this.handlePostAdServer();   		            	 					
  			}
  		else{
@@ -643,21 +717,21 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 		Logger.d(TAG, "handlePostAdServer numPlayed=" + this.player.getNumPlayed() + " topScoreDiff=" + this.topScoreDiff + 
 				" newTopScore=" + this.newTopScore + " prevTopScore" + this.prevTopScore + 
-				" player.getNumGamesSinceLastTopScore" + player.getNumGamesSinceLastTopScore());
+				" player.getNumGamesSinceLastTopScore" + player.getNumGamesSinceLastTopScore() + " prevNumGamesSinceLastTopScore=" + prevNumGamesSinceLastTopScore);
 		if (player.getNumPlayed() == 1) {
 			Logger.d(TAG, "1");
 			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_first_time_title), this.getString(R.string.game_completed_first_time_message));
 		}
-		else if (this.topScoreDiff > 0) {
-			Logger.d(TAG, "2");
+		else if (this.topScoreDiff > 0) { 
+			Logger.d(TAG, "2"); 
 			//new top score message
-			if (this.prevNumGamesSinceLastTopScore > 0  && this.prevNumGamesSinceLastTopScore % 10 == 0) {
+			if (this.prevNumGamesSinceLastTopScore > 9) {// && this.prevNumGamesSinceLastTopScore % 10 == 0) {
 				Logger.d(TAG, "3");
 				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_new_top_score_in_x_games_title), String.format(this.getString(R.string.game_completed_new_top_score_in_x_games_message, this.prevNumGamesSinceLastTopScore)));				
 			}
 			else {
 				Logger.d(TAG, "4");
-				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_first_time_title), this.getString(R.string.game_completed_first_time_message));
+				DialogManager.SetupAlert(this, this.getString(R.string.game_completed_new_top_score_title), this.getString(R.string.game_completed_new_top_score_message));
 			}
 		}
 		else if (this.topScoreDiff == 0 && this.newTopScore > 0){
@@ -674,9 +748,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			Logger.d(TAG, "7");
 			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_within_10_top_score_title), this.getString(R.string.game_completed_within_10_top_score_message));
 		}
-		else if (this.prevTopScore > 0 && player.getNumGamesSinceLastTopScore() % 5 == 0) {
-			Logger.d(TAG, "8");
-			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_since_last_top_score_title), String.format(this.getString(R.string.game_completed_since_last_top_score_message, this.prevNumGamesSinceLastTopScore)));
+		else if (this.prevTopScore > 0 && player.getNumGamesSinceLastTopScore() > 0 && player.getNumGamesSinceLastTopScore() % 5 == 0) {
+			Logger.d(TAG, "8 player.getNumGamesSinceLastTopScore()=" + player.getNumGamesSinceLastTopScore() + " " + player.getNumGamesSinceLastTopScore() % 5);
+			DialogManager.SetupAlert(this, this.getString(R.string.game_completed_since_last_top_score_title),  String.format(this.getString(R.string.game_completed_since_last_top_score_message, player.getNumGamesSinceLastTopScore())));
 		}
 		else {
 			Logger.d(TAG, "9");
@@ -696,11 +770,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			}
 		}
 		
-		 //if new top score set
+		 this.tvCountdown.setText(this.getString(R.string.scoreboard_countdown_start));
 		 
-		 //if top score not set but close
-		 
-		
+		this.gameSurfaceView.setReadyToDraw(true);
 			this.isStartButtonVisible = true;
 	    	this.hasPostAdRun = true;
     		// 	this.unfreezeButtons();
@@ -1019,6 +1091,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 
 	public void handleStartOnClick(){
+		if (this.isStartClicked) {return;}
+		
+		this.isStartClicked = true;
 		 //make countdown timer a variable so that it can be killed in stop/pause
 		   //change game status to started (5)
 		   //ApplicationContext.captureTime(TAG, "handleStartOnClick called");
@@ -1066,9 +1141,11 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   }
 		   
 		   GameService.startGame(this.game);
+		   this.gameSurfaceView.setReadyToDraw(true);
 		   this.setBottom();
-		   this.setCountdown(15000); //this.getTimerStart());
+		   this.setCountdown(this.getTimerStart()); //15000
 		   this.freezeAction = false;
+		 //  this.gameSurfaceView.
 	   }
  
 	private void handleButtonClick(int id){
@@ -1520,13 +1597,15 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	private void setViewLayouts(){
 		
 		Display display = getWindowManager().getDefaultDisplay();
+		
+		
 	    Point size = new Point();
 	 	display.getSize(size);
 	 	display.getSize(size);
 		int fullWidth = size.x;
 		
 		this.playedLetterTileSize = Math.round(fullWidth / 10.50f);
-		this.letterTileSize =  this.playedLetterTileSize * .28f ;	
+		this.letterTileSize =  this.playedLetterTileSize * .66f; //.28f ;	
 		
 		Logger.d(TAG, "setViewLayouts letterTileSize=" + this.letterTileSize + " playedLetterTileSize=" + this.playedLetterTileSize);
 	 	//int maxTrayTileSize = this.getResources().getInteger(R.integer.maxTrayTileSize);
@@ -1896,6 +1975,13 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	 			this.isStartButtonVisible = true;
 	 		}
 	 	}
+	 	
+	 	if (this.game.isStarted()){
+	 		this.freezeAction = false;
+	 	}
+	 	else {
+	 		this.freezeAction = true;
+	 	}
   }
 	
 	protected void setupFonts(){
@@ -1944,7 +2030,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	}
 	
 	
-	   private int getTimerStart(){
+	   private int getTimerStart(){ 
 		   int timerLength = this.getResources().getInteger(R.integer.defaultCountdownStart); //5 minutes
 		/*   if (this.game.isDoubleTimeType()){
 			   timerLength = this.getResources().getInteger(R.integer.gameTypeDoubleTimeCountdownStart);
@@ -2013,6 +2099,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   Logger.d(TAG, "handleCompletion called");
 		   this.isCountdownRunning = false;
 		   
+		   this.isStartClicked = false;
 	    	this.freezeAction = true;
 	    	this.isStartButtonVisible = false;
 	    	  
@@ -2035,6 +2122,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		   this.row3Tiles.clear();
 		   
 		   this.resetOnStart = true;
+  		   this.tvCountdown.setTextColor(Color.parseColor(GameSurface.this.getString(R.color.countdown_text_color)));
  
 		   //handle Ad or purchase reminder
 		   this.handleInterstitialAd(); 
@@ -2225,7 +2313,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			//Toast.makeText(context, "Interstitial '"+location+"' Load Failed",
 			//		Toast.LENGTH_SHORT).show();
 			handlePostAdServer();
-			//handlePostTurnFinalAction(postTurnAction);
+			//handlePostTurnFinalAction(postTurnAction); 
 		}
 
 		/*

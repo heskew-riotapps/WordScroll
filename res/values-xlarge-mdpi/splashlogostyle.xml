@@ -2,7 +2,7 @@
 <resources>
     <style name="SplashLogoStyle">
         <item name="android:src">@drawable/splash_logo</item>
-	    <item name="android:layout_width">250dp</item>
+	    <item name="android:layout_width">300dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerInParent">true</item>
         <item name="android:contentDescription">@string/logo</item>

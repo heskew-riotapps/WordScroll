@@ -27,6 +27,7 @@
 		        android:paddingTop="0dp"
 		        android:layout_height="12dp"
 		        />
+		
 		 
 		<LinearLayout 
         style="@style/ContentAreaTextBottomStyle"
@@ -84,7 +85,13 @@
 				        android:layout_below="@id/tvPremiumUpgradeTitle"
 				        android:layout_toLeftOf="@id/llPremiumUpgradePriceWrapper"
 				        />
-				 
+					 <ImageView 
+						    android:src="@drawable/no_ads"
+						    android:layout_below="@id/tvPremiumUpgradeDescription"
+						    android:layout_width="wrap_content"
+				        	android:layout_height="wrap_content"
+				        	android:layout_centerHorizontal="true"
+						    />
 			  </RelativeLayout>
 						  
 		</LinearLayout>

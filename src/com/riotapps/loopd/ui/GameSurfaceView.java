@@ -8,6 +8,7 @@ import com.riotapps.loopd.R;
 import com.riotapps.wordbase.ui.Coordinate;
 import com.riotapps.wordbase.ui.RectArea;
 import com.riotapps.wordbase.utils.ApplicationContext;
+import com.riotapps.wordbase.utils.Constants;
 import com.riotapps.wordbase.utils.ImageHelper;
 import com.riotapps.wordbase.utils.Logger;
 import com.riotapps.wordbase.utils.Utils;
@@ -67,18 +68,29 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	
 	private int speedStarterDistanceMin = 4;
 	private int speedStarterDistanceMax = 6;
-
 	private int speedDistanceMin = 6;
 	private int speedDistanceMax = 13;
+	
+	private int originalSpeedStarterDistanceMin = 4;
+	private int originalSpeedStarterDistanceMax = 6;
+	private int originalSpeedDistanceMin = 6;
+	private int originalSpeedDistanceMax = 13;
+	
 	private int lastSpeedChange = 0;
 	private int updateSpeedInterval = 30;
 	private int bonusCount = 0;
 	
 	private int backoffDistanceFromEdge = 5;
 	private int speedDistance = 6;
+	private float speedIncrement = 1f;
 	private float speedDistancePercentageOfTileSize = .03125f; ///????? change to dp conversion
 	private float rowHeightDivisor = 3.5f;
 	private int maxTileSize = 170;
+	private int originalMaxTileSize = 170;
+
+	private double inchesPerMillisecondActive; 
+	private double inchesPerMillisecondStarter;
+	private long currentTimestamp;
 	
 	private int row1Position = 0;
 	private int row2Position = 0;
@@ -106,12 +118,17 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	private boolean isDrawing;
 	private int startWidth;
 	private float startButtonPercentageOfHeight = .8f;
-	private int maxStartButtonSize = 200;
+	private int maxStartButtonSize = 360;
+	private int originalMaxStartButtonSize = 360;
 	private int horizontalMidPoint;
 	private int startXPosition;
 	private RectArea startButtonArea;
 	private boolean stopStarterTile = false;
 	private boolean isStartButtonPressed = false;
+	private boolean fullDrawLoopCompleted = true;
+	private boolean isSetDerivedValuesCompleted = false;
+	private int speedDistanceStarter;
+	private int speedDistanceActive;
 	
 	public boolean isReadyToDraw() {
 		return readyToDraw;
@@ -119,6 +136,14 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 
 	public void setReadyToDraw(boolean readyToDraw) {
 		this.readyToDraw = readyToDraw;
+	}
+
+	public boolean isFullDrawLoopCompleted() {
+		return fullDrawLoopCompleted;
+	}
+
+	public void setFullDrawLoopCompleted(boolean fullDrawLoopCompleted) {
+		this.fullDrawLoopCompleted = fullDrawLoopCompleted;
 	}
 
 	private Tile getTappedTile(){
@@ -204,6 +229,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	//}
  private void kickoff(boolean onResume){
      final boolean  handleOnResume = onResume;
+     this.isSetDerivedValuesCompleted = false;
 	 this.post(new Runnable() 
 	    {   
 	        @Override
@@ -263,9 +289,49 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 	this.parent.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 	    //	int w  = displaymetrics.widthPixels;
 	//  	Logger.d(TAG, "SetDerivedValues gameboard_button_area_height=" +  this.parent.getResources().getInteger(com.riotapps.word.R.integer.gameboard_button_area_height) );
-//	 	Logger.d(TAG, "SetDerivedValues scoreboard_height=" +  this.parent.getResources().getInteger(com.riotapps.word.R.integer.scoreboard_height) );
+ 	//Logger.d(TAG, "SetDerivedValues scoreboard_height=" +  this.parent.getResources().getInteger(com.riotapps.word.R.integer.scoreboard_height) );
 //	  	Logger.d(TAG, "SetDerivedValues h1=" +  this.getHeight() );
   
+	 	String resolution = this.parent.getString(R.string.derived_device_resolution);
+	 	Logger.d(TAG, "convertPixelsBasedOnXxhdpiReolution resolution=" + resolution);
+
+	 	double pixelsPerInch = displaymetrics.xdpi;
+	 	int speedDistanceActiveMultiplier = 50;
+	 	int speedDistanceActiveStarter = 120;
+
+ 
+	 	if (resolution.equals(Constants.LDPI)){//120
+	 		speedDistanceActiveMultiplier = 50;
+		 	speedDistanceActiveStarter = 120;
+	 	}
+	 	else if (resolution.equals(Constants.MDPI)){//160
+	 		speedDistanceActiveMultiplier = 30;
+		 	speedDistanceActiveStarter = 60;
+	 	}
+	 	else if (resolution.equals(Constants.HDPI)){//240
+	 		speedDistanceActiveMultiplier = 40;
+		 	speedDistanceActiveStarter = 60;
+	 	}
+	 	else if (resolution.equals(Constants.XHDPI)){//320
+	 		speedDistanceActiveMultiplier = 55;
+		 	speedDistanceActiveStarter = 100;
+	 	}
+	// 	else if (resolution.equals(Constants.XXHDPI)){//480
+	// 		speedDistanceActiveMultiplier = 50;
+	//	 	speedDistanceActiveStarter = 120;
+	// 	}
+	 	else {
+	 		speedDistanceActiveMultiplier = 50;
+		 	speedDistanceActiveStarter = 120;
+	 	} 
+	 	
+	 	this.speedDistanceActive = (int) Math.round(pixelsPerInch / speedDistanceActiveMultiplier);
+	 	this.speedDistanceStarter = (int) Math.round(pixelsPerInch / speedDistanceActiveStarter);
+	 	
+	 	Logger.d(TAG, "SetDerivedValues pixelsPerInch=" + pixelsPerInch + " speedDirectionActive=" +  this.speedDistanceActive + " speedDirectionStarter=" + speedDistanceStarter );
+	 	
+
+	 	
 	 	 this.fullWidth = this.getWidth();
 	 	 this.row2Position = this.fullWidth;
 	 	 
@@ -276,19 +342,31 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 	  this.height = this.getHeight() - this.parent.getBottomHeight();
 //		 		 Utils.convertDensityPixelsToPixels(parent, this.parent.getResources().getInteger(com.riotapps.wordbase.R.integer.gameboard_button_area_height));// - 
  
-		 this.speedStarterDistanceMax = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedStarterDistanceMax);
-		 this.speedStarterDistanceMin = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedStarterDistanceMin);
-	 	 this.speedDistanceMax = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedDistanceMax);
-	 	 this.speedDistanceMin = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.speedDistanceMin);
-	 	 this.maxStartButtonSize = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.maxStartButtonSize);
-	 	 this.maxTileSize = Utils.convertPixelsBasedOnXxhdpiReolution(this.parent, this.maxTileSize);
+		 this.speedStarterDistanceMax = Utils.shrinkPixelsBasedOnXxhdpiReolution(this.parent, this.originalSpeedStarterDistanceMax);
+		 this.speedStarterDistanceMin = Utils.shrinkPixelsBasedOnXxhdpiReolution(this.parent, this.originalSpeedStarterDistanceMin);
+	 	 this.speedDistanceMax = Utils.shrinkPixelsBasedOnXxhdpiReolution(this.parent, this.originalSpeedDistanceMax);
+	 	 this.speedDistanceMin = Utils.shrinkPixelsBasedOnXxhdpiReolution(this.parent, this.originalSpeedDistanceMin);
+	 	 this.maxStartButtonSize = Utils.shrinkPixelsBasedOnXxhdpiReolution(this.parent, this.originalMaxStartButtonSize);
+	 
+	 	 this.speedIncrement = Utils.shrinkPixelMultiplierBasedOnXxhdpiReolution(this.parent);
+	 	 
+	 	 Logger.d(TAG, "first maxTileSize=" + this.maxTileSize + " START WIDTH=" + this.startWidth);
+	 	 
+	 	 this.maxTileSize = Utils.shrinkPixelsBasedOnXxhdpiReolution(this.parent, this.originalMaxTileSize);
 	 	  
 	 	 this.verticalMidPoint = Math.round(this.height / 2); 
 	 	 this.horizontalMidPoint = Math.round(this.fullWidth / 2); 	 	 
 	 	 this.startWidth = Math.round(this.height * this.startButtonPercentageOfHeight );
 	 	 
+	 	 Logger.d(TAG, "maxTileSize=" + this.maxTileSize + " START WIDTH=" + this.startWidth);
+	 	 
+	 	 if (this.maxStartButtonSize < this.startWidth){
+	 		 this.startWidth = this.maxStartButtonSize; 
+	 	 }
 	 //	 this.startXPosition = horizontalMidPoint - Math.round(this.startWidth / 2);
 	 //	 this.startXPosition = horizontalMidPoint - Math.round(this.startWidth / 2);
+	 	 
+	 	 //fix max height of button
 	 	 
 	 	 this.startButtonArea = new RectArea();
 	 	 this.startButtonArea.setTop(verticalMidPoint - Math.round(this.startWidth / 2));
@@ -296,7 +374,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 	 this.startButtonArea.setRight(this.startButtonArea.getLeft() + this.startWidth);
 	 	 this.startButtonArea.setBottom(this.startButtonArea.getTop() + this.startWidth);
 	 	 
-	 	 Logger.d(TAG, "setDerive vmp=" + this.verticalMidPoint + " hmp=" +  this.horizontalMidPoint + " sba.top=" + this.startButtonArea.getTop() + 
+	 	 Logger.d(TAG, "setDerive startWidth=" + this.startWidth + " vmp=" + this.verticalMidPoint + " hmp=" +  this.horizontalMidPoint + " sba.top=" + this.startButtonArea.getTop() + 
 	 			" sba.left=" + this.startButtonArea.getLeft() + " sba.right=" + this.startButtonArea.getRight() + 
 	 			" sba.bottom=" + this.startButtonArea.getBottom());
 	 	 
@@ -316,14 +394,25 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 	 
 	 	 this.row2_yPosition = this.verticalMidPoint - Math.round(this.tileSize / 2);
 	 	 
+	 	Logger.d(TAG, "SetDerivedValues 1 row1_yPosition=" +  this.row1_yPosition + " row2_yPosition=" + this.row2_yPosition  + " row3_yPosition=" + this.row3_yPosition  );
+	 	 
 	 	 this.row1_yPosition = this.row2_yPosition - this.tileSize - this.tileGap;   
+	 	Logger.d(TAG, "SetDerivedValues 2 row1_yPosition=" +  this.row1_yPosition + " row2_yPosition=" + this.row2_yPosition  + " row3_yPosition=" + this.row3_yPosition  );
+
 	 	 if (this.row1_yPosition < 0){
+	 		Logger.d(TAG, "SetDerivedValues 3 row1_yPosition=" +  this.row1_yPosition + " row2_yPosition=" + this.row2_yPosition  + " row3_yPosition=" + this.row3_yPosition  );
+
 	 		 this.row1_yPosition = backoffDistanceFromEdge;
 	 	 }
+	 	Logger.d(TAG, "SetDerivedValues 4 row1_yPosition=" +  this.row1_yPosition + " row2_yPosition=" + this.row2_yPosition  + " row3_yPosition=" + this.row3_yPosition  );
+
 	 	this.row3_yPosition = this.row2_yPosition + this.tileSize + this.tileGap;
 	 	 if (this.row1_yPosition > this.height){
+	 		Logger.d(TAG, "SetDerivedValues 5 row1_yPosition=" +  this.row1_yPosition + " row2_yPosition=" + this.row2_yPosition  + " row3_yPosition=" + this.row3_yPosition  );
+
 	 		 this.row1_yPosition = this.height - this.backoffDistanceFromEdge;
 	 	 }
+	 	Logger.d(TAG, "SetDerivedValues 6 row1_yPosition=" +  this.row1_yPosition + " row2_yPosition=" + this.row2_yPosition  + " row3_yPosition=" + this.row3_yPosition  );
 	 	 
 	 	this.parent.captureTime("SetDerivedValues before math");
 	/* 	this.trayTileSize = Math.round(this.fullWidth / 7.50f);	
@@ -377,6 +466,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		 this.parent.captureTime("SetDerivedValues after bitmap loads");
 		//Toast t = Toast.makeText(context, "Hello " +  this.height + " " + this.fullWidth + " " + getMeasuredHeight() , Toast.LENGTH_LONG);   
 	    //t.show();
+		 this.isSetDerivedValuesCompleted = true;
 	}
 	
 
@@ -424,6 +514,9 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			this.parent.setSurfaceViewReadyToPause(true);
 		}
 		this.readyToDraw = false;
+		if (!this.parent.getGame().isStarted()){
+			
+		}
 		this.gameThread.onPause();
 	//	 this.stopThread();  
 	}
@@ -550,14 +643,14 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		  this.currentY = (int) event.getRawY() - this.absoluteTop;
 		  long currentTouchTime = System.currentTimeMillis();
 		  
-		  Logger.d(TAG, "MotionEvent=" + event.getAction());
+		  //Logger.d(TAG, "MotionEvent=" + event.getAction());
 	     synchronized (this.gameThread.getSurfaceHolder()) {
              switch (event.getAction()) {
              
              case MotionEvent.ACTION_DOWN:  ///0
             	 this.tapCheck = currentTouchTime;
             	 
-            	 Logger.d(TAG, "onTouchEVent  this.tapCheck=" +  this.tapCheck + " status=" + this.parent.getGame().getStatus());
+             	 Logger.d(TAG, "onTouchEVent  this.tapCheck=" +  this.tapCheck + " status=" + this.parent.getGame().getStatus());
  
 	          
             	 this.previousX = this.currentX;
@@ -573,12 +666,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
             	 else if (this.parent.getGame().isStarted()) {
             		 this.setTileOnDown(this.findTapTargetTile(this.currentX, this.currentY));
             	 }
-            	 Logger.d(TAG, "onTouchEvent ACTION_DOWN tapped id=" + this.getTileOnDown());
+            //	 Logger.d(TAG, "onTouchEvent ACTION_DOWN tapped id=" + this.getTileOnDown());
             	 
             	  break;
 
              case MotionEvent.ACTION_UP: //1
-            	 Logger.d(TAG, "onTouchEvent ACTION_UP tapped id=" + this.getTileOnDown());
+            //	 Logger.d(TAG, "onTouchEvent ACTION_UP tapped id=" + this.getTileOnDown());
             	 Logger.d(TAG, "onTouchEvent ACTION_UP tapCheck=" + this.tapCheck + " currentTouchTime=" + currentTouchTime + " diff=" + (currentTouchTime - this.tapCheck));
 	            
             	 this.isStartButtonPressed = false;
@@ -590,12 +683,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
    						 this.parent.handleStartOnClick();
 	   					 }
 	   					 else {
-	   						 Logger.d(TAG, "onTouchEVent  this.startButtonArea.isCoordinateWithinArea=false");
+	   				//		 Logger.d(TAG, "onTouchEVent  this.startButtonArea.isCoordinateWithinArea=false");
 	   					 }
 	            	}
 	            	else if (this.parent.getGame().isStarted() && this.getTileOnDown() >= 0) {
 	            		// int actionUpTile = this.findTapTargetTile(this.currentX, this.currentY);
-	            		 Logger.d(TAG, "onTouchEVent UP tile this.isPaused=" + this.isPaused);
+	             		 Logger.d(TAG, "onTouchEVent UP tile this.isPaused=" + this.isPaused);
 	            		 //Logger.d(TAG, "onTouchEvent ACTION_UP tapped actionUpTile=" + actionUpTile);
 	            		 //if (actionUpTile == this.getTileOnDown()){
 	            			 if (!this.isPaused){
@@ -629,13 +722,9 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	 }
 	 
  
-	 private void resetPointsView(){
-		
-	 }
-	 
 	 private int findTapTargetTile(int xPosition, int yPosition){
 		 int tileId = -1;
-		 this.parent.captureTime(TAG + " FindTileFromPositionInFullViewMode loop starting");
+	//	 this.parent.captureTime(TAG + " FindTileFromPositionInFullViewMode loop starting");
 		 
 		 for (Tile tile : this.parent.getGame().getRow1Tiles()) { 
 	    	 if (xPosition >= tile.getLocation().getxLocation() && xPosition <= (tile.getLocation().getxLocation() + this.tileSize + Math.round(this.tileGap / 4 )) &&
@@ -676,7 +765,12 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			 Logger.d("TAG", "onDraw canvas is null");
 			 return;
 		 }
+		 if(!this.isSetDerivedValuesCompleted){
+			 Logger.d("TAG", "onDraw setDerivedValues not completed");
+			 return;
+		 }
 		 this.readyToDraw = false;
+		 this.fullDrawLoopCompleted = false;
 		
 		 canvas.drawColor(0, Mode.CLEAR);
 		 
@@ -687,7 +781,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			 Logger.d(TAG, "onDraw readyToDraw=" + this.readyToDraw);
 		 }
 		 this.isDrawing = false;
-		 if (this.isPaused){
+		 if (this.isPaused || this.parent.isPaused()){
 			 this.parent.setSurfaceViewReadyToPause(true);
 		 }
 	//	 this.parent.captureTime("onDraw ended");
@@ -695,34 +789,39 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
    
 	
 	private void drawField(Canvas canvas){
-		
-		setSpeed();
-
-		int moveToRow2 = this.drawAndAdvanceTiles(canvas, this.parent.getGame().getRow1Tiles(), 1);
-		int moveToRow3 = this.drawAndAdvanceTiles(canvas, this.parent.getGame().getRow2Tiles(), 2);
-		int moveToRow1 = this.drawAndAdvanceTiles(canvas, this.parent.getGame().getRow3Tiles(), 3);
- 
-		if (moveToRow2 >= 0) {
-			this.moveToNextRow(this.parent.getGame().getRow1Tiles(), this.parent.getGame().getRow2Tiles(), 2, this.row2_yPosition);
+		try{
+			setSpeed();
+	
+			int moveToRow2 = this.drawAndAdvanceTiles(canvas, this.parent.getGame().getRow1Tiles(), 1);
+			int moveToRow3 = this.drawAndAdvanceTiles(canvas, this.parent.getGame().getRow2Tiles(), 2);
+			int moveToRow1 = this.drawAndAdvanceTiles(canvas, this.parent.getGame().getRow3Tiles(), 3);
+	 
+			if (moveToRow2 >= 0) {
+				this.moveToNextRow(this.parent.getGame().getRow1Tiles(), this.parent.getGame().getRow2Tiles(), 2, this.row2_yPosition);
+			}
+			if (moveToRow3 >= 0) {
+				this.moveToNextRow(this.parent.getGame().getRow2Tiles(), this.parent.getGame().getRow3Tiles(), 3, this.row3_yPosition);
+			}
+			if (moveToRow1 >= 0) {
+				this.moveToNextRow(this.parent.getGame().getRow3Tiles(), this.parent.getGame().getRow1Tiles(), 1, this.row1_yPosition);
+			}
+	 
+			this.drawBorders(canvas);
+			this.drawStartButton(canvas);
+			
+		//	Logger.d(TAG, "active=" + this.parent.getGame().isActive() + "first tile x loc=" + this.parent.getGame().getRow1Tiles().get(0).getLocation().getxLocation() +
+		//		 " tileStarterMaxDistance=" + tileStarterMaxDistance);
+		//	if (this.parent.getGame().isActive() && //not start yet
+		//			this.parent.getGame().getRow1Tiles().get(0).getLocation().getxLocation() + this.tileSize >= this.tileStarterMaxDistance){ 
+		//		//this.stopStarterTile  = true;
+		//		this.readyToDraw = false;
+		//	}
+		//	else{
 		}
-		if (moveToRow3 >= 0) {
-			this.moveToNextRow(this.parent.getGame().getRow2Tiles(), this.parent.getGame().getRow3Tiles(), 3, this.row3_yPosition);
+		catch (Exception e){
+			Logger.d(TAG, "drawField e=" + e.getMessage(), e) ;
 		}
-		if (moveToRow1 >= 0) {
-			this.moveToNextRow(this.parent.getGame().getRow3Tiles(), this.parent.getGame().getRow1Tiles(), 1, this.row1_yPosition);
-		}
- 
-		this.drawBorders(canvas);
-		this.drawStartButton(canvas);
-		
-	//	Logger.d(TAG, "active=" + this.parent.getGame().isActive() + "first tile x loc=" + this.parent.getGame().getRow1Tiles().get(0).getLocation().getxLocation() +
-	//		 " tileStarterMaxDistance=" + tileStarterMaxDistance);
-	//	if (this.parent.getGame().isActive() && //not start yet
-	//			this.parent.getGame().getRow1Tiles().get(0).getLocation().getxLocation() + this.tileSize >= this.tileStarterMaxDistance){ 
-	//		//this.stopStarterTile  = true;
-	//		this.readyToDraw = false;
-	//	}
-	//	else{
+		this.fullDrawLoopCompleted = true;
 			this.readyToDraw = true; 
 	//	}
 	}
@@ -749,6 +848,13 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	}
 	
 	private void setSpeed(){
+		if (this.parent.getGame().isStarted()){
+			this.speedDistance = this.speedDistanceActive;
+		}
+		else {
+			this.speedDistance = this.speedDistanceStarter;			
+		}
+		/*
 		
 		this.loopCount += 1;
 		if (this.loopCount - this.lastSpeedChange >= this.updateSpeedInterval){
@@ -764,24 +870,24 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 			
 			//faster
 			if (this.speedDirection == 0 && this.speedDistance < speedMax ){ 
-				this.speedDistance += 1;
+				this.speedDistance = Math.round(this.speedDistance + this.speedIncrement);
 			}
 			//faster but we've reached the max, so flip speed direction
 			else if (this.speedDirection == 0 && this.speedDistance >= speedMax ){ 
 				this.speedDirection = 1;
-				this.speedDistance -= 1;
+				this.speedDistance = Math.round(this.speedDistance - this.speedIncrement);
 			}
 			//slower
 			if (this.speedDirection == 1 && this.speedDistance > speedMin ){ 
-				this.speedDistance -= 1;
+				this.speedDistance = Math.round(this.speedDistance - this.speedIncrement);
 			} 
 			//slower but we've reached the min, so flip speed direction
 			else if (this.speedDirection == 1 && this.speedDistance <= speedMin ){ 				
 				this.speedDirection = 0;
-				this.speedDistance += 1;
+				this.speedDistance = Math.round(this.speedDistance + this.speedIncrement);
 			}
 		}
- 	
+		*/
 	}
 	
 	private int drawAndAdvanceTiles(Canvas canvas, List<Tile> tiles, int currentRow){
@@ -794,8 +900,10 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
  
 			//set initial position
 			if (currentRow == 1 && tile.getLocation().getxLocation() == 0 && tile.getLocation().getyLocation() == 0){
+				if (i < 2) {Logger.d(TAG, "drawAndAdvanceTiles tile=" + tile.getLetter());}
 				tile.getLocation().setxLocation(this.row1Position - (i * (this.tileSize + this.tileGap)));
 				tile.getLocation().setyLocation(this.row1_yPosition);
+				if (i < 2) {Logger.d(TAG, "drawAndAdvanceTiles tile xpos=" + tile.getLocation().getxLocation() + " ypos=" + tile.getLocation().getyLocation());}
 
 //				tile.setLocation(new Coordinate(this.row1Position - (i * (this.tileSize + this.tileGap)), 0, 0));
 			}
@@ -871,21 +979,22 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 	}
 	
 	private void drawTile(Canvas canvas, int xPosition, int yPosition, String letter, boolean isPlayed, boolean isBonus){
-		if (isPlayed) { 
+		
+		if (!this.parent.getGame().isStarted()) {
+			canvas.drawBitmap(GameSurfaceView.bgTileStarter, xPosition, yPosition, null);
+		}
+		else if (isPlayed) { 
 			canvas.drawBitmap(GameSurfaceView.bgTilePlayed, xPosition, yPosition, null);
 		}
 		else if (isBonus) { 
 			canvas.drawBitmap(GameSurfaceView.bgTileBonus, xPosition, yPosition, null);
-		}
-		else if (!this.parent.getGame().isStarted()) {
-			canvas.drawBitmap(GameSurfaceView.bgTileStarter, xPosition, yPosition, null);
 		}
 		else  {
 			canvas.drawBitmap(GameSurfaceView.bgTile, xPosition, yPosition, null);  
 		}
     	 Paint pLetter = new Paint();
     	 int baseTextColor = this.parent.getGame().isActive() ? Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_starter_letter)) : Color.parseColor(this.parent.getString(R.color.game_board_tray_tile_letter));
-    	 pLetter.setColor(isBonus ? Color.parseColor(this.parent.getString(R.color.game_board_bonus_tile_letter)) : baseTextColor );
+    	 pLetter.setColor(isBonus && this.parent.getGame().isStarted() ? Color.parseColor(this.parent.getString(R.color.game_board_bonus_tile_letter)) : baseTextColor );
     	 pLetter.setTextSize(Math.round(this.tileSize  * .70));
     	 pLetter.setAntiAlias(true); 
     	 pLetter.setTypeface(ApplicationContext.getLetterTypeface()); //(this.letterTypeface);

@@ -60,7 +60,7 @@
 	<string name="share_message">Check out Loopd for Android in the Google Play store.  Test your word building skills as the letters snake by.  How many words can you build???</string>
 
 	<string name="full_rules_1">The idea is to score as many points as you possibly can by building words (the longer the better) before the countdown is completed.</string>
-	<string name="full_rules_2">To start the game, just tap the Start button.  That kicks off the 5 minute countdown timer. The three words will be preset for you with letters or word fragments.  Your job is to determine what words can be formed from each fragment using the letter tiles from the hopper that are scrolling by in the bottom area.  </string>
+	<string name="full_rules_2">To start the game, just tap the Start button.  That kicks off the 4 minute 8 second countdown timer. The three words will be preset for you with letters or word fragments.  Your job is to determine what words can be formed from each fragment using the letter tiles from the hopper that are scrolling by in the bottom area.  </string>
 	<string name="full_rules_3">The top row of the scrolling hopper is used for Word 1.  The middle row is used for Word 2.  The bottom row is used for Word 3.  As you tap letter tiles in the scrolling hopper, those letters are added to the left-most empty tile of the particular word for the row the tapped tile belonged to.</string>
 	<string name="full_rules_4">If you make a mistake and want to remove a letter from a word, just tap that letter\'s tile and it will be removed - except for the preset letters in the word fragment which cannot be changed.</string>
 	<string name="full_rules_5">No formal words or hyphenated words are allowed. Words can be from 2 to 10 letters long.</string> 	    
