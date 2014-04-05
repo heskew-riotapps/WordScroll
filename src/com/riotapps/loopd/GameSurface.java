@@ -171,7 +171,21 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	public boolean isStartButtonVisible;
 	private float pixelsPerInch;
 	private boolean isStartClicked;
+	private boolean isCompletedState = false;
  
+	private void setupCB(){
+		if (this.cb == null) {
+			Logger.d(TAG, "setupCB cb is null");
+			this.setupChartBoost();	
+		
+		}
+		else{
+			Logger.d(TAG, "setupCB cb is NOT null");
+		}
+		this.cb.onStart(this);
+	//	return this.cb;
+		
+	}
 	
 	private static Bitmap bgTray = null;
 	
@@ -250,7 +264,14 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 		this.kickoff();
 	}
-	
+	 private void checkFirstTimeStatus(){
+		 //first check to see if this score has already been alerted (from local storage) 
+		 
+		 if (!PlayerService.checkFirstTimeGameSurfaceAlertAlreadyShown(this)) {
+			 DialogManager.SetupAlert(this, this.getString(R.string.game_surface_first_time_alert_title), this.getString(R.string.game_surface_first_time_alert_message));
+		 }
+		 
+	 }
     private void dismissCustomDialog(){
 		if (this.customDialog != null){
 			customDialog.dismiss();
@@ -322,37 +343,46 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 		
 		Logger.d(TAG, "finishOnPause called");
-		this.onPauseTask = null;
+		if (this.onPauseTask != null) {
+			this.onPauseTask = null;
+		}
 		//wait until surfaceview is ready to pause
 
-		this.gameSurfaceView.onPause();
+		if (this.gameSurfaceView != null) {
+			this.gameSurfaceView.onPause();
+		}
 	    //if (this.game.isActive()){
 		Logger.d(TAG, "saveGame about to be called");
 			
-			
-		if (!this.game.isStarted()){
-			Logger.d(TAG, "reset tile positions");
-			this.game.getRow1Tiles().clear();
-			this.game.getRow2Tiles().clear();
-			this.game.getRow3Tiles().clear();
-			
-			String x = "";
-			for (int i = 0; i < game.getHopper().size(); i++) {  
-	    		Tile tile = new Tile();
-	    		tile.setLetter(game.getHopper().get(i));
-	    		tile.setPlayed(false);
-	    		tile.setId(i); //java.util.UUID.randomUUID().toString());
-	    		tile.setRow(1);
-	    		tile.setLocation(new Coordinate());
-	    		game.getRow1Tiles().add(tile);
-	    		
-	    		x += game.getHopper().get(i);
-	    	}
-			Logger.d(TAG, "hopper=" + x);
+		if (this.countdown != null) {
+			this.countdown.cancel();
+			this.countdown = null;
 		}
-			
-	    GameService.saveGame(this.game);
-	 
+		
+		if (this.game != null){	
+			if (!this.game.isStarted()){
+				Logger.d(TAG, "reset tile positions");
+				this.game.getRow1Tiles().clear();
+				this.game.getRow2Tiles().clear();
+				this.game.getRow3Tiles().clear();
+				
+				String x = "";
+				for (int i = 0; i < game.getHopper().size(); i++) {  
+		    		Tile tile = new Tile();
+		    		tile.setLetter(game.getHopper().get(i));
+		    		tile.setPlayed(false);
+		    		tile.setId(i); //java.util.UUID.randomUUID().toString());
+		    		tile.setRow(1);
+		    		tile.setLocation(new Coordinate());
+		    		game.getRow1Tiles().add(tile);
+		    		
+		    		x += game.getHopper().get(i);
+		    	}
+				Logger.d(TAG, "hopper=" + x);
+			}
+		
+			GameService.saveGame(this.game);
+		}
 	}
 	
 
@@ -360,12 +390,14 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	protected void onDestroy() {
 		Logger.d(TAG, "onDestroy");
 		super.onDestroy();
-		if (this.isChartBoostActive){
+		if (this.isChartBoostActive && this.cb != null){
 			
 			this.cb.onDestroy(this);
 			this.cb = null;
 		}
-		this.gameSurfaceView.onDestroy();
+		if (this.gameSurfaceView != null) {
+			this.gameSurfaceView.onDestroy();
+		}
 	}
 
 	@Override
@@ -375,10 +407,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		EasyTracker.getInstance().activityStart(this); // Add this method.
 
 		if (this.isChartBoostActive) {
-			if (this.cb == null) {
-				this.setupChartBoost();	
-			}
-			this.cb.onStart(this);
+			this.setupCB();
 		}
  
 	}
@@ -396,7 +425,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		super.onStop();
  
 		 EasyTracker.getInstance().activityStop(this);
-		if (this.isChartBoostActive){
+		if (this.isChartBoostActive && this.cb != null){
 			
 			if (this.cb.hasCachedInterstitial()){ this.cb.clearCache(); }
 			this.cb.onStop(this);
@@ -404,7 +433,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			//this.cb = n//ull;
 		}
 		
-		this.gameSurfaceView.onStop();
+		if (this.gameSurfaceView != null) {
+			this.gameSurfaceView.onStop();
+		}
 	}
 
 	@Override
@@ -428,6 +459,10 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			}
 		//check to see if user has purchased premium upgrade 
 		 
+			//we were interrupted during the interstitial ad
+			if (this.game.isCompleted() && !this.hasPostAdRun){
+				this.handlePostAdServer();
+			}
 		
 	}
 
@@ -435,14 +470,14 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	public void onBackPressed() {
 		Logger.d(TAG, "onBackPressed");
 		// TODO Auto-generated method stub
-		//super.onBackPressed();
+		super.onBackPressed();
 		//override back button in case user just started game. this will make sure they don;t back through 
 		//all of the pick opponent activities
  
-		//if (this.isChartBoostActive && this.getCB().onBackPressed())
+	//	if (this.isChartBoostActive && this.getCB().onBackPressed())
 			// If a Chartboost view exists, close it and return
 		//	return;
-		//else {
+	//	else {
 			//if game is completed, just go back to whatever activity is in the stack
 			//this.gameSurfaceView.onStop();
 			//if (this.game.isActive()){
@@ -452,7 +487,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		//	this.game = null;
 		//	this.player = null;
 			
-			super.onBackPressed();
+	//		super.onBackPressed();
 		//}
 		 
 	}
@@ -509,6 +544,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
  
 		this.initializeGameOnBoard();	
 		this.setupAdServer();
+		this.checkFirstTimeStatus();
 		
 	}
 	
@@ -695,7 +731,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 	 					this.spinner.setMessage(this.getString(R.string.progress_almost_ready));
 	 					this.spinner.show();				
 	 				}
-	 				
+	 				this.setupCB(); //just in case cb is null
 		 			this.cb.setTimeout((int)Constants.GAME_SURFACE_INTERSTITIAL_AD_CHECK_IN_MILLISECONDS);
 		 			this.cb.showInterstitial();
 			    	Logger.d(TAG, "showInterstitial from Chartboost");
@@ -772,6 +808,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		
 		 this.tvCountdown.setText(this.getString(R.string.scoreboard_countdown_start));
 		 
+		this.isCompletedState = false;
 		this.gameSurfaceView.setReadyToDraw(true);
 			this.isStartButtonVisible = true;
 	    	this.hasPostAdRun = true;
@@ -1605,7 +1642,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		int fullWidth = size.x;
 		
 		this.playedLetterTileSize = Math.round(fullWidth / 10.50f);
-		this.letterTileSize =  this.playedLetterTileSize * .66f; //.28f ;	
+		this.letterTileSize =  Utils.convertPixelsToDensityPixels(this, Math.round(this.playedLetterTileSize * .75f));	
 		
 		Logger.d(TAG, "setViewLayouts letterTileSize=" + this.letterTileSize + " playedLetterTileSize=" + this.playedLetterTileSize);
 	 	//int maxTrayTileSize = this.getResources().getInteger(R.integer.maxTrayTileSize);
@@ -2091,6 +2128,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 		  
 		  
 		  this.countdown.start();
+		 
 		  this.freezeAction = false;
 		  this.isCountdownRunning = true;
 	   }
@@ -2125,6 +2163,7 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
   		   this.tvCountdown.setTextColor(Color.parseColor(GameSurface.this.getString(R.color.countdown_text_color)));
  
 		   //handle Ad or purchase reminder
+  		   this.isCompletedState  = true;
 		   this.handleInterstitialAd(); 
     
 	   }
@@ -2312,7 +2351,9 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 			Logger.d(TAG, "ChartBoost INTERSTITIAL '"+location+"' REQUEST FAILED");
 			//Toast.makeText(context, "Interstitial '"+location+"' Load Failed",
 			//		Toast.LENGTH_SHORT).show();
-			handlePostAdServer();
+			if (GameSurface.this.isCompletedState) {
+				handlePostAdServer();
+			}
 			//handlePostTurnFinalAction(postTurnAction); 
 		}
 

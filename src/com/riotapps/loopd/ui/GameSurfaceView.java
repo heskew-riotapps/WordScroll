@@ -696,6 +696,7 @@ public class GameSurfaceView extends SurfaceView  implements SurfaceHolder.Callb
 		            				 this.getTappedTile().setPlayed(true);	 
 		            			 }
 	            			 }
+ 
 	            		// }
 	            		 //else {
 	            		//	 this.resetTileOnDown();

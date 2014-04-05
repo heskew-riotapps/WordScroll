@@ -131,24 +131,28 @@ have created your word.  Do this as many times as you can...but do it quickly!\n
 	 <string name="game_completed_within_3_top_score_title">Almost!</string>
 	 <string name="game_completed_within_3_top_score_message">So close to your top score!</string>
 	 
-	  <string name="game_completed_no_top_score_title_1">Keep at it!</string>
+	 <string name="game_completed_no_top_score_title_1">Keep at it!</string>
 	 <string name="game_completed_no_top_score_message_1">Your new top score could only be a game away!</string>
-	  <string name="game_completed_no_top_score_title_2">Don\'t give up!</string>
+	 <string name="game_completed_no_top_score_title_2">Don\'t give up!</string>
 	 <string name="game_completed_no_top_score_message_2">Another game is waiting.  Your top score is calling!</string>
-	   <string name="game_completed_no_top_score_title_3">Not bad!</string>
+	 <string name="game_completed_no_top_score_title_3">Not bad!</string>
 	 <string name="game_completed_no_top_score_message_3">Keep pushing to get a new top score!</string>
-	   <string name="game_completed_no_top_score_title_4">Keep it up!</string>
+	 <string name="game_completed_no_top_score_title_4">Keep it up!</string>
 	 <string name="game_completed_no_top_score_message_4">A new top score is within your reach!</string>
-	   <string name="game_completed_no_top_score_title_5">Keep at it!</string>
+	 <string name="game_completed_no_top_score_title_5">Keep at it!</string>
 	 <string name="game_completed_no_top_score_message_5">Your new top score could only be a game away!</string>
-	 	   <string name="game_completed_no_top_score_title_6">Keep at it!</string>
+	 <string name="game_completed_no_top_score_title_6">Keep at it!</string>
 	 <string name="game_completed_no_top_score_message_6">Your new top score could only be a game away!</string>
-	 	   <string name="game_completed_no_top_score_title_7">Keep at it!</string>
+	 <string name="game_completed_no_top_score_title_7">Keep at it!</string>
 	 <string name="game_completed_no_top_score_message_7">Your new top score could only be a game away!</string>
-	 	   <string name="game_completed_no_top_score_title_8">Keep at it!</string>
+	 <string name="game_completed_no_top_score_title_8">Keep at it!</string>
 	 <string name="game_completed_no_top_score_message_8">Your new top score could only be a game away!</string>
-	 	   <string name="game_completed_no_top_score_title_9">Keep at it!</string>
+	 <string name="game_completed_no_top_score_title_9">Keep at it!</string>
 	 <string name="game_completed_no_top_score_message_9">Your new top score could only be a game away!</string>
-	 	   <string name="game_completed_no_top_score_title_10">Keep at it!</string>
+	 <string name="game_completed_no_top_score_title_10">Keep at it!</string>
 	 <string name="game_completed_no_top_score_message_10">Your new top score could only be a game away!</string>
+	 
+	 <string name="game_surface_first_time_alert_title">Good luck!</string>
+	<string name="game_surface_first_time_alert_message">Tap on scrolling letters to form words in the corresponding rows.  Tap "Play" as you complete each word to add it to your score.  Get as high a score as you can!\n\nTap the 3 dots in the top right to review all of the game rules.</string>
+	 
 </resources>
