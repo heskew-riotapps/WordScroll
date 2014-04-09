@@ -464,6 +464,11 @@ public class GameSurface  extends FragmentActivity implements View.OnClickListen
 				this.handlePostAdServer();
 			}
 		
+			this.setBottom();
+			if (StoreService.isHideInterstitialAdPurchased(this))
+		 	{
+		 		this.hideInterstitialAd = true;
+		 	}
 	}
 
 	@Override

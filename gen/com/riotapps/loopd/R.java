@@ -1120,8 +1120,8 @@ custom color for pressed state
         public static final int OpponentRecordWrapperStyle=0x7f050032;
         public static final int OpponentSkillLevelStyle=0x7f050033;
         public static final int PlayedWordPlayerImageStyle=0x7f050034;
-        public static final int PlayedWordTileSetStyle=0x7f05006b;
-        public static final int PlayedWordTileSetTitleStyle=0x7f05006a;
+        public static final int PlayedWordTileSetStyle=0x7f05006a;
+        public static final int PlayedWordTileSetTitleStyle=0x7f05006b;
         public static final int ProgressBarStyle=0x7f050035;
         public static final int ProgressTextStyle=0x7f050036;
         public static final int RulesTableRowStyle=0x7f050037;
